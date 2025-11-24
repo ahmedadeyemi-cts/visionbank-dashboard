@@ -1,71 +1,82 @@
-/* General layout */
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    background: #f5f6f7;
+    margin: 0;
+    padding: 0;
 }
 
-/* Section headers */
-.section-header {
-    font-size: 22px;
-    font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 10px;
+/* Layout */
+.container {
+    width: 90%;
+    margin: auto;
+    padding-top: 20px;
 }
 
-/* Data table styling */
-.data-table {
+/* Table */
+table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
+    font-size: 14px;
 }
 
-.data-table th,
-.data-table td {
-    border: 1px solid #ccc;
-    padding: 8px;
+th {
+    background: #e9ecef;
+    padding: 10px;
     text-align: center;
+    border: 1px solid #ccc;
+    white-space: normal;
 }
 
-/* alternating rows */
-.even-row {
-    background: #f5f5f5;
+td {
+    padding: 8px;
+    border: 1px solid #ddd;
 }
 
-.odd-row {
-    background: #ffffff;
-}
+/* Zebra Rows */
+.row-even { background: #ffffff; }
+.row-odd  { background: #f2f2f2; }
 
-/* Status colors */
-.agent-status-available {
-    color: #0f8a0f !important;
+/* Availability Colors */
+.av-available {
+    background: #c8f7c5;
+    color: #0a5500;
     font-weight: bold;
 }
 
-.agent-status-wrapup {
-    color: #d1a000 !important;
+.av-busy {
+    background: #ffc7c7;
+    color: #8b0000;
     font-weight: bold;
 }
 
-.agent-status-busy {
-    color: #d93025 !important;
+.av-wrap {
+    background: #fff8b3;
+    color: #7a6a00;
+    font-weight: bold;
+}
+
+.av-neutral {
+    background: #e1e1e1;
+    color: #555;
     font-weight: bold;
 }
 
 /* Summary text */
 #agentSummary {
     margin-bottom: 10px;
-    font-size: 14px;
 }
 
-/* Footer logo container */
+/* Footer logo */
 .footer-logo {
-    width: 140px;
+    width: 90px;
     display: block;
     margin: 40px auto 5px auto;
 }
 
 .footer-text {
     text-align: center;
-    font-size: 14px;
-    margin-bottom: 20px;
+    font-size: 12px;
+    color: #333;
+    margin-bottom: 30px;
 }
