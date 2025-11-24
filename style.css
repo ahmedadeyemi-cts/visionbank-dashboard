@@ -1,128 +1,164 @@
-/* PAGE BASE */
+/* -------------------- Global -------------------- */
+
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
-    background: #f4f5f7;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f5f7fa;
     color: #222;
 }
+
+.page-main {
+    width: 95%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+/* -------------------- Header -------------------- */
 
 .page-header {
     display: flex;
     align-items: center;
-    padding: 20px;
-    background: white;
-    border-bottom: 2px solid #ddd;
+    justify-content: space-between;
+    background: #ffffff;
+    padding: 15px 30px;
+    border-bottom: 2px solid #d8d8d8;
 }
 
 .logo-main {
-    height: 70px;
-    margin-right: 20px;
+    height: 75px;
 }
 
-h1 {
-    font-size: 26px;
-    font-weight: 700;
+.header-center {
+    text-align: center;
+}
+
+.header-center h1 {
+    font-size: 32px;
+    font-weight: bold;
     margin: 0;
+    color: #111;
 }
 
 .sub-brand {
-    font-size: 16px;
-    margin-left: 95px;
+    font-size: 18px;
     margin-top: 4px;
-    color: #444;
+    color: #555;
 }
 
-.page-main {
-    padding: 25px;
-}
+/* -------------------- Sections -------------------- */
 
-/* SECTIONS */
 .section {
-    margin-bottom: 40px;
-    background: white;
-    border-radius: 6px;
+    background: #fff;
+    margin-top: 35px;
     padding: 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .section-header {
-    background: #d8d9df;
-    padding: 12px 16px;
-    font-size: 18px;
-    font-weight: 600;
-    border-radius: 6px 6px 0 0;
+    background: #d9d9e1;
+    padding: 14px 20px;
+    font-size: 20px;
+    font-weight: bold;
     display: flex;
     align-items: center;
+    gap: 10px;
+    border-radius: 8px 8px 0 0;
 }
 
 .section-body {
-    padding: 20px;
+    padding: 25px;
 }
 
-/* TABLES */
+.section-summary {
+    margin-bottom: 15px;
+    font-size: 15px;
+    color: #444;
+}
+
+/* -------------------- Link Bar -------------------- */
+
+.link-bar {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #0066cc;
+    font-weight: bold;
+}
+
+.link-bar span {
+    cursor: pointer;
+}
+
+/* -------------------- Tables -------------------- */
+
 .table-wrapper {
     overflow-x: auto;
 }
 
 table {
-    border-collapse: collapse;
     width: 100%;
-    font-size: 14px;
-}
-
-th, td {
-    padding: 8px 12px;
-    border-bottom: 1px solid #e6e6e6;
-    text-align: left;
+    border-collapse: collapse;
 }
 
 th {
-    font-weight: 700;
-    background: #f5f5f7;
-}
-
-/* STATUS COLORS */
-.agent-available {
-    background: #e8ffe8; /* light green */
-}
-
-.agent-oncall {
-    background: #fff3cc; /* light yellow */
-}
-
-.agent-break {
-    background: #ffe0e0; /* light red/pink */
-}
-
-.agent-wrapup {
-    background: #f0e5ff; /* light purple */
-}
-
-.agent-busy {
-    background: #ffebd6; /* peach */
-}
-
-/* LINK BAR */
-.link-bar {
-    margin-bottom: 15px;
+    background: #34495e;
+    color: white;
+    padding: 10px;
+    text-align: left;
     font-size: 14px;
 }
 
-.link-bar span {
-    margin-right: 18px;
-    color: #0077cc;
-    cursor: pointer;
+td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #dcdcdc;
+    font-size: 14px;
 }
 
-/* FOOTER */
+/* -------------------- Agent State Colors -------------------- */
+
+.state-ready {
+    background-color: #2ecc71;
+    color: white !important;
+    font-weight: bold;
+}
+
+.state-notready {
+    background-color: #e74c3c;
+    color: white !important;
+    font-weight: bold;
+}
+
+.state-busy {
+    background-color: #f39c12;
+    color: white !important;
+    font-weight: bold;
+}
+
+/* -------------------- Footer -------------------- */
+
 .page-footer {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    padding: 30px 40px;
     margin-top: 60px;
-    padding: 20px 40px;
-    font-size: 14px;
+}
+
+.footer-right {
     text-align: right;
 }
 
-.logo-us-bottom {
-    margin-top: 10px;
-    height: 50px;
+.logo-secondary-footer {
+    width: 70px;
+    display: block;
+    margin-left: auto;
+    margin-bottom: 8px;
+}
+
+.footer-text {
+    font-size: 14px;
+    color: #333;
 }
