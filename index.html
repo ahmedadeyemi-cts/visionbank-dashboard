@@ -1,48 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Contact Center Realtime Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <title>VisionBank Contact Center Realtime Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
     <script defer src="dashboard.js"></script>
 </head>
+
 <body>
 
 <header class="page-header">
-    <div class="header-left">
-        <img src="assets/visionbank.png" alt="VisionBank" class="logo-main" />
-    </div>
-    <div class="header-center">
-        <h1>VisionBank Contact Center Realtime Dashboard</h1>
-        <div class="sub-brand">VisionBank</div>
-    </div>
-    <div class="header-right">
-        <img src="assets/ussignal.png" alt="US Signal" class="logo-secondary-top" />
-    </div>
+    <img src="assets/visionbank.png" class="logo-main" alt="VisionBank">
+    <h1>VisionBank Contact Center Realtime Dashboard</h1>
+    <div class="sub-brand">VisionBank</div>
 </header>
 
 <main class="page-main">
 
-    <!-- Current Queue Status -->
-    <section class="section" id="queueStatusSection">
+    <!-- CURRENT QUEUE STATUS -->
+    <section class="section">
         <div class="section-header">
             <span class="toggle-indicator">−</span>
-            <span>Current Queue Status</span>
+            Current Queue Status
         </div>
         <div class="section-body">
-            <div class="table-wrapper" id="queueStatusContent">
-                <!-- Filled by JS -->
-            </div>
+            <div id="queueStatusContent" class="table-wrapper"></div>
         </div>
     </section>
 
-    <!-- Current Agent Status -->
-    <section class="section" id="agentStatusSection">
+    <!-- CURRENT AGENT STATUS -->
+    <section class="section">
         <div class="section-header">
             <span class="toggle-indicator">−</span>
-            <span>Current Agent Status</span>
+            Current Agent Status
         </div>
+
         <div class="section-body">
             <div id="agentSummary" class="section-summary"></div>
 
@@ -55,9 +48,7 @@
                 <span>Not Available</span>
             </div>
 
-            <div class="table-wrapper" id="agentStatusContent">
-                <!-- Filled by JS -->
-            </div>
+            <div id="agentStatusContent" class="table-wrapper"></div>
         </div>
     </section>
 
@@ -65,7 +56,10 @@
 
 <footer class="page-footer">
     <div class="footer-right">
-        Created and maintained by <strong>Ahmed Adeyemi</strong>, <strong>US Signal</strong>
+        Created and maintained by <strong>Ahmed Adeyemi</strong>,  
+        <strong>US Signal</strong>
+        <br>
+        <img src="assets/ussignal.png" class="logo-us-bottom" alt="US Signal">
     </div>
 </footer>
 
