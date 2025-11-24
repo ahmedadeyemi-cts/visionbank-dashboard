@@ -1,6 +1,6 @@
 const API_BASE = "https://visionbank-tle1.onrender.com";
 
-// Convert seconds → HH:MM:SS
+// Convert seconds to HH:MM:SS
 function formatSeconds(sec) {
     if (!sec || isNaN(sec)) return "00:00:00";
     const h = String(Math.floor(sec / 3600)).padStart(2, "0");
@@ -9,35 +9,33 @@ function formatSeconds(sec) {
     return `${h}:${m}:${s}`;
 }
 
-// Convert UTC → Local
+// UTC → Central Time
 function toLocal(dateStr) {
     if (!dateStr) return "";
-    const d = new Date(dateStr + "Z");
-    return d.toLocaleString("en-US", { timeZone: "America/Chicago" });
+    return new Date(dateStr + "Z").toLocaleString("en-US", {
+        timeZone: "America/Chicago"
+    });
 }
 
-// Availability → Color class
+// Availability color rules
 function statusColor(status) {
     const s = status.toLowerCase();
 
     if (s.includes("available")) return "avail-green";
     if (
-        s.includes("busy") ||
-        s.includes("call") ||
+        s.includes("busy") || 
+        s.includes("call") || 
         s.includes("dial") ||
         s.includes("connected") ||
         s.includes("internal")
     ) return "avail-red";
-    if (
-        s.includes("wrap") ||
-        s.includes("break") ||
-        s.includes("acw")
-    ) return "avail-yellow";
+    if (s.includes("wrap") || s.includes("break") || s.includes("acw"))
+        return "avail-yellow";
 
     return "";
 }
 
-// Load Queue Status
+// Load queue section
 async function loadQueue() {
     const box = document.getElementById("queueStatusContent");
 
@@ -47,7 +45,7 @@ async function loadQueue() {
         const q = json.QueueStatus?.[0];
 
         if (!q) {
-            box.innerHTML = "<div>No queue data</div>";
+            box.innerHTML = `<div>No queue data</div>`;
             return;
         }
 
@@ -72,11 +70,11 @@ async function loadQueue() {
             </table>
         `;
     } catch (e) {
-        box.innerHTML = "<div>Error loading queue data</div>";
+        box.innerHTML = `<div>Error loading queue data</div>`;
     }
 }
 
-// Load Agent Performance Table
+// Load agent performance section
 async function loadAgents() {
     const box = document.getElementById("agentTable");
     const summary = document.getElementById("agentSummary");
@@ -86,6 +84,7 @@ async function loadAgents() {
         const json = await r.json();
         const agents = json.AgentStatus || [];
 
+        // Counts
         let available = 0, oncall = 0, wrap = 0, breakCnt = 0, other = 0;
 
         agents.forEach(a => {
@@ -117,7 +116,7 @@ async function loadAgents() {
                         <th>Inbound Calls</th>
                         <th>Missed</th>
                         <th>Transferred</th>
-                        <th>Average Handle Time</th>
+                        <th>Avg Handle Time</th>
                         <th>Outbound Calls</th>
                         <th>Start Date</th>
                     </tr>
@@ -132,7 +131,7 @@ async function loadAgents() {
                 <tr class="${color}">
                     <td>${a.FullName}</td>
                     <td>${a.TeamName}</td>
-                    <td>${a.PhoneExt || ""}</td>
+                    <td>${a.PhoneExt}</td>
                     <td>${a.CallTransferStatusDesc}</td>
                     <td>${a.TotalCallsReceived || 0}</td>
                     <td>${a.TotalCallsMissed || 0}</td>
@@ -144,11 +143,11 @@ async function loadAgents() {
             `;
         });
 
-        html += "</tbody></table>";
+        html += `</tbody></table>`;
         box.innerHTML = html;
 
     } catch (e) {
-        box.innerHTML = "<div>Error loading agent data</div>";
+        box.innerHTML = `<div>Error loading agent data</div>`;
     }
 }
 
@@ -156,7 +155,6 @@ async function loadAgents() {
 document.addEventListener("DOMContentLoaded", () => {
     loadQueue();
     loadAgents();
-
     setInterval(() => {
         loadQueue();
         loadAgents();
