@@ -1,82 +1,55 @@
 body {
     font-family: Arial, sans-serif;
-    background: #f5f6f7;
-    margin: 0;
-    padding: 0;
+    margin: 20px;
 }
 
-/* Layout */
-.container {
-    width: 90%;
-    margin: auto;
-    padding-top: 20px;
-}
-
-/* Table */
+/* Table layout */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 15px;
     font-size: 14px;
 }
 
-th {
-    background: #e9ecef;
-    padding: 10px;
-    text-align: center;
+th, td {
     border: 1px solid #ccc;
-    white-space: normal;
-}
-
-td {
     padding: 8px;
-    border: 1px solid #ddd;
-}
-
-/* Zebra Rows */
-.row-even { background: #ffffff; }
-.row-odd  { background: #f2f2f2; }
-
-/* Availability Colors */
-.av-available {
-    background: #c8f7c5;
-    color: #0a5500;
-    font-weight: bold;
-}
-
-.av-busy {
-    background: #ffc7c7;
-    color: #8b0000;
-    font-weight: bold;
-}
-
-.av-wrap {
-    background: #fff8b3;
-    color: #7a6a00;
-    font-weight: bold;
-}
-
-.av-neutral {
-    background: #e1e1e1;
-    color: #555;
-    font-weight: bold;
-}
-
-/* Summary text */
-#agentSummary {
-    margin-bottom: 10px;
-}
-
-/* Footer logo */
-.footer-logo {
-    width: 90px;
-    display: block;
-    margin: 40px auto 5px auto;
-}
-
-.footer-text {
     text-align: center;
-    font-size: 12px;
-    color: #333;
-    margin-bottom: 30px;
+}
+
+th {
+    background: #f2f2f2;
+    font-weight: bold;
+}
+
+.row-even { background: #ffffff; }
+.row-odd { background: #f9f9f9; }
+
+/* Availability colors */
+.avail-green {
+    font-weight: bold;
+    color: #0a8f0a;
+}
+
+.avail-yellow {
+    font-weight: bold;
+    color: #d9a300;
+}
+
+.avail-red {
+    font-weight: bold;
+    color: #cc0000;
+}
+
+/* Footer alignment */
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 14px;
+}
+
+#uss-logo {
+    width: 85px;
+    display: block;
+    margin: 0 auto;
 }
