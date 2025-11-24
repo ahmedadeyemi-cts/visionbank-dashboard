@@ -1,88 +1,81 @@
 const API_BASE = "https://visionbank-tle1.onrender.com";
 
-// ------------------------------
-// ON LOAD
-// ------------------------------
+// Load everything when page loads
 document.addEventListener("DOMContentLoaded", () => {
     loadQueueStatus();
     loadAgentStatus();
 
-    // Auto refresh
+    // Auto-refresh every 10 seconds
     setInterval(() => {
         loadQueueStatus();
         loadAgentStatus();
-    }, 5000);
+    }, 10000);
 });
 
-// ------------------------------
-// FORMATTERS
-// ------------------------------
-function formatSecondsToHHMMSS(sec) {
-    if (!sec || isNaN(sec)) return "00:00:00";
-    const h = String(Math.floor(sec / 3600)).padStart(2,"0");
-    const m = String(Math.floor((sec % 3600) / 60)).padStart(2,"0");
-    const s = String(sec % 60).padStart(2,"0");
+// Time formatting helpers
+function formatSecondsToHHMMSS(seconds) {
+    if (!seconds || isNaN(seconds)) return "00:00:00";
+    const h = Math.floor(seconds / 3600).toString().padStart(2, "0");
+    const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, "0");
+    const s = Math.floor(seconds % 60).toString().padStart(2, "0");
     return `${h}:${m}:${s}`;
 }
 
-function convertUTCToCentral(utc) {
-    if (!utc) return "";
-    return new Date(utc + "Z")
-        .toLocaleString("en-US", { timeZone: "America/Chicago" });
+function convertUTCToCentral(utcString) {
+    if (!utcString) return "";
+    const date = new Date(utcString + "Z");
+    return date.toLocaleString("en-US", { timeZone: "America/Chicago" });
 }
 
-// ------------------------------
-// AVAILABILITY COLORING
-// ------------------------------
+// Availability color logic
 function getAvailabilityClass(status) {
+    if (!status) return "";
+
     const s = status.toLowerCase();
 
-    if (s.includes("available")) return "status-available";
-    if (s.includes("wrap")) return "status-wrap";
+    if (s.includes("available")) return "avail-green";
+    if (s.includes("wrap") || s.includes("break")) return "avail-yellow";
     if (
         s.includes("busy") ||
         s.includes("call") ||
+        s.includes("connect") ||
         s.includes("accept") ||
         s.includes("dial")
-    ) return "status-busy";
+    )
+        return "avail-red";
 
     return "";
 }
 
-// ------------------------------
-// LOAD QUEUE STATUS
-// ------------------------------
+// Load queue status
 async function loadQueueStatus() {
     const container = document.getElementById("queueStatusContent");
 
     try {
         const res = await fetch(`${API_BASE}/queues`);
         const data = await res.json();
-        const q = data?.QueueStatus?.[0];
 
-        if (!q) {
-            container.innerHTML = `<div class='error'>No queue data</div>`;
+        if (!data.QueueStatus || data.QueueStatus.length === 0) {
+            container.innerHTML = `<div class="error">No queue data available</div>`;
             return;
         }
 
+        const q = data.QueueStatus[0];
+
         container.innerHTML = `
             <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Queue</th>
-                        <th class="numeric">Calls</th>
-                        <th class="numeric">Agents</th>
-                        <th class="numeric">Wait</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>${q.QueueName}</td>
-                        <td class="numeric">${q.TotalCalls}</td>
-                        <td class="numeric">${q.TotalLoggedAgents}</td>
-                        <td class="numeric">${formatSecondsToHHMMSS(q.AvgWaitInterval)}</td>
-                    </tr>
-                </tbody>
+                <tr>
+                    <th>Queue</th>
+                    <th>Calls</th>
+                    <th>Agents</th>
+                    <th>Wait</th>
+                </tr>
+                <tr>
+                    <td>${q.QueueName}</td>
+                    <td>${q.TotalCalls}</td>
+                    <td>${q.TotalLoggedAgents}</td>
+                    <td>${formatSecondsToHHMMSS(q.AvgWaitInterval)}</td>
+                </tr>
             </table>
         `;
 
@@ -91,9 +84,7 @@ async function loadQueueStatus() {
     }
 }
 
-// ------------------------------
-// LOAD AGENTS
-// ------------------------------
+// Load agent status
 async function loadAgentStatus() {
     const container = document.getElementById("agentStatusContent");
     const summary = document.getElementById("agentSummary");
@@ -101,15 +92,24 @@ async function loadAgentStatus() {
     try {
         const res = await fetch(`${API_BASE}/agents`);
         const data = await res.json();
-        const agents = data.AgentStatus || [];
 
-        // -------------------------------------------------
-        // Summary counts
-        // -------------------------------------------------
-        let available = 0, onCall = 0, wrap = 0, breakCnt = 0, other = 0;
+        if (!data.AgentStatus) {
+            container.innerHTML = `<div class='error'>No agent data</div>`;
+            return;
+        }
+
+        const agents = data.AgentStatus;
+
+        // Summary counters
+        let available = 0,
+            onCall = 0,
+            wrap = 0,
+            breakCnt = 0,
+            other = 0;
 
         agents.forEach(a => {
             const s = a.CallTransferStatusDesc.toLowerCase();
+
             if (s.includes("available")) available++;
             else if (s.includes("call")) onCall++;
             else if (s.includes("wrap")) wrap++;
@@ -117,60 +117,52 @@ async function loadAgentStatus() {
             else other++;
         });
 
-        summary.innerHTML = `
-            ${agents.length} agents signed on,
-            ${available} available,
-            ${onCall} on call,
-            ${wrap} on wrap-up,
-            ${breakCnt} on break,
-            ${other} in other statuses
-        `;
+        summary.innerText = `${agents.length} agents signed on, ${available} available, ${onCall} on call, ${wrap} on wrap-up, ${breakCnt} on break, ${other} in other statuses`;
 
-        // -------------------------------------------------
         // Build table
-        // -------------------------------------------------
         let html = `
             <table class="data-table">
-                <thead>
-                    <tr>
-                        <th class="sortable">Employee</th>
-                        <th>Team</th>
-                        <th>Phone No.</th>
-                        <th>Availability</th>
-                        <th class="numeric">Inbound</th>
-                        <th class="numeric">Missed</th>
-                        <th class="numeric">Transferred</th>
-                        <th class="numeric">Outbound</th>
-                        <th>Start Date</th>
-                    </tr>
-                </thead>
-                <tbody>
+                <tr>
+                    <th>Employee</th>
+                    <th>Team</th>
+                    <th>Phone No.</th>
+                    <th>Availability</th>
+                    <th>Inbound</th>
+                    <th>Missed</th>
+                    <th>Transferred</th>
+                    <th>Outbound</th>
+                    <th>Avg Handle Time</th>
+                    <th>Start Date</th>
+                </tr>
         `;
 
-        agents.forEach((a, i) => {
-            const cls = getAvailabilityClass(a.CallTransferStatusDesc);
+        agents.forEach((a, index) => {
+            const rowClass = index % 2 === 0 ? "row-even" : "row-odd";
+            const availClass = getAvailabilityClass(a.CallTransferStatusDesc);
 
             html += `
-                <tr class="${i % 2 === 0 ? "row-alt" : ""}">
+                <tr class="${rowClass}">
                     <td>${a.FullName}</td>
                     <td>${a.TeamName}</td>
                     <td>${a.PhoneExt || ""}</td>
-                    <td class="${cls}">${a.CallTransferStatusDesc}</td>
+                    <td class="${availClass}">${a.CallTransferStatusDesc}</td>
 
-                    <td class="numeric">${a.TotalCallsAnswered}</td>
-                    <td class="numeric">${a.TotalCallsMissed}</td>
-                    <td class="numeric">${a.TotalCallsTransferred}</td>
-                    <td class="numeric">${a.TotalOutboundCalls}</td>
+                    <td>${a.TotalCallsReceived ?? 0}</td>
+                    <td>${a.TotalCallsMissed ?? 0}</td>
+                    <td>${a.TotalCallsTransferred ?? 0}</td>
+                    <td>${a.DialoutCount ?? 0}</td>
 
+                    <td>${formatSecondsToHHMMSS(a.TotalSecondsOnCall)}</td>
                     <td>${convertUTCToCentral(a.StartDateUtc)}</td>
                 </tr>
             `;
         });
 
-        html += "</tbody></table>";
+        html += "</table>";
+
         container.innerHTML = html;
 
     } catch (err) {
-        container.innerHTML = `<div class="error">Error loading agents</div>`;
+        container.innerHTML = `<div class='error'>Error loading agent status</div>`;
     }
 }
