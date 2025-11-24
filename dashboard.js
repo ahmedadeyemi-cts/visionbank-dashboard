@@ -27,14 +27,14 @@ function toCST(dateStr) {
     });
 }
 
-// Determine Availability Color
+// Return availability color class
 function getAvailabilityClass(status) {
     if (!status) return "";
 
     const s = status.toLowerCase();
 
     if (s.includes("available")) return "avail-green";
-    if (s.includes("wrap")) return "avail-yellow";
+    if (s.includes("wrap") || s.includes("acw")) return "avail-yellow";
     if (
         s.includes("busy") ||
         s.includes("call") ||
@@ -150,9 +150,15 @@ async function loadAgentStatus() {
 
         agents.forEach(a => {
             const availClass = getAvailabilityClass(a.CallTransferStatusDesc);
-            const avgHandle = a.TotalCallsAnswered > 0
-                ? fmt(a.TotalSecondsOnCall / a.TotalCallsAnswered)
-                : "00:00:00";
+
+            // Correct fields
+            const inbound = a.TotalCallsReceived || 0;
+            const missed = a.TotalCallsMissed || 0;
+            const transferred = a.TotalCallsTransferred || 0;
+            const outbound = a.TotalOutboundCalls || 0;
+
+            const avgHandle =
+                inbound > 0 ? fmt(a.TotalSecondsOnCall / inbound) : "00:00:00";
 
             html += `
                 <tr>
@@ -160,11 +166,11 @@ async function loadAgentStatus() {
                     <td>${a.TeamName}</td>
                     <td>${a.PhoneExt || ""}</td>
                     <td class="${availClass}">${a.CallTransferStatusDesc || ""}</td>
-                    <td>${a.TotalCallsAnswered || 0}</td>
-                    <td>${a.TotalCallsMissed || 0}</td>
-                    <td>${a.TotalCallsTransferred || 0}</td>
+                    <td>${inbound}</td>
+                    <td>${missed}</td>
+                    <td>${transferred}</td>
                     <td>${avgHandle}</td>
-                    <td>${a.TotalOutboundCalls || 0}</td>
+                    <td>${outbound}</td>
                     <td>${toCST(a.StartDateUtc)}</td>
                 </tr>
             `;
