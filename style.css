@@ -1,43 +1,91 @@
 body {
-    margin: 20px;
+    margin: 0;
+    padding: 0;
     font-family: Arial, sans-serif;
+    background: #ffffff;
 }
 
 .page-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
 }
 
 .logo-main {
-    height: 70px;
+    height: 75px;
 }
 
-.logo-secondary-top {
-    height: 70px;
+.page-title {
+    font-size: 28px;
+    font-weight: bold;
 }
 
 .section {
-    margin-top: 30px;
+    margin: 40px 30px;
 }
 
-h2 {
-    margin-bottom: 10px;
+.section-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 15px;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
     margin-top: 10px;
+    font-size: 14px;
 }
 
-th, td {
-    border: 1px solid #ccc;
-    padding: 6px 10px;
-    text-align: left;
-}
-
-.error {
-    color: red;
+th {
+    background: #f1f1f1;
+    text-align: center;
+    padding: 10px;
     font-weight: bold;
+    word-wrap: break-word;
+}
+
+td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+    background: #fafafa;
+}
+
+tr:nth-child(odd) {
+    background: #ffffff;
+}
+
+/* Status row highlighting */
+.agent-available { background-color: #d8f5d3 !important; }
+.agent-oncall { background-color: #fff4cc !important; }
+.agent-wrapup { background-color: #f2dbff !important; }
+.agent-break { background-color: #ffd6d6 !important; }
+.agent-busy { background-color: #ffe2c5 !important; }
+
+.agent-summary {
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.page-footer {
+    margin-top: 60px;
+    padding: 20px;
+    text-align: right;
+}
+
+.logo-footer {
+    height: 50px;
+    display: block;
+    margin-left: auto;
+}
+
+.footer-text {
+    font-size: 13px;
+    margin-top: 8px;
 }
