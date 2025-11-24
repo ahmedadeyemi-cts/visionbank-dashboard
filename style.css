@@ -1,92 +1,36 @@
-/* GENERAL PAGE STYLE */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #f5f7fa;
-    color: #000;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VisionBank – CEG Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 
-.section {
-    margin: 20px;
-    background: white;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
+<body>
+    <div class="header">
+        <img class="vbLogo" src="visionbank.png">
+        <div class="title">CEG Contact Center Realtime Dashboard</div>
+        <div class="subtitle">VisionBank</div>
+    </div>
 
-.section-header {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 12px;
-}
+    <section class="queue-section">
+        <h2>Current Queue Status</h2>
+        <div id="queueStatusContent" class="queue-table"></div>
+    </section>
 
-.section-summary {
-    margin-bottom: 15px;
-    font-size: 15px;
-    color: #333;
-}
+    <!-- 📌 EXECUTIVE KPI BOX INSERTED HERE -->
+    <section class="kpi-section">
+        <div id="kpiContainer"></div>
+    </section>
 
-/* TABLES */
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-}
+    <section class="agent-section">
+        <h2>Agent Performance</h2>
+        <div id="agentTableContainer"></div>
+    </section>
 
-.data-table th {
-    background: #e5e7eb;
-    font-weight: 700;
-    padding: 10px;
-    border-bottom: 2px solid #ccc;
-    text-align: left;
-    white-space: nowrap;
-}
+    <img class="usSignalLogo" src="ussignal.png">
+    <div class="footerText">Created and maintained by <b>Ahmed Adeyemi, US Signal</b></div>
 
-.data-table td {
-    padding: 9px 10px;
-    border-bottom: 1px solid #ddd;
-}
-
-/* ALTERNATING ROWS */
-.row-even {
-    background: #fafafa;
-}
-.row-odd {
-    background: white;
-}
-
-/* AVAILABILITY COLORS */
-.avail-green {
-    background-color: #d8f5d8 !important;
-    color: #0a7a0a !important;
-    font-weight: bold;
-}
-
-.avail-red {
-    background-color: #ffd6d6 !important;
-    color: #b30000 !important;
-    font-weight: bold;
-}
-
-.avail-yellow {
-    background-color: #fff2af !important;
-    color: #a68b00 !important;
-    font-weight: bold;
-}
-
-/* US SIGNAL LOGO — small, bottom-right */
-.footer-logo {
-    width: 50px;
-    height: auto;
-    position: fixed;
-    right: 25px;
-    bottom: 55px;
-}
-
-.page-footer {
-    text-align: right;
-    font-size: 13px;
-    padding: 8px 25px;
-    margin-top: 20px;
-    color: #444;
-}
+    <script src="dashboard.js"></script>
+</body>
+</html>
