@@ -1,125 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>CEG Contact Center Realtime Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="styles.css" />
-  <script defer src="dashboard.js"></script>
+    <meta charset="UTF-8" />
+    <title>CEG Contact Center Realtime Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="dashboard.js"></script>
 </head>
+
 <body>
-  <header class="header">
+
+<header class="page-header">
     <div class="header-left">
-      <!-- VisionBank logo -->
-      <img src="assets/visionbank.png" alt="VisionBank" class="logo-main" />
-      <div class="header-title-block">
+        <img src="assets/visionbank.png" alt="VisionBank" class="logo-main" />
+    </div>
+    <div class="header-center">
         <h1>CEG Contact Center Realtime Dashboard</h1>
-        <span class="header-subtitle">VisionBank</span>
-      </div>
+        <div class="sub-brand">VisionBank</div>
     </div>
-    <div class="header-right">
-      <div class="header-datetime">
-        <div id="currentTime" class="time-text">--:--:--</div>
-        <div id="currentDate" class="date-text">Updating…</div>
-        <div class="tz-text">US Central Time</div>
-      </div>
-    </div>
-  </header>
+</header>
 
-  <main class="main">
-    <!-- TOP METRIC CARDS -->
-    <section class="top-grid">
-      <article class="metric-card">
-        <div class="metric-label">Available Agents</div>
-        <div id="metric-available" class="metric-value">0</div>
-        <div class="metric-caption">Agents currently in an available state</div>
-      </article>
+<main class="page-main">
 
-      <article class="metric-card">
-        <div class="metric-label">Average Handling Time</div>
-        <div id="metric-aht" class="metric-value">00:00</div>
-        <div class="metric-caption">
-          Calculated from total on-call time / inbound calls (today)
+    <!-- Current Queue Status -->
+    <section class="section" id="queueStatusSection">
+        <div class="section-header">
+            <span class="toggle-indicator">−</span>
+            <span>Current Queue Status</span>
         </div>
-      </article>
-
-      <article class="metric-card">
-        <div class="metric-label">Answered Calls (Today)</div>
-        <div id="metric-answered" class="metric-value">0</div>
-        <div class="metric-caption">
-          Sum of inbound calls handled by all agents
+        <div class="section-body">
+            <div class="table-wrapper" id="queueStatusContent"></div>
         </div>
-      </article>
-
-      <article class="metric-card">
-        <div class="metric-label">Calls in Queue</div>
-        <div id="metric-queue-calls" class="metric-value">0</div>
-        <div class="metric-caption">
-          Oldest Wait: <span id="metric-oldest-wait">00:00</span>
-        </div>
-      </article>
     </section>
 
-    <!-- QUEUE STATUS -->
-    <section class="panel">
-      <header class="panel-header">
-        <h2>Current Queue Status</h2>
-      </header>
-      <div class="panel-body" id="queue-panel-body">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Queue</th>
-              <th>Calls</th>
-              <th>Agents</th>
-              <th>Avg Wait</th>
-              <th>Min Wait</th>
-              <th>Max Wait</th>
-            </tr>
-          </thead>
-          <tbody id="queue-tbody">
-            <!-- Filled by JS -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- AGENT PERFORMANCE -->
-    <section class="panel">
-      <header class="panel-header">
-        <h2>Agent Performance</h2>
-        <div id="agent-summary" class="panel-summary">
-          Updating…
+    <!-- Current Agent Status -->
+    <section class="section" id="agentStatusSection">
+        <div class="section-header">
+            <span class="toggle-indicator">−</span>
+            <span>Current Agent Status</span>
         </div>
-      </header>
-      <div class="panel-body">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Employee</th>
-              <th>Availability</th>
-              <th>Inbound Calls</th>
-              <th>Avg Handle Time</th>
-              <th>Outbound Calls</th>
-            </tr>
-          </thead>
-          <tbody id="agent-tbody">
-            <!-- Filled by JS -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </main>
+        <div class="section-body">
+            <div id="agentSummary" class="section-summary"></div>
 
-  <footer class="footer">
+            <div class="link-bar">
+                <span>Log Agent Out</span>
+                <span>Log Telagent In</span>
+                <span>Switch to Telagent</span>
+                <span>Text Message</span>
+                <span>Available</span>
+                <span>Not Available</span>
+            </div>
+
+            <div class="table-wrapper" id="agentStatusContent"></div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="page-footer">
     <div class="footer-right">
-      <div class="footer-logo-block">
-        <img src="assets/ussignal.png" alt="US Signal" class="logo-secondary" />
+        <img src="assets/ussignal.png" alt="US Signal" class="logo-secondary-footer" />
         <div class="footer-text">
-          Created and maintained by <strong>Ahmed Adeyemi</strong>, <strong>US Signal</strong>
+            Created and maintained by <strong>Ahmed Adeyemi</strong>, <strong>US Signal</strong>
         </div>
-      </div>
     </div>
-  </footer>
+</footer>
+
 </body>
 </html>
