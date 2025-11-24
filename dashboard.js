@@ -1,6 +1,6 @@
 const API_BASE = "https://visionbank-tle1.onrender.com";
 
-// Load everything when page loads
+// Load data when page is ready
 document.addEventListener("DOMContentLoaded", () => {
     loadQueueStatus();
     loadAgentStatus();
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 10000);
 });
 
-// Time formatting helpers
+// Format seconds → HH:MM:SS
 function formatSecondsToHHMMSS(seconds) {
     if (!seconds || isNaN(seconds)) return "00:00:00";
     const h = Math.floor(seconds / 3600).toString().padStart(2, "0");
@@ -21,13 +21,14 @@ function formatSecondsToHHMMSS(seconds) {
     return `${h}:${m}:${s}`;
 }
 
+// Convert UTC → Central Time
 function convertUTCToCentral(utcString) {
     if (!utcString) return "";
     const date = new Date(utcString + "Z");
     return date.toLocaleString("en-US", { timeZone: "America/Chicago" });
 }
 
-// Availability color logic
+// Availability colors
 function getAvailabilityClass(status) {
     if (!status) return "";
 
@@ -38,8 +39,8 @@ function getAvailabilityClass(status) {
     if (
         s.includes("busy") ||
         s.includes("call") ||
-        s.includes("connect") ||
         s.includes("accept") ||
+        s.includes("connect") ||
         s.includes("dial")
     )
         return "avail-red";
@@ -78,7 +79,6 @@ async function loadQueueStatus() {
                 </tr>
             </table>
         `;
-
     } catch (err) {
         container.innerHTML = `<div class="error">Error loading queue status</div>`;
     }
@@ -119,7 +119,7 @@ async function loadAgentStatus() {
 
         summary.innerText = `${agents.length} agents signed on, ${available} available, ${onCall} on call, ${wrap} on wrap-up, ${breakCnt} on break, ${other} in other statuses`;
 
-        // Build table
+        // Build HTML table
         let html = `
             <table class="data-table">
                 <tr>
@@ -145,11 +145,14 @@ async function loadAgentStatus() {
                     <td>${a.FullName}</td>
                     <td>${a.TeamName}</td>
                     <td>${a.PhoneExt || ""}</td>
-                    <td class="${availClass}">${a.CallTransferStatusDesc}</td>
+
+                    <td class="${availClass}">
+                        ${a.CallTransferStatusDesc}
+                    </td>
 
                     <td>${a.TotalCallsReceived ?? 0}</td>
                     <td>${a.TotalCallsMissed ?? 0}</td>
-                    <td>${a.TotalCallsTransferred ?? 0}</td>
+                    <td>${a.ThirdPartyTransferCount ?? 0}</td>
                     <td>${a.DialoutCount ?? 0}</td>
 
                     <td>${formatSecondsToHHMMSS(a.TotalSecondsOnCall)}</td>
@@ -161,7 +164,6 @@ async function loadAgentStatus() {
         html += "</table>";
 
         container.innerHTML = html;
-
     } catch (err) {
         container.innerHTML = `<div class='error'>Error loading agent status</div>`;
     }
