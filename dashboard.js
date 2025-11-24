@@ -1,68 +1,57 @@
 const API_BASE = "https://visionbank-tle1.onrender.com";
 
-document.addEventListener("DOMContentLoaded", () => {
-    loadQueueStatus();
-    loadAgentStatus();
-    setInterval(() => {
-        loadQueueStatus();
-        loadAgentStatus();
-    }, 10000);
-});
-
 // Convert seconds → HH:MM:SS
-function fmt(sec) {
-    if (!sec && sec !== 0) return "00:00:00";
-    sec = Math.floor(sec);
+function formatSeconds(sec) {
+    if (!sec || isNaN(sec)) return "00:00:00";
     const h = String(Math.floor(sec / 3600)).padStart(2, "0");
     const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
     const s = String(sec % 60).padStart(2, "0");
     return `${h}:${m}:${s}`;
 }
 
-// Convert UTC → Central Time
-function toCST(dateStr) {
+// Convert UTC → Local
+function toLocal(dateStr) {
     if (!dateStr) return "";
-    return new Date(dateStr + "Z").toLocaleString("en-US", {
-        timeZone: "America/Chicago"
-    });
+    const d = new Date(dateStr + "Z");
+    return d.toLocaleString("en-US", { timeZone: "America/Chicago" });
 }
 
-// Return availability color class
-function getAvailabilityClass(status) {
-    if (!status) return "";
-
+// Availability → Color class
+function statusColor(status) {
     const s = status.toLowerCase();
 
     if (s.includes("available")) return "avail-green";
-    if (s.includes("wrap") || s.includes("acw")) return "avail-yellow";
     if (
         s.includes("busy") ||
         s.includes("call") ||
-        s.includes("accept") ||
-        s.includes("dial")
+        s.includes("dial") ||
+        s.includes("connected") ||
+        s.includes("internal")
     ) return "avail-red";
+    if (
+        s.includes("wrap") ||
+        s.includes("break") ||
+        s.includes("acw")
+    ) return "avail-yellow";
 
     return "";
 }
 
-// ----------------------------
 // Load Queue Status
-// ----------------------------
-async function loadQueueStatus() {
-    const el = document.getElementById("queueStatusContent");
+async function loadQueue() {
+    const box = document.getElementById("queueStatusContent");
 
     try {
-        const res = await fetch(`${API_BASE}/queues`);
-        const data = await res.json();
+        const r = await fetch(`${API_BASE}/queues`);
+        const json = await r.json();
+        const q = json.QueueStatus?.[0];
 
-        if (!data.QueueStatus || !data.QueueStatus.length) {
-            el.innerHTML = "<div>No queue data found</div>";
+        if (!q) {
+            box.innerHTML = "<div>No queue data</div>";
             return;
         }
 
-        const q = data.QueueStatus[0];
-
-        el.innerHTML = `
+        box.innerHTML = `
             <table class="data-table">
                 <thead>
                     <tr>
@@ -77,58 +66,46 @@ async function loadQueueStatus() {
                         <td>${q.QueueName}</td>
                         <td>${q.TotalCalls}</td>
                         <td>${q.TotalLoggedAgents}</td>
-                        <td>${fmt(q.AvgWaitInterval)}</td>
+                        <td>${formatSeconds(q.AvgWaitInterval)}</td>
                     </tr>
                 </tbody>
             </table>
         `;
     } catch (e) {
-        el.innerHTML = "<div>Error loading queue status</div>";
-        console.error(e);
+        box.innerHTML = "<div>Error loading queue data</div>";
     }
 }
 
-// ----------------------------
-// Load Agent Status
-// ----------------------------
-async function loadAgentStatus() {
-    const el = document.getElementById("agentStatusContent");
-    const summaryEl = document.getElementById("agentSummary");
+// Load Agent Performance Table
+async function loadAgents() {
+    const box = document.getElementById("agentTable");
+    const summary = document.getElementById("agentSummary");
 
     try {
-        const res = await fetch(`${API_BASE}/agents`);
-        const data = await res.json();
+        const r = await fetch(`${API_BASE}/agents`);
+        const json = await r.json();
+        const agents = json.AgentStatus || [];
 
-        if (!data.AgentStatus) {
-            el.innerHTML = "<div>No agent data</div>";
-            return;
-        }
-
-        const agents = data.AgentStatus;
-
-        // Summary counts
-        let available = 0, onCall = 0, wrap = 0, breakCnt = 0, other = 0;
+        let available = 0, oncall = 0, wrap = 0, breakCnt = 0, other = 0;
 
         agents.forEach(a => {
-            const s = a.CallTransferStatusDesc?.toLowerCase() || "";
-
+            const s = a.CallTransferStatusDesc.toLowerCase();
             if (s.includes("available")) available++;
-            else if (s.includes("call")) onCall++;
+            else if (s.includes("call") || s.includes("busy")) oncall++;
             else if (s.includes("wrap")) wrap++;
             else if (s.includes("break")) breakCnt++;
             else other++;
         });
 
-        summaryEl.innerHTML = `
+        summary.innerHTML = `
             ${agents.length} agents signed on, 
             ${available} available, 
-            ${onCall} on call, 
+            ${oncall} on call, 
             ${wrap} on wrap-up, 
             ${breakCnt} on break, 
             ${other} in other statuses
         `;
 
-        // Build table
         let html = `
             <table class="data-table">
                 <thead>
@@ -149,38 +126,39 @@ async function loadAgentStatus() {
         `;
 
         agents.forEach(a => {
-            const availClass = getAvailabilityClass(a.CallTransferStatusDesc);
-
-            // Correct fields
-            const inbound = a.TotalCallsReceived || 0;
-            const missed = a.TotalCallsMissed || 0;
-            const transferred = a.TotalCallsTransferred || 0;
-            const outbound = a.TotalOutboundCalls || 0;
-
-            const avgHandle =
-                inbound > 0 ? fmt(a.TotalSecondsOnCall / inbound) : "00:00:00";
+            const color = statusColor(a.CallTransferStatusDesc);
 
             html += `
-                <tr>
+                <tr class="${color}">
                     <td>${a.FullName}</td>
                     <td>${a.TeamName}</td>
                     <td>${a.PhoneExt || ""}</td>
-                    <td class="${availClass}">${a.CallTransferStatusDesc || ""}</td>
-                    <td>${inbound}</td>
-                    <td>${missed}</td>
-                    <td>${transferred}</td>
-                    <td>${avgHandle}</td>
-                    <td>${outbound}</td>
-                    <td>${toCST(a.StartDateUtc)}</td>
+                    <td>${a.CallTransferStatusDesc}</td>
+                    <td>${a.TotalCallsReceived || 0}</td>
+                    <td>${a.TotalCallsMissed || 0}</td>
+                    <td>${a.TotalCallsTransferred || 0}</td>
+                    <td>${formatSeconds(a.AvgTalkInterval)}</td>
+                    <td>${a.TotalOutboundCalls || 0}</td>
+                    <td>${toLocal(a.StartDateUtc)}</td>
                 </tr>
             `;
         });
 
         html += "</tbody></table>";
-        el.innerHTML = html;
+        box.innerHTML = html;
 
     } catch (e) {
-        el.innerHTML = "<div>Error loading agent status</div>";
-        console.error(e);
+        box.innerHTML = "<div>Error loading agent data</div>";
     }
 }
+
+// Refresh every 10 seconds
+document.addEventListener("DOMContentLoaded", () => {
+    loadQueue();
+    loadAgents();
+
+    setInterval(() => {
+        loadQueue();
+        loadAgents();
+    }, 10000);
+});
