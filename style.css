@@ -1,144 +1,76 @@
-/* Base layout */
-* { box-sizing: border-box; }
-
+/* GENERAL LAYOUT */
 body {
+    font-family: Arial, sans-serif;
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background-color: #f5f6f8;
+    background: #f5f7fa;
+    color: #000;
 }
 
-/* Header */
-.page-header {
-    display: flex;
-    align-items: center;
-    padding: 12px 32px;
-    border-bottom: 3px solid #d5d7dd;
-    background-color: #ffffff;
+.section-header {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
-.logo-main {
-    height: 72px;
-    margin-right: 20px;
-}
-
-.header-center h1 {
-    font-size: 26px;
-    margin: 0;
-}
-
-/* Section layout */
-.page-main { padding: 20px 40px 80px; }
-
-.section {
-    background: #ffffff;
-    border: 1px solid #e0e1e6;
-    border-radius: 4px;
-    padding: 16px;
-    margin-bottom: 24px;
-}
-
-/* Link bar */
-.link-bar span {
-    margin-right: 18px;
-    color: #0066cc;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-/* Tables */
-.table-wrapper { overflow-x: auto; }
-
+/* TABLE STYLE */
 .data-table {
-    border-collapse: collapse;
     width: 100%;
-    table-layout: fixed;
-    min-width: 900px;
-    background: #ffffff;
+    border-collapse: collapse;
+    background: #fff;
 }
 
 .data-table th {
-    background: #eceef2;
-    padding: 8px;
-    border: 1px solid #d8dae0;
+    background: #e5e7eb;
     font-weight: 600;
+    padding: 10px;
+    border-bottom: 2px solid #ccc;
+    text-align: left;
 }
 
 .data-table td {
-    padding: 8px;
-    border: 1px solid #d8dae0;
+    padding: 8px 10px;
+    border-bottom: 1px solid #ddd;
 }
 
-.row-alt {
-    background: #f7f8fb;
+/* ALTERNATING ROWS */
+.row-even {
+    background: #fafafa;
+}
+.row-odd {
+    background: #ffffff;
 }
 
-/* Availability Colors */
-.status-available {
-    color: #0a7a20;
-    font-weight: 600;
+/* AVAILABILITY COLORS */
+.avail-green {
+    background-color: #d8f5d8 !important;
+    color: #0a7a0a !important;
+    font-weight: bold;
 }
 
-.status-busy {
-    color: #c01818;
-    font-weight: 600;
+.avail-red {
+    background-color: #ffd6d6 !important;
+    color: #b30000 !important;
+    font-weight: bold;
 }
 
-.status-wrap {
-    color: #c27b00;
-    font-weight: 600;
+.avail-yellow {
+    background-color: #fff2af !important;
+    color: #a68b00 !important;
+    font-weight: bold;
 }
 
-/* US Signal Logo */
-.page-footer {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    text-align: right;
-    background: none;
-}
-
-.logo-ussignal-footer {
-    width: 48px;
+/* FOOTER LOGO - bottom right small */
+.footer-logo {
+    width: 60px;
     height: auto;
-    opacity: 0.9;
-    display: block;
-    margin-left: auto;
+    position: fixed;
+    right: 25px;
+    bottom: 55px;
 }
 
-.footer-text {
-    font-size: 12px;
-    margin-top: 4px;
-    color: #333;
-}
-
-/* Dark mode */
-body.dark-mode {
-    background-color: #14161d;
-    color: #e8e8f0;
-}
-
-body.dark-mode .section {
-    background: #1f222b;
-}
-
-body.dark-mode .data-table {
-    background: #1f222b;
-}
-
-body.dark-mode .data-table th {
-    background: #292d3a;
-}
-
-body.dark-mode .row-alt {
-    background: #262a36;
-}
-
-/* Flashing red */
-@keyframes flash-red {
-    0% { background: #ffe3e3; }
-    100% { background: #ffb3b3; }
-}
-
-.over-threshold {
-    animation: flash-red 1s infinite alternate;
+.page-footer {
+    text-align: right;
+    font-size: 13px;
+    padding: 10px 25px;
+    color: #444;
 }
