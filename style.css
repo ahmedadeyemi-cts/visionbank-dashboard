@@ -1,144 +1,128 @@
-/* Page Layout */
+/* PAGE BASE */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background: #f5f7fa;
-    color: #333;
+    background: #f4f5f7;
+    color: #222;
 }
 
 .page-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 25px;
+    padding: 20px;
     background: white;
-    border-bottom: 3px solid #e0e4ea;
+    border-bottom: 2px solid #ddd;
 }
 
 .logo-main {
     height: 70px;
+    margin-right: 20px;
 }
 
-.logo-secondary-top {
-    height: 55px;
+h1 {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.sub-brand {
+    font-size: 16px;
+    margin-left: 95px;
+    margin-top: 4px;
+    color: #444;
 }
 
 .page-main {
-    padding: 20px 40px;
+    padding: 25px;
 }
 
-/* Section Styling */
+/* SECTIONS */
 .section {
-    background: #fff;
+    margin-bottom: 40px;
+    background: white;
     border-radius: 6px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-    margin-bottom: 30px;
+    padding: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .section-header {
-    background: #d3d6df;
-    padding: 12px 18px;
-    font-weight: bold;
+    background: #d8d9df;
+    padding: 12px 16px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 6px 6px 0 0;
     display: flex;
     align-items: center;
-    font-size: 17px;
-}
-
-.section-header .toggle-indicator {
-    margin-right: 10px;
-    font-size: 20px;
 }
 
 .section-body {
-    padding: 15px 25px;
+    padding: 20px;
 }
 
-.section-summary {
-    margin-bottom: 10px;
-    font-size: 15px;
-}
-
-/* Link bar */
-.link-bar span {
-    margin-right: 18px;
-    color: #0066ff;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-/* Tables */
+/* TABLES */
 .table-wrapper {
     overflow-x: auto;
-    margin-top: 10px;
 }
 
 table {
-    width: 100%;
     border-collapse: collapse;
+    width: 100%;
     font-size: 14px;
+}
+
+th, td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e6e6e6;
+    text-align: left;
 }
 
 th {
-    background: #eaecef;
-    padding: 8px;
-    text-align: left;
-    border-bottom: 2px solid #cbd0d8;
-}
-
-td {
-    padding: 6px 8px;
-    border-bottom: 1px solid #e2e5ea;
-}
-
-/* Alternating rows */
-tbody tr:nth-child(even) {
-    background: #f7f9fc;
+    font-weight: 700;
+    background: #f5f5f7;
 }
 
 /* STATUS COLORS */
-.status-available {
-    color: green;
-    font-weight: bold;
+.agent-available {
+    background: #e8ffe8; /* light green */
 }
 
-.status-busy {
-    color: red;
-    font-weight: bold;
+.agent-oncall {
+    background: #fff3cc; /* light yellow */
 }
 
-.status-break {
-    color: #d9534f;
-    font-weight: bold;
+.agent-break {
+    background: #ffe0e0; /* light red/pink */
 }
 
-.status-notready {
-    color: #ff9933;
-    font-weight: bold;
+.agent-wrapup {
+    background: #f0e5ff; /* light purple */
 }
 
-.status-wrapup {
-    color: #007acc;
-    font-weight: bold;
+.agent-busy {
+    background: #ffebd6; /* peach */
 }
 
-/* DURATION COLORS */
-.time-green {
-    color: green;
-    font-weight: bold;
-}
-.time-yellow {
-    color: #ff9900;
-    font-weight: bold;
-}
-.time-red {
-    color: red;
-    font-weight: bold;
+/* LINK BAR */
+.link-bar {
+    margin-bottom: 15px;
+    font-size: 14px;
 }
 
-/* Footer */
+.link-bar span {
+    margin-right: 18px;
+    color: #0077cc;
+    cursor: pointer;
+}
+
+/* FOOTER */
 .page-footer {
-    text-align: right;
+    margin-top: 60px;
     padding: 20px 40px;
     font-size: 14px;
-    color: #333;
+    text-align: right;
+}
+
+.logo-us-bottom {
+    margin-top: 10px;
+    height: 50px;
 }
