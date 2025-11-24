@@ -1,71 +1,55 @@
-/* General layout */
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
 }
 
-/* Section headers */
-.section-header {
-    font-size: 22px;
-    font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 10px;
-}
-
-/* Data table styling */
-.data-table {
+/* Table layout */
+table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 15px;
+    font-size: 14px;
 }
 
-.data-table th,
-.data-table td {
+th, td {
     border: 1px solid #ccc;
     padding: 8px;
     text-align: center;
 }
 
-/* alternating rows */
-.even-row {
-    background: #f5f5f5;
-}
-
-.odd-row {
-    background: #ffffff;
-}
-
-/* Status colors */
-.agent-status-available {
-    color: #0f8a0f !important;
+th {
+    background: #f2f2f2;
     font-weight: bold;
 }
 
-.agent-status-wrapup {
-    color: #d1a000 !important;
+.row-even { background: #ffffff; }
+.row-odd { background: #f9f9f9; }
+
+/* Availability colors */
+.avail-green {
     font-weight: bold;
+    color: #0a8f0a;
 }
 
-.agent-status-busy {
-    color: #d93025 !important;
+.avail-yellow {
     font-weight: bold;
+    color: #d9a300;
 }
 
-/* Summary text */
-#agentSummary {
-    margin-bottom: 10px;
-    font-size: 14px;
+.avail-red {
+    font-weight: bold;
+    color: #cc0000;
 }
 
-/* Footer logo container */
-.footer-logo {
-    width: 140px;
-    display: block;
-    margin: 40px auto 5px auto;
-}
-
-.footer-text {
+/* Footer alignment */
+.footer {
     text-align: center;
+    margin-top: 40px;
     font-size: 14px;
-    margin-bottom: 20px;
+}
+
+#uss-logo {
+    width: 85px;
+    display: block;
+    margin: 0 auto;
 }
