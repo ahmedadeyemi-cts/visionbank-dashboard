@@ -1,152 +1,190 @@
 const API_BASE = "https://visionbank-tle1.onrender.com";
 
-// Load when ready
+/* ----------------- GLOBAL ----------------- */
+let agentData = [];
+let sortColumn = null;
+let sortDir = "asc";
+
+/* ----------------- INITIAL LOAD ----------------- */
 document.addEventListener("DOMContentLoaded", () => {
     loadQueueStatus();
     loadAgentStatus();
+    loadKPIs();
 
-    setInterval(() => {
-        loadQueueStatus();
-        loadAgentStatus();
-    }, 10000);
+    setInterval(loadQueueStatus, 8000);
+    setInterval(loadAgentStatus, 8000);
+    setInterval(loadKPIs, 20000);
 });
 
-// Format seconds → HH:MM:SS
-function formatSecondsToHHMMSS(seconds) {
-    if (!seconds || isNaN(seconds)) return "00:00:00";
-    const h = Math.floor(seconds / 3600).toString().padStart(2, "0");
-    const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, "0");
-    const s = Math.floor(seconds % 60).toString().padStart(2, "0");
-    return `${h}:${m}:${s}`;
-}
+/* ----------------- UTILS ----------------- */
+function availabilityClass(desc) {
+    if (!desc) return "";
 
-// Convert UTC → Central Time
-function convertUTCToCentral(utcString) {
-    if (!utcString) return "";
-    const date = new Date(utcString + "Z");
-    return date.toLocaleString("en-US", { timeZone: "America/Chicago" });
-}
+    const s = desc.toLowerCase();
 
-// Availability colors
-function getAvailabilityClass(status) {
-    if (!status) return "";
-    const s = status.toLowerCase();
+    if (s.includes("wrap") || s.includes("acw"))
+        return "wrapup";
 
-    if (s.includes("available")) return "avail-green";
-    if (s.includes("wrap") || s.includes("break")) return "avail-yellow";
     if (
-        s.includes("busy") ||
         s.includes("call") ||
-        s.includes("accept") ||
-        s.includes("connect") ||
-        s.includes("dial")
-    ) return "avail-red";
+        s.includes("dial") ||
+        s.includes("ring") ||
+        s.includes("busy")
+    )
+        return "busy";
+
+    if (s.includes("avail"))
+        return "available";
 
     return "";
 }
 
-// Load queue status
+/* ----------------- QUEUE STATUS ----------------- */
 async function loadQueueStatus() {
-    const container = document.getElementById("queueStatusContent");
+    const box = document.getElementById("queueStatusContent");
+    if (!box) return;
 
-    try {
-        const res = await fetch(`${API_BASE}/queues`);
-        const data = await res.json();
+    const res = await fetch(`${API_BASE}/queues`);
+    const data = await res.json();
 
-        if (!data.QueueStatus || data.QueueStatus.length === 0) {
-            container.innerHTML = `<div class="error">No queue data available</div>`;
-            return;
-        }
-
-        const q = data.QueueStatus[0];
-
-        container.innerHTML = `
-            <table class="data-table">
-                <tr>
-                    <th>Queue</th>
-                    <th>Calls</th>
-                    <th>Agents</th>
-                    <th>Wait</th>
-                </tr>
-                <tr>
-                    <td>${q.QueueName}</td>
-                    <td>${q.TotalCalls}</td>
-                    <td>${q.TotalLoggedAgents}</td>
-                    <td>${formatSecondsToHHMMSS(q.AvgWaitInterval)}</td>
-                </tr>
-            </table>
-        `;
-    } catch (err) {
-        container.innerHTML = `<div class='error'>Error loading queue status</div>`;
-    }
+    box.innerHTML = `
+        <table class="queue-table">
+            <tr><th>Queue</th><th>Calls</th><th>Agents</th><th>Wait</th></tr>
+            <tr>
+                <td>${data.QueueName}</td>
+                <td>${data.Calls}</td>
+                <td>${data.Agents}</td>
+                <td>${data.Wait}</td>
+            </tr>
+        </table>
+    `;
 }
 
-// Load agent status
+/* ----------------- KPI SECTION ----------------- */
+async function loadKPIs() {
+    const kpiDiv = document.getElementById("kpiContainer");
+    if (!kpiDiv) return;
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const res = await fetch(`${API_BASE}/v3/hist/agentsessions/${today}`);
+    const sessions = await res.json();
+
+    let inbound = 0;
+    let outbound = 0;
+    let missed = 0;
+
+    sessions.forEach(s => {
+        inbound += s.CallCount || 0;
+        outbound += s.DialOutCount || 0;
+        missed += s.MissedCallCount || 0;
+    });
+
+    const answeredPct = inbound + missed === 0 ? 0 : ((inbound / (inbound + missed)) * 100).toFixed(1);
+    const abandonedPct = inbound + missed === 0 ? 0 : ((missed / (inbound + missed)) * 100).toFixed(1);
+
+    kpiDiv.innerHTML = `
+        <div class="kpi-card">
+            <div class="kpi-value">${inbound + missed}</div>
+            <div class="kpi-label">Total Calls Queued</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-value">${answeredPct}%</div>
+            <div class="kpi-label">Pct Answered</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-value">${inbound}</div>
+            <div class="kpi-label">Total Calls Answered</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-value">${abandonedPct}%</div>
+            <div class="kpi-label">Pct Abandoned</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-value">${missed}</div>
+            <div class="kpi-label">Total Abandoned</div>
+        </div>
+    `;
+}
+
+/* ----------------- AGENT STATUS TABLE ----------------- */
 async function loadAgentStatus() {
-    const container = document.getElementById("agentStatusContent");
-    const summary = document.getElementById("agentSummary");
+    const res = await fetch(`${API_BASE}/agentstatus`);
+    const data = await res.json();
+    agentData = data.AgentStatus;
 
-    try {
-        const res = await fetch(`${API_BASE}/agents`);
-        const data = await res.json();
+    renderAgentTable();
+}
 
-        if (!data.AgentStatus) {
-            container.innerHTML = `<div class='error'>No agent data</div>`;
-            return;
-        }
+function renderAgentTable() {
+    const container = document.getElementById("agentTableContainer");
+    if (!container) return;
 
-        const agents = data.AgentStatus;
+    let html = `
+        <table class="agent-table">
+            <tr>
+                <th onclick="sortAgents('FullName')">Employee</th>
+                <th>Team</th>
+                <th>Phone</th>
+                <th onclick="sortAgents('CallTransferStatusDesc')">Availability</th>
+                <th>Inbound</th>
+                <th>Outbound</th>
+                <th>Transferred</th>
+                <th>Missed</th>
+                <th>Start Date</th>
+            </tr>
+    `;
 
-        // REMOVE PERFORMANCE SUMMARY
-        summary.innerHTML = "";  // <-- Wiped clean
+    agentData.forEach(a => {
+        const cls = availabilityClass(a.CallTransferStatusDesc);
 
-        // BUILD TABLE
-        let html = `
-            <table class="data-table">
-                <tr>
-                    <th>Employee</th>
-                    <th>Team</th>
-                    <th>Phone No.</th>
-                    <th>Availability</th>
-                    <th>Inbound</th>
-                    <th>Missed</th>
-                    <th>Transferred</th>
-                    <th>Outbound</th>
-                    <th>Avg Handle Time</th>
-                    <th>Start Date</th>
-                </tr>
+        html += `
+            <tr class="${cls}">
+                <td>${a.FullName}</td>
+                <td>${a.TeamName}</td>
+                <td>${a.PhoneExt}</td>
+                <td>${a.CallTransferStatusDesc}</td>
+                <td>${a.TotalCallsReceived}</td>
+                <td>${a.DialoutCount}</td>
+                <td>${a.ThirdPartyTransferCount}</td>
+                <td>${a.TotalCallsMissed}</td>
+                <td>${new Date(a.StartDateUtc).toLocaleString()}</td>
+            </tr>
         `;
+    });
 
-        agents.forEach((a, index) => {
-            const rowClass = index % 2 === 0 ? "row-even" : "row-odd";
-            const availClass = getAvailabilityClass(a.CallTransferStatusDesc);
+    html += "</table>";
+    container.innerHTML = html;
+}
 
-            html += `
-                <tr class="${rowClass}">
-                    <td>${a.FullName}</td>
-                    <td>${a.TeamName}</td>
-                    <td>${a.PhoneExt || ""}</td>
-
-                    <td class="${availClass}">
-                        ${a.CallTransferStatusDesc}
-                    </td>
-
-                    <td>${a.TotalCallsReceived ?? 0}</td>
-                    <td>${a.TotalCallsMissed ?? 0}</td>
-                    <td>${a.ThirdPartyTransferCount ?? 0}</td>
-                    <td>${a.DialoutCount ?? 0}</td>
-
-                    <td>${formatSecondsToHHMMSS(a.TotalSecondsOnCall)}</td>
-                    <td>${convertUTCToCentral(a.StartDateUtc)}</td>
-                </tr>
-            `;
-        });
-
-        html += "</table>";
-
-        container.innerHTML = html;
-
-    } catch (err) {
-        container.innerHTML = `<div class='error'>Error loading agent status</div>`;
+/* ----------------- SORTING ----------------- */
+function sortAgents(col) {
+    if (sortColumn === col) {
+        sortDir = sortDir === "asc" ? "desc" : "asc";
+    } else {
+        sortColumn = col;
+        sortDir = "asc";
     }
+
+    agentData.sort((a, b) => {
+        let x = a[col], y = b[col];
+        if (typeof x === "string") x = x.toLowerCase();
+        if (typeof y === "string") y = y.toLowerCase();
+        return sortDir === "asc" ? (x > y ? 1 : -1) : (x < y ? 1 : -1);
+    });
+
+    renderAgentTable();
+}
+
+/* ----------------- DARK MODE ----------------- */
+function createDarkModeToggle() {
+    const btn = document.createElement("button");
+    btn.innerText = "Dark Mode";
+    btn.className = "darkToggle";
+    btn.onclick = () => document.body.classList.toggle("dark");
+    document.body.appendChild(btn);
 }
