@@ -1,0 +1,71 @@
+/* General layout */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+/* Section headers */
+.section-header {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+/* Data table styling */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+}
+
+/* alternating rows */
+.even-row {
+    background: #f5f5f5;
+}
+
+.odd-row {
+    background: #ffffff;
+}
+
+/* Status colors */
+.agent-status-available {
+    color: #0f8a0f !important;
+    font-weight: bold;
+}
+
+.agent-status-wrapup {
+    color: #d1a000 !important;
+    font-weight: bold;
+}
+
+.agent-status-busy {
+    color: #d93025 !important;
+    font-weight: bold;
+}
+
+/* Summary text */
+#agentSummary {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+/* Footer logo container */
+.footer-logo {
+    width: 140px;
+    display: block;
+    margin: 40px auto 5px auto;
+}
+
+.footer-text {
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
