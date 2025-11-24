@@ -1,35 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>VisionBank – CEG Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <title>CEG Contact Center Realtime Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-    <div class="header">
-        <img class="vbLogo" src="visionbank.png">
-        <div class="title">CEG Contact Center Realtime Dashboard</div>
-        <div class="subtitle">VisionBank</div>
-    </div>
+    <header class="page-header">
+        <div class="header-left">
+            <img src="visionbank-logo.png" alt="VisionBank" class="logo-main" />
+        </div>
+        <div class="header-center">
+            <h1>CEG Contact Center Realtime Dashboard</h1>
+            <div class="sub-brand">VisionBank</div>
+        </div>
+    </header>
 
-    <section class="queue-section">
-        <h2>Current Queue Status</h2>
-        <div id="queueStatusContent" class="queue-table"></div>
-    </section>
+    <main class="page-main">
+        <!-- Current queue status -->
+        <section class="section">
+            <div class="section-header">
+                <span>Current Queue Status</span>
+            </div>
+            <div class="section-body">
+                <div class="section-summary" id="queueSummary">
+                    <!-- summary text gets injected here -->
+                </div>
+                <div class="table-wrapper" id="queueStatusContent">
+                    <!-- queue table + KPI card go here -->
+                </div>
+            </div>
+        </section>
 
-    <!-- 📌 EXECUTIVE KPI BOX INSERTED HERE -->
-    <section class="kpi-section">
-        <div id="kpiContainer"></div>
-    </section>
+        <!-- Agent performance -->
+        <section class="section">
+            <div class="section-header">
+                <span>Agent Performance</span>
+            </div>
+            <div class="section-body">
+                <div class="section-summary" id="agentSummary">
+                    <!-- high-level agent counts go here -->
+                </div>
+                <div class="link-bar" id="agentLinks">
+                    <span>Log Agent Out</span>
+                    <span>Log Telagent In</span>
+                    <span>Switch to Telagent</span>
+                    <span>Text Message</span>
+                    <span>Available</span>
+                    <span>Not Available</span>
+                </div>
+                <div class="table-wrapper" id="agentStatusContent">
+                    <!-- agent table goes here -->
+                </div>
+            </div>
+        </section>
+    </main>
 
-    <section class="agent-section">
-        <h2>Agent Performance</h2>
-        <div id="agentTableContainer"></div>
-    </section>
+    <footer class="page-footer">
+        <div class="footer-right">
+            <img src="ussignal-logo.png" alt="US Signal" class="footer-logo" />
+        </div>
+        <div class="footer-text">
+            Created and maintained by <strong>Ahmed Adeyemi, US Signal</strong>
+        </div>
+    </footer>
 
-    <img class="usSignalLogo" src="ussignal.png">
-    <div class="footerText">Created and maintained by <b>Ahmed Adeyemi, US Signal</b></div>
+    <button id="darkModeToggle">Dark mode</button>
 
     <script src="dashboard.js"></script>
 </body>
