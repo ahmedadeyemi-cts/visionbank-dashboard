@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>VisionBank Contact Center Realtime Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="dashboard.js"></script>
+</head>
+<body>
+
+<header class="page-header">
+    <div class="logo-wrapper">
+        <img src="assets/visionbank.png" alt="VisionBank" class="logo-main" />
+    </div>
+    <h1>VisionBank Contact Center Realtime Dashboard</h1>
+    <div class="sub-brand">VisionBank</div>
+</header>
+
+<main class="page-main">
+
+    <!-- Daily Queue Statistics -->
+    <section class="section" id="dailyQueueSection">
+        <div class="section-header">
+            <span class="toggle-indicator">−</span>
+            <span>Daily Queue Statistics</span>
+        </div>
+        <div class="section-body">
+            <div class="table-wrapper" id="dailyQueueContent">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Current Queue Status -->
+    <section class="section" id="queueStatusSection">
+        <div class="section-header">
+            <span class="toggle-indicator">−</span>
+            <span>Current Queue Status</span>
+        </div>
+        <div class="section-body">
+            <div class="table-wrapper" id="queueStatusContent">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Current Agent Status -->
+    <section class="section" id="agentStatusSection">
+        <div class="section-header">
+            <span class="toggle-indicator">−</span>
+            <span>Current Agent Status</span>
+        </div>
+        <div class="section-body">
+            <div id="agentSummary" class="section-summary"></div>
+
+            <div class="link-bar">
+                <span>Log Agent Out</span>
+                <span>Log Telagent In</span>
+                <span>Switch to Telagent</span>
+                <span>Text Message</span>
+                <span>Available</span>
+                <span>Not Available</span>
+            </div>
+
+            <div class="table-wrapper" id="agentStatusContent">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="page-footer">
+    <div>
+        Created and maintained by <strong>Ahmed Adeyemi</strong>, <strong>US Signal</strong>
+    </div>
+    <img src="assets/ussignal.png" alt="US Signal" class="logo-secondary" />
+</footer>
+
+</body>
+</html>
