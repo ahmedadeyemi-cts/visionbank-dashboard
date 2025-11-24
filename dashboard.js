@@ -1,11 +1,10 @@
 const API_BASE = "https://visionbank-tle1.onrender.com";
 
-// Load data when page is ready
+// Load when ready
 document.addEventListener("DOMContentLoaded", () => {
     loadQueueStatus();
     loadAgentStatus();
 
-    // Auto-refresh every 10 seconds
     setInterval(() => {
         loadQueueStatus();
         loadAgentStatus();
@@ -31,7 +30,6 @@ function convertUTCToCentral(utcString) {
 // Availability colors
 function getAvailabilityClass(status) {
     if (!status) return "";
-
     const s = status.toLowerCase();
 
     if (s.includes("available")) return "avail-green";
@@ -42,8 +40,7 @@ function getAvailabilityClass(status) {
         s.includes("accept") ||
         s.includes("connect") ||
         s.includes("dial")
-    )
-        return "avail-red";
+    ) return "avail-red";
 
     return "";
 }
@@ -80,7 +77,7 @@ async function loadQueueStatus() {
             </table>
         `;
     } catch (err) {
-        container.innerHTML = `<div class="error">Error loading queue status</div>`;
+        container.innerHTML = `<div class='error'>Error loading queue status</div>`;
     }
 }
 
@@ -100,26 +97,10 @@ async function loadAgentStatus() {
 
         const agents = data.AgentStatus;
 
-        // Summary counters
-        let available = 0,
-            onCall = 0,
-            wrap = 0,
-            breakCnt = 0,
-            other = 0;
+        // REMOVE PERFORMANCE SUMMARY
+        summary.innerHTML = "";  // <-- Wiped clean
 
-        agents.forEach(a => {
-            const s = a.CallTransferStatusDesc.toLowerCase();
-
-            if (s.includes("available")) available++;
-            else if (s.includes("call")) onCall++;
-            else if (s.includes("wrap")) wrap++;
-            else if (s.includes("break")) breakCnt++;
-            else other++;
-        });
-
-        summary.innerText = `${agents.length} agents signed on, ${available} available, ${onCall} on call, ${wrap} on wrap-up, ${breakCnt} on break, ${other} in other statuses`;
-
-        // Build HTML table
+        // BUILD TABLE
         let html = `
             <table class="data-table">
                 <tr>
@@ -164,6 +145,7 @@ async function loadAgentStatus() {
         html += "</table>";
 
         container.innerHTML = html;
+
     } catch (err) {
         container.innerHTML = `<div class='error'>Error loading agent status</div>`;
     }
