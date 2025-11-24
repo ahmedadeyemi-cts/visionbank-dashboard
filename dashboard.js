@@ -1,112 +1,78 @@
 const API_BASE = "https://visionbank-tle1.onrender.com";
 
-// Load everything when page is ready
+// Auto-load on startup
 document.addEventListener("DOMContentLoaded", () => {
     loadQueueStatus();
     loadAgentStatus();
-
-    // Auto-refresh every 10 seconds
     setInterval(() => {
         loadQueueStatus();
         loadAgentStatus();
     }, 10000);
 });
 
-// ------------------------------
-// TIME FORMATTING HELPERS
-// ------------------------------
-function formatSecondsToHHMMSS(seconds) {
-    if (!seconds || isNaN(seconds)) return "00:00:00";
-
-    const h = Math.floor(seconds / 3600).toString().padStart(2, "0");
-    const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, "0");
-    const s = Math.floor(seconds % 60).toString().padStart(2, "0");
-
+// Helpers
+function formatSecondsToHHMMSS(sec) {
+    if (sec === undefined || sec === null || isNaN(sec)) return "00:00:00";
+    const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+    const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+    const s = String(sec % 60).padStart(2, "0");
     return `${h}:${m}:${s}`;
 }
 
-function convertUTCToCentral(utcString) {
-    if (!utcString) return "--";
-
-    const date = new Date(utcString + "Z");
-    return date.toLocaleString("en-US", {
-        timeZone: "America/Chicago",
-    });
+function convertUTCToCentral(utc) {
+    if (!utc) return "";
+    return new Date(utc + "Z").toLocaleString("en-US", { timeZone: "America/Chicago" });
 }
 
-// ------------------------------
-// STATUS → CSS CLASS COLORS
-// ------------------------------
-function getAgentStatusClass(statusText) {
-    const s = (statusText || "").toLowerCase();
+function getAvailabilityClass(status) {
+    if (!status) return "";
 
-    // GREEN — Available
-    if (s.includes("available")) return "agent-status-available";
+    const s = status.toLowerCase();
 
-    // YELLOW — Wrap Up
-    if (s.includes("wrap")) return "agent-status-wrapup";
-
-    // RED — Busy / On Call / Accept Internal / Callback / Connected
-    if (
-        s.includes("busy") ||
-        s.includes("on call") ||
-        s.includes("accept") ||
-        s.includes("callback") ||
-        s.includes("connected")
-    ) {
-        return "agent-status-busy";
-    }
+    if (s.includes("available")) return "avail-green";
+    if (s.includes("wrap")) return "avail-yellow";
+    if (s.includes("busy") || s.includes("call") || s.includes("accept")) return "avail-red";
 
     return "";
 }
 
-// ------------------------------
+//-------------------------------------------------
 // LOAD QUEUE STATUS
-// ------------------------------
+//-------------------------------------------------
 async function loadQueueStatus() {
-    const container = document.getElementById("queueStatusContent");
+    const container = document.getElementById("queueTableBody");
 
     try {
         const res = await fetch(`${API_BASE}/queues`);
         const data = await res.json();
 
-        if (!data.QueueStatus || !data.QueueStatus.length) {
-            container.innerHTML = `<div class='error'>No queue data available</div>`;
+        if (!data.QueueStatus || data.QueueStatus.length === 0) {
+            container.innerHTML = `<tr><td colspan="4">No queue data</td></tr>`;
             return;
         }
 
         const q = data.QueueStatus[0];
 
         container.innerHTML = `
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Queue</th>
-                        <th>Calls</th>
-                        <th>Agents</th>
-                        <th>Wait</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>${q.QueueName}</td>
-                        <td>${q.TotalCalls}</td>
-                        <td>${q.TotalLoggedAgents}</td>
-                        <td>${formatSecondsToHHMMSS(q.AvgWaitInterval)}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <tr>
+                <td>${q.QueueName}</td>
+                <td>${q.TotalCalls}</td>
+                <td>${q.TotalLoggedAgents}</td>
+                <td>${formatSecondsToHHMMSS(q.AvgWaitInterval)}</td>
+            </tr>
         `;
+
     } catch (err) {
-        container.innerHTML = `<div class='error'>Error loading queue status</div>`;
+        console.error("Queue Error:", err);
+        container.innerHTML = `<tr><td colspan="4">Error loading queues</td></tr>`;
     }
 }
 
-// ------------------------------
+//-------------------------------------------------
 // LOAD AGENT STATUS
-// ------------------------------
+//-------------------------------------------------
 async function loadAgentStatus() {
-    const container = document.getElementById("agentStatusContent");
+    const tbody = document.getElementById("agentTableBody");
     const summary = document.getElementById("agentSummary");
 
     try {
@@ -114,89 +80,54 @@ async function loadAgentStatus() {
         const data = await res.json();
 
         if (!data.AgentStatus) {
-            container.innerHTML = `<div class='error'>No agent data</div>`;
+            tbody.innerHTML = `<tr><td colspan="10">No agent data</td></tr>`;
             return;
         }
 
         const agents = data.AgentStatus;
 
-        // Summary Counts
-        let available = 0,
-            onCall = 0,
-            wrap = 0,
-            breakCnt = 0,
-            busy = 0;
+        let available = 0, onCall = 0, wrap = 0, breakCnt = 0, other = 0;
 
         agents.forEach(a => {
-            const s = a.CallTransferStatusDesc?.toLowerCase() || "";
-
-            if (s.includes("available")) available++;
-            else if (s.includes("on call")) onCall++;
-            else if (s.includes("wrap")) wrap++;
-            else if (s.includes("break")) breakCnt++;
-            else if (s.includes("busy")) busy++;
+            const st = a.CallTransferStatusDesc.toLowerCase();
+            if (st.includes("available")) available++;
+            else if (st.includes("call")) onCall++;
+            else if (st.includes("wrap")) wrap++;
+            else if (st.includes("break")) breakCnt++;
+            else other++;
         });
 
-        summary.innerText = `
-            ${agents.length} agents signed on,
-            ${available} available,
-            ${onCall} on call,
-            ${wrap} on wrap-up,
-            ${breakCnt} on break,
-            ${busy} in other statuses
-        `;
+        summary.innerText =
+            `${agents.length} agents signed on, ${available} available, ${onCall} on call, ` +
+            `${wrap} on wrap-up, ${breakCnt} on break, ${other} in other statuses`;
 
-        // Build Agent Table
-        let html = `
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Employee</th>
-                        <th>Availability</th>
-                        <th>Inbound Calls</th>
-                        <th>Average Handle Time</th>
-                        <th>Outbound Calls</th>
-                        <th>Log On</th>
-                        <th>Not Ready</th>
-                        <th>Avail</th>
-                        <th>On Inc Calls</th>
-                        <th>On Out Calls</th>
-                        <th>Wrap-up</th>
-                        <th>Break</th>
-                        <th>Other</th>
-                        <th>Start Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
+        let html = "";
 
-        agents.forEach((a, index) => {
-            const rowColor = index % 2 === 0 ? "even-row" : "odd-row";
-            const statusClass = getAgentStatusClass(a.CallTransferStatusDesc);
+        agents.forEach((a, i) => {
+            const rowClass = i % 2 === 0 ? "row-even" : "row-odd";
+            const availClass = getAvailabilityClass(a.CallTransferStatusDesc);
 
             html += `
-                <tr class="${rowColor}">
-                    <td>${a.FullName}</td>
-                    <td class="${statusClass}">${a.CallTransferStatusDesc}</td>
-                    <td>${a.TotalCallsReceived ?? 0}</td>
-                    <td>${formatSecondsToHHMMSS(a.TotalSecondsOnCall)}</td>
-                    <td>${a.TotalCallsDialed ?? 0}</td>
-                    <td>${formatSecondsToHHMMSS(a.LogonInterval)}</td>
-                    <td>${formatSecondsToHHMMSS(a.TotalSecondsNotSet)}</td>
-                    <td>${formatSecondsToHHMMSS(a.TotalSecondsAvailable)}</td>
-                    <td>${formatSecondsToHHMMSS(a.TotalSecondsOnCall)}</td>
-                    <td>${formatSecondsToHHMMSS(a.TotalSecondsDialingOut)}</td>
-                    <td>${formatSecondsToHHMMSS(a.TotalSecondsWrappingUp)}</td>
-                    <td>${formatSecondsToHHMMSS(a.TotalSecondsOnBreak)}</td>
-                    <td>${formatSecondsToHHMMSS(a.TotalSecondsOnACW)}</td>
-                    <td>${convertUTCToCentral(a.StartDateUtc)}</td>
-                </tr>
-            `;
+            <tr class="${rowClass}">
+                <td>${a.FullName || ""}</td>
+                <td>${a.TeamName || ""}</td>
+                <td>${a.PhoneExt || ""}</td>
+                <td class="${availClass}">${a.CallTransferStatusDesc || ""}</td>
+
+                <td>${a.TotalCallsReceived ?? 0}</td>
+                <td>${a.TotalCallsMissed ?? 0}</td>
+                <td>${a.TotalCallsTransferred ?? 0}</td>
+
+                <td>${formatSecondsToHHMMSS(a.TotalSecondsOnCall)}</td>
+                <td>${a.TotalOutboundCalls ?? 0}</td>
+                <td>${convertUTCToCentral(a.StartDateUtc)}</td>
+            </tr>`;
         });
 
-        html += `</tbody></table>`;
-        container.innerHTML = html;
+        tbody.innerHTML = html;
+
     } catch (err) {
-        container.innerHTML = `<div class='error'>Error loading agent status</div>`;
+        console.error("Agent Error:", err);
+        tbody.innerHTML = `<tr><td colspan="10">Error loading agents</td></tr>`;
     }
 }
