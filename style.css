@@ -52,7 +52,7 @@ body {
     background: #fafafa;
 }
 .row-odd {
-    background: #ffffff;
+    background: white;
 }
 
 /* AVAILABILITY COLORS */
@@ -74,9 +74,9 @@ body {
     font-weight: bold;
 }
 
-/* FOOTER - US SIGNAL */
+/* US SIGNAL LOGO — small, bottom-right */
 .footer-logo {
-    width: 55px;
+    width: 50px;
     height: auto;
     position: fixed;
     right: 25px;
