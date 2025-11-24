@@ -1,7 +1,7 @@
 // Base URL for your Render proxy backend
 const API_BASE = "https://visionbank-tle1.onrender.com";
 
-// Helpers
+// ---------- Helper functions ----------
 
 function formatSeconds(sec) {
     if (sec === null || sec === undefined || isNaN(sec)) return "00:00:00";
@@ -33,71 +33,7 @@ async function callAPI(path) {
     }
 }
 
-/* ---------- Daily Queue Statistics ---------- */
-
-function renderDailyQueueStats(data) {
-    // If VisionBank does not expose queue statistics, show a friendly message
-    if (!data || !data.QueueStatistics || data.QueueStatistics.length === 0) {
-        return "<div class='section-summary'>No queue statistics available for today.</div>";
-    }
-
-    const rows = data.QueueStatistics;
-
-    let html = `
-        <table>
-            <thead>
-                <tr>
-                    <th rowspan="2">Queue</th>
-                    <th rowspan="2">Qd.</th>
-                    <th rowspan="2">Rt.</th>
-                    <th rowspan="2">FDQ.</th>
-                    <th rowspan="2">Ab.</th>
-                    <th rowspan="2">VM.</th>
-                    <th rowspan="2">Rt. Rate</th>
-                    <th rowspan="2">Ab. Rate</th>
-                    <th rowspan="2">Service Level</th>
-                    <th colspan="3" class="group-header">Wait Time</th>
-                    <th colspan="3" class="group-header">Talk Time</th>
-                </tr>
-                <tr>
-                    <th>Min.</th>
-                    <th>Max.</th>
-                    <th>Avg.</th>
-                    <th>Min.</th>
-                    <th>Max.</th>
-                    <th>Avg.</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    rows.forEach(q => {
-        html += `
-            <tr>
-                <td>${q.QueueName || ""}</td>
-                <td>${q.Queued ?? ""}</td>
-                <td>${q.Routed ?? ""}</td>
-                <td>${q.FirstDayQueued ?? q.FDQ ?? ""}</td>
-                <td>${q.Abandoned ?? ""}</td>
-                <td>${q.Voicemail ?? q.VM ?? ""}</td>
-                <td>${q.RouteRate ?? ""}</td>
-                <td>${q.AbandonRate ?? ""}</td>
-                <td>${q.ServiceLevel ?? ""}</td>
-                <td>${formatSeconds(q.WaitTimeMin)}</td>
-                <td>${formatSeconds(q.WaitTimeMax)}</td>
-                <td>${formatSeconds(q.WaitTimeAvg)}</td>
-                <td>${formatSeconds(q.TalkTimeMin)}</td>
-                <td>${formatSeconds(q.TalkTimeMax)}</td>
-                <td>${formatSeconds(q.TalkTimeAvg)}</td>
-            </tr>
-        `;
-    });
-
-    html += "</tbody></table>";
-    return html;
-}
-
-/* ---------- Current Queue Status ---------- */
+// ---------- Queue Status ----------
 
 function renderQueueStatus(data) {
     if (!data || !data.QueueStatus || data.QueueStatus.length === 0) {
@@ -134,7 +70,7 @@ function renderQueueStatus(data) {
     return html;
 }
 
-/* ---------- Current Agent Status ---------- */
+// ---------- Agent Status ----------
 
 function classifyAgentState(agent) {
     const s = (agent.CallTransferStatusDesc || agent.AgentStateDesc || agent.Status || "")
@@ -154,6 +90,15 @@ function stateCssClass(state) {
     return "status-other";
 }
 
+// Option A thresholds: <10 green, 10–30 yellow, >30 red
+function durationCssClass(seconds) {
+    if (!seconds || isNaN(seconds)) return "";
+    const mins = seconds / 60;
+    if (mins < 10) return "duration-green";
+    if (mins < 30) return "duration-yellow";
+    return "duration-red";
+}
+
 function renderAgentStatus(data) {
     if (!data || !data.AgentStatus || data.AgentStatus.length === 0) {
         document.getElementById("agentSummary").textContent = "No agents signed on.";
@@ -162,8 +107,8 @@ function renderAgentStatus(data) {
 
     const rows = data.AgentStatus;
 
-    // Summary
-    let signedOn = rows.length;
+    // Summary counts
+    const signedOn = rows.length;
     let available = 0, oncall = 0, wrap = 0, brk = 0, other = 0;
 
     rows.forEach(a => {
@@ -182,21 +127,15 @@ function renderAgentStatus(data) {
 
     document.getElementById("agentSummary").textContent = summaryText;
 
-    // Table
     let html = `
         <table>
             <thead>
                 <tr>
-                    <th rowspan="2">Agent</th>
-                    <th rowspan="2">Team</th>
-                    <th rowspan="2">Phone No.</th>
-                    <th rowspan="2">Status</th>
-                    <th rowspan="2">Duration</th>
-                    <th colspan="4" class="group-header">Incoming calls</th>
-                    <th colspan="8" class="group-header">Time Management</th>
-                    <th rowspan="2">Start Date</th>
-                </tr>
-                <tr>
+                    <th>Agent</th>
+                    <th>Team</th>
+                    <th>Phone No.</th>
+                    <th>Status</th>
+                    <th>Duration</th>
                     <th>An.</th>
                     <th>Miss.</th>
                     <th>Trans.</th>
@@ -209,6 +148,7 @@ function renderAgentStatus(data) {
                     <th>Wrap-up</th>
                     <th>Break</th>
                     <th>Other</th>
+                    <th>Start Date</th>
                 </tr>
             </thead>
             <tbody>
@@ -216,11 +156,15 @@ function renderAgentStatus(data) {
 
     rows.forEach(a => {
         const state = classifyAgentState(a);
-        const css = stateCssClass(state);
-        const statusText = a.CallTransferStatusDesc || a.AgentStateDesc || a.Status || "";
+        const statusCss = stateCssClass(state);
 
-        const durationSec = a.SecondsInCurrentStatus ?? a.NormalOnCallInterval ??
-                            a.LogonInterval ?? 0;
+        const durationSec =
+            a.SecondsInCurrentStatus ??
+            a.NormalOnCallInterval ??
+            a.LogonInterval ??
+            0;
+
+        const durationClass = durationCssClass(durationSec);
 
         const answered = a.TotalCallsReceived ?? a.TotalCallCount ?? "";
         const missed = a.TotalCallsMissed ?? "";
@@ -236,13 +180,16 @@ function renderAgentStatus(data) {
         const brkTime = a.TotalSecondsOnBreak;
         const otherTime = a.TotalSecondsBusy;
 
+        const statusText =
+            a.CallTransferStatusDesc || a.AgentStateDesc || a.Status || "";
+
         html += `
             <tr>
                 <td>${a.FullName || ""}</td>
                 <td>${a.TeamName || ""}</td>
                 <td>${a.PhoneExt || ""}</td>
-                <td class="${css}">${statusText}</td>
-                <td>${formatSeconds(durationSec)}</td>
+                <td class="${statusCss}">${statusText}</td>
+                <td class="${durationClass}">${formatSeconds(durationSec)}</td>
                 <td>${answered}</td>
                 <td>${missed}</td>
                 <td>${trans}</td>
@@ -250,41 +197,4 @@ function renderAgentStatus(data) {
                 <td>${formatSeconds(logOn)}</td>
                 <td>${formatSeconds(notReady)}</td>
                 <td>${formatSeconds(avail)}</td>
-                <td>${formatSeconds(onInc)}</td>
-                <td>${formatSeconds(onOut)}</td>
-                <td>${formatSeconds(wrapup)}</td>
-                <td>${formatSeconds(brkTime)}</td>
-                <td>${formatSeconds(otherTime)}</td>
-                <td class="timestamp">${formatCentral(a.StartDateUtc)}</td>
-            </tr>
-        `;
-    });
-
-    html += "</tbody></table>";
-    return html;
-}
-
-/* ---------- Load Dashboard ---------- */
-
-async function loadDashboard() {
-    const [queueStats, queueStatus, agents] = await Promise.all([
-        callAPI("/queue-stats"),
-        callAPI("/queues"),
-        callAPI("/agents")
-    ]);
-
-    document.getElementById("dailyQueueContent").innerHTML =
-        renderDailyQueueStats(queueStats);
-
-    document.getElementById("queueStatusContent").innerHTML =
-        renderQueueStatus(queueStatus);
-
-    document.getElementById("agentStatusContent").innerHTML =
-        renderAgentStatus(agents);
-}
-
-// Initial load and auto refresh
-document.addEventListener("DOMContentLoaded", () => {
-    loadDashboard();
-    setInterval(loadDashboard, 5000);
-});
+                <td>${format
