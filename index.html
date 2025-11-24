@@ -1,41 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>VisionBank Contact Center Realtime Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8" />
+    <title>CEG Contact Center Realtime Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
     <script defer src="dashboard.js"></script>
 </head>
 
 <body>
 
 <header class="page-header">
-    <img src="assets/visionbank.png" class="logo-main" alt="VisionBank">
-    <h1>VisionBank Contact Center Realtime Dashboard</h1>
-    <div class="sub-brand">VisionBank</div>
+    <div class="header-left">
+        <img src="assets/visionbank.png" alt="VisionBank" class="logo-main" />
+    </div>
+    <div class="header-center">
+        <h1>CEG Contact Center Realtime Dashboard</h1>
+        <div class="sub-brand">VisionBank</div>
+    </div>
 </header>
 
 <main class="page-main">
 
-    <!-- CURRENT QUEUE STATUS -->
-    <section class="section">
+    <!-- Current Queue Status -->
+    <section class="section" id="queueStatusSection">
         <div class="section-header">
             <span class="toggle-indicator">−</span>
-            Current Queue Status
+            <span>Current Queue Status</span>
         </div>
         <div class="section-body">
-            <div id="queueStatusContent" class="table-wrapper"></div>
+            <div class="table-wrapper" id="queueStatusContent"></div>
         </div>
     </section>
 
-    <!-- CURRENT AGENT STATUS -->
-    <section class="section">
+    <!-- Current Agent Status -->
+    <section class="section" id="agentStatusSection">
         <div class="section-header">
             <span class="toggle-indicator">−</span>
-            Current Agent Status
+            <span>Current Agent Status</span>
         </div>
-
         <div class="section-body">
             <div id="agentSummary" class="section-summary"></div>
 
@@ -48,7 +51,7 @@
                 <span>Not Available</span>
             </div>
 
-            <div id="agentStatusContent" class="table-wrapper"></div>
+            <div class="table-wrapper" id="agentStatusContent"></div>
         </div>
     </section>
 
@@ -56,10 +59,10 @@
 
 <footer class="page-footer">
     <div class="footer-right">
-        Created and maintained by <strong>Ahmed Adeyemi</strong>,  
-        <strong>US Signal</strong>
-        <br>
-        <img src="assets/ussignal.png" class="logo-us-bottom" alt="US Signal">
+        <img src="assets/ussignal.png" alt="US Signal" class="logo-secondary-footer" />
+        <div class="footer-text">
+            Created and maintained by <strong>Ahmed Adeyemi</strong>, <strong>US Signal</strong>
+        </div>
     </div>
 </footer>
 
