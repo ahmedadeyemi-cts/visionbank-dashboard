@@ -1,14 +1,10 @@
 /* Base layout */
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    font-size: 14px;
     background-color: #f5f6f8;
-    color: #222;
 }
 
 /* Header */
@@ -20,118 +16,63 @@ body {
     background-color: #ffffff;
 }
 
-.header-left img.logo-main {
-    height: 70px;
-    margin-right: 16px;
+.logo-main {
+    height: 72px;
+    margin-right: 20px;
 }
 
 .header-center h1 {
+    font-size: 26px;
     margin: 0;
-    font-size: 24px;
-    font-weight: 600;
 }
 
-.header-center .sub-brand {
-    font-size: 13px;
-    color: #777;
-    margin-top: 4px;
-}
+/* Section layout */
+.page-main { padding: 20px 40px 80px; }
 
-.page-main {
-    padding: 20px 40px 80px;
-}
-
-/* Section containers */
 .section {
-    background-color: #ffffff;
-    border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    margin-bottom: 24px;
+    background: #ffffff;
     border: 1px solid #e0e1e6;
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 24px;
 }
 
-.section-header {
-    background-color: #e5e6eb;
-    padding: 10px 16px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.section-body {
-    padding: 12px 16px 16px;
-}
-
-/* Summary + link bar */
-.section-summary {
-    margin-bottom: 8px;
-}
-
-.link-bar {
-    margin: 4px 0 12px;
-}
-
-.link-bar span,
-.link-bar a {
-    margin-right: 22px;
+/* Link bar */
+.link-bar span {
+    margin-right: 18px;
     color: #0066cc;
-    font-size: 13px;
     cursor: pointer;
-    text-decoration: none;
-}
-
-.link-bar span:hover,
-.link-bar a:hover {
-    text-decoration: underline;
+    font-size: 14px;
 }
 
 /* Tables */
-.table-wrapper {
-    overflow-x: auto;
-}
+.table-wrapper { overflow-x: auto; }
 
 .data-table {
     border-collapse: collapse;
     width: 100%;
-    min-width: 900px;
     table-layout: fixed;
-    background-color: #ffffff;
+    min-width: 900px;
+    background: #ffffff;
 }
 
-.data-table thead {
-    background-color: #eceef2;
+.data-table th {
+    background: #eceef2;
+    padding: 8px;
+    border: 1px solid #d8dae0;
+    font-weight: 600;
 }
 
-.data-table th,
 .data-table td {
-    padding: 6px 8px;
-    border: 1px solid #dde0e6;
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    padding: 8px;
+    border: 1px solid #d8dae0;
 }
 
-.data-table th.numeric,
-.data-table td.numeric {
-    text-align: right;
+.row-alt {
+    background: #f7f8fb;
 }
 
-.data-table tbody tr.row-alt {
-    background-color: #f7f8fb;
-}
-
-/* Sorting */
-.data-table th.sortable {
-    cursor: pointer;
-}
-
-.data-table th.sortable:hover {
-    background-color: #dde1eb;
-}
-
-/* Availability colors */
+/* Availability Colors */
 .status-available {
     color: #0a7a20;
     font-weight: 600;
@@ -147,92 +88,57 @@ body {
     font-weight: 600;
 }
 
-/* Longest waiting & over threshold */
-.longest-wait {
-    box-shadow: inset 4px 0 0 #ffcc00;
-}
-
-@keyframes flash-red {
-    0%   { background-color: #ffe6e6; }
-    100% { background-color: #ffb3b3; }
-}
-
-.over-threshold {
-    animation: flash-red 1s alternate infinite;
-}
-
-/* Error text */
-.error {
-    color: #c01818;
-    font-weight: 500;
-}
-
-/* Footer & US Signal logo */
+/* US Signal Logo */
 .page-footer {
     position: fixed;
     right: 20px;
-    bottom: 10px;
+    bottom: 20px;
     text-align: right;
-    font-size: 11px;
-    color: #555;
-    background: transparent;
+    background: none;
 }
 
-.footer-right img,
-.footer-logo {
-    display: block;
-    width: 54px;
+.logo-ussignal-footer {
+    width: 48px;
     height: auto;
+    opacity: 0.9;
+    display: block;
     margin-left: auto;
-    margin-bottom: 4px;
+}
+
+.footer-text {
+    font-size: 12px;
+    margin-top: 4px;
+    color: #333;
 }
 
 /* Dark mode */
-#darkModeToggle {
-    position: fixed;
-    left: 20px;
-    bottom: 20px;
-    padding: 6px 10px;
-    font-size: 12px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    background-color: #ffffff;
-    cursor: pointer;
-}
-
 body.dark-mode {
     background-color: #14161d;
     color: #e8e8f0;
 }
 
 body.dark-mode .section {
-    background-color: #1f222b;
-    border-color: #2b2f3a;
-}
-
-body.dark-mode .section-header {
-    background-color: #2a2e3a;
+    background: #1f222b;
 }
 
 body.dark-mode .data-table {
-    background-color: #1f222b;
+    background: #1f222b;
 }
 
-body.dark-mode .data-table thead {
-    background-color: #292d3a;
+body.dark-mode .data-table th {
+    background: #292d3a;
 }
 
-body.dark-mode .data-table th,
-body.dark-mode .data-table td {
-    border-color: #343849;
+body.dark-mode .row-alt {
+    background: #262a36;
 }
 
-body.dark-mode .data-table tbody tr.row-alt {
-    background-color: #262a36;
+/* Flashing red */
+@keyframes flash-red {
+    0% { background: #ffe3e3; }
+    100% { background: #ffb3b3; }
 }
 
-body.dark-mode #darkModeToggle {
-    background-color: #1f222b;
-    color: #e8e8f0;
-    border-color: #44495a;
+.over-threshold {
+    animation: flash-red 1s infinite alternate;
 }
