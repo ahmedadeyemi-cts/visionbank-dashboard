@@ -1,60 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
     <title>CEG Contact Center Realtime Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
     <script defer src="dashboard.js"></script>
 </head>
 <body>
 
-<header>
-    <img src="assets/visionbank.png" class="logo">
-    <h1>CEG Contact Center Realtime Dashboard</h1>
+<header class="page-header">
+    <div class="header-left">
+        <img src="assets/visionbank.png" alt="VisionBank" class="logo-main" />
+    </div>
+    <div class="header-center">
+        <h1>CEG Contact Center Realtime Dashboard</h1>
+        <div class="sub-brand">Available Agents</div>
+    </div>
+    <div class="header-right">
+        <img src="assets/ussignal.png" alt="US Signal" class="logo-secondary-top" />
+    </div>
 </header>
 
-<main>
+<main class="page-main">
 
-    <section class="metrics-section">
-        <h2>Available Agents</h2>
-        <div id="availableAgentsValue">–</div>
-
-        <div class="metric-block">
-            <h3>Average Handling Time</h3>
-            <div id="avgHandlingTime">00:00</div>
-            <small>Calculated from total on-call time / answered calls</small>
-        </div>
-
-        <div class="metric-block">
-            <h3>Answered Calls (Today)</h3>
-            <div id="answeredCalls">–</div>
-            <small>Sum of inbound calls handled by all agents</small>
-        </div>
-
-        <div class="metric-block">
-            <h3>Calls in Queue</h3>
-            <div id="callsInQueue">–</div>
-            <small>Oldest Wait: <span id="oldestWait">–</span></small>
-        </div>
-    </section>
-
-    <section class="panel">
+    <!-- Current Queue Status -->
+    <section class="section">
         <h2>Current Queue Status</h2>
-        <div id="queueStatusContent">Loading…</div>
+        <div id="queueStatusContent"></div>
     </section>
 
-    <section class="panel">
+    <!-- Agent Status -->
+    <section class="section">
         <h2>Agent Performance</h2>
         <div id="agentSummary"></div>
-        <div id="agentStatusContent">Loading…</div>
+        <div id="agentStatusContent"></div>
     </section>
 
 </main>
 
-<footer>
-    <img src="assets/ussignal.png" class="logo-small">
-    <p>Created and maintained by Ahmed Adeyemi, US Signal</p>
+<footer class="page-footer">
+    <div class="footer-right">
+        Created and maintained by <strong>Ahmed Adeyemi</strong>, <strong>US Signal</strong>
+    </div>
 </footer>
 
 </body>
