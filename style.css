@@ -1,36 +1,315 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>VisionBank – CEG Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+/* Base layout */
+* {
+    box-sizing: border-box;
+}
 
-<body>
-    <div class="header">
-        <img class="vbLogo" src="visionbank.png">
-        <div class="title">CEG Contact Center Realtime Dashboard</div>
-        <div class="subtitle">VisionBank</div>
-    </div>
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    background-color: #f5f6f8;
+    color: #222;
+}
 
-    <section class="queue-section">
-        <h2>Current Queue Status</h2>
-        <div id="queueStatusContent" class="queue-table"></div>
-    </section>
+/* Header */
+.page-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 32px;
+    border-bottom: 3px solid #d5d7dd;
+    background-color: #ffffff;
+}
 
-    <!-- 📌 EXECUTIVE KPI BOX INSERTED HERE -->
-    <section class="kpi-section">
-        <div id="kpiContainer"></div>
-    </section>
+.header-left img.logo-main {
+    height: 70px;
+    margin-right: 16px;
+}
 
-    <section class="agent-section">
-        <h2>Agent Performance</h2>
-        <div id="agentTableContainer"></div>
-    </section>
+.header-center h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
 
-    <img class="usSignalLogo" src="ussignal.png">
-    <div class="footerText">Created and maintained by <b>Ahmed Adeyemi, US Signal</b></div>
+.header-center .sub-brand {
+    font-size: 13px;
+    color: #777;
+    margin-top: 4px;
+}
 
-    <script src="dashboard.js"></script>
-</body>
-</html>
+/* Main layout */
+.page-main {
+    padding: 20px 40px 80px;
+}
+
+/* Section containers */
+.section {
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
+    border: 1px solid #e0e1e6;
+}
+
+.section-header {
+    background-color: #e5e6eb;
+    padding: 10px 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-body {
+    padding: 12px 16px 16px;
+}
+
+/* Summary + link bar */
+.section-summary {
+    margin-bottom: 8px;
+}
+
+.link-bar {
+    margin: 4px 0 12px;
+}
+
+.link-bar span,
+.link-bar a {
+    margin-right: 22px;
+    color: #0066cc;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.link-bar span:hover,
+.link-bar a:hover {
+    text-decoration: underline;
+}
+
+/* Tables */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.data-table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 900px;
+    table-layout: fixed;
+    background-color: #ffffff;
+}
+
+.data-table thead {
+    background-color: #eceef2;
+}
+
+.data-table th,
+.data-table td {
+    padding: 6px 8px;
+    border: 1px solid #dde0e6;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.data-table th.numeric,
+.data-table td.numeric {
+    text-align: right;
+}
+
+.data-table tbody tr.row-alt {
+    background-color: #f7f8fb;
+}
+
+/* Sorting */
+.data-table th.sortable {
+    cursor: pointer;
+}
+
+.data-table th.sortable:hover {
+    background-color: #dde1eb;
+}
+
+/* Availability colors (text) */
+.status-available {
+    color: #0a7a20;
+    font-weight: 600;
+}
+
+.status-busy {
+    color: #c01818;
+    font-weight: 600;
+}
+
+.status-wrap {
+    color: #c27b00;
+    font-weight: 600;
+}
+
+/* Longest waiting & over-threshold */
+.longest-wait {
+    box-shadow: inset 4px 0 0 #ffcc00;
+}
+
+@keyframes flash-red {
+    0%   { background-color: #ffe6e6; }
+    100% { background-color: #ffb3b3; }
+}
+
+.over-threshold {
+    animation: flash-red 1s alternate infinite;
+}
+
+/* Error text */
+.error {
+    color: #c01818;
+    font-weight: 500;
+}
+
+/* Footer & US Signal logo */
+.page-footer {
+    position: fixed;
+    right: 20px;
+    bottom: 10px;
+    text-align: right;
+    font-size: 11px;
+    color: #555;
+    background: transparent;
+}
+
+.footer-right img,
+.footer-logo {
+    display: block;
+    width: 54px;
+    height: auto;
+    margin-left: auto;
+    margin-bottom: 4px;
+}
+
+/* Dark mode */
+#darkModeToggle {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
+body.dark-mode {
+    background-color: #14161d;
+    color: #e8e8f0;
+}
+
+body.dark-mode .section {
+    background-color: #1f222b;
+    border-color: #2b2f3a;
+}
+
+body.dark-mode .section-header {
+    background-color: #2a2e3a;
+}
+
+body.dark-mode .data-table {
+    background-color: #1f222b;
+}
+
+body.dark-mode .data-table thead {
+    background-color: #292d3a;
+}
+
+body.dark-mode .data-table th,
+body.dark-mode .data-table td {
+    border-color: #343849;
+}
+
+body.dark-mode .data-table tbody tr.row-alt {
+    background-color: #262a36;
+}
+
+body.dark-mode #darkModeToggle {
+    background-color: #1f222b;
+    color: #e8e8f0;
+    border-color: #44495a;
+}
+
+/* KPI summary card (Daily Call Summary) */
+.kpi-section {
+    margin-top: 12px;
+    max-width: 220px;
+}
+
+.kpi-card {
+    border: 1px solid #e0e1e6;
+    border-radius: 4px;
+    background-color: #ffffff;
+    text-align: center;
+    font-size: 12px;
+    padding: 8px 10px;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.06);
+}
+
+.kpi-main-value {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.kpi-main-label {
+    font-size: 11px;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+.kpi-divider {
+    border-top: 1px solid #e5e7eb;
+    margin: 6px 0;
+}
+
+.kpi-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 4px;
+}
+
+.kpi-col {
+    flex: 1;
+}
+
+.kpi-sub-label {
+    font-size: 10px;
+    color: #777;
+}
+
+.kpi-sub-value {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.kpi-row-label {
+    font-size: 10px;
+    color: #555;
+    margin-top: 2px;
+}
+
+.kpi-footer-note {
+    font-size: 10px;
+    color: #777;
+    margin-top: 4px;
+}
+
+body.dark-mode .kpi-card {
+    background-color: #1f222b;
+    border-color: #343849;
+}
+
+body.dark-mode .kpi-main-label,
+body.dark-mode .kpi-row-label,
+body.dark-mode .kpi-sub-label,
+body.dark-mode .kpi-footer-note {
+    color: #d1d5db;
+}
