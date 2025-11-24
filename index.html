@@ -1,68 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>CEG Contact Center Realtime Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="style.css" />
-    <script defer src="dashboard.js"></script>
+    <meta charset="UTF-8">
+    <title>VisionBank – CEG Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-
-<header class="page-header">
-    <div class="header-left">
-        <img src="assets/visionbank.png" alt="VisionBank" class="logo-main" />
+    <div class="header">
+        <img class="vbLogo" src="visionbank.png">
+        <div class="title">CEG Contact Center Realtime Dashboard</div>
+        <div class="subtitle">VisionBank</div>
     </div>
-    <div class="header-center">
-        <h1>CEG Contact Center Realtime Dashboard</h1>
-        <div class="sub-brand">VisionBank</div>
-    </div>
-</header>
 
-<main class="page-main">
-
-    <!-- Current Queue Status -->
-    <section class="section">
-        <h2 class="section-title">Current Queue Status</h2>
-        <div class="section-body">
-            <div class="table-wrapper" id="queueStatusContent">
-                <!-- filled by JS -->
-            </div>
-        </div>
+    <section class="queue-section">
+        <h2>Current Queue Status</h2>
+        <div id="queueStatusContent" class="queue-table"></div>
     </section>
 
-    <!-- Agent Performance -->
-    <section class="section">
-        <h2 class="section-title">Agent Performance</h2>
-
-        <div id="agentSummary" class="section-summary"></div>
-
-        <div class="link-bar">
-            <span>Log Agent Out</span>
-            <span>Log Telagent In</span>
-            <span>Switch to Telagent</span>
-            <span>Text Message</span>
-            <span>Available</span>
-            <span>Not Available</span>
-        </div>
-
-        <div class="section-body">
-            <div class="table-wrapper" id="agentStatusContent">
-                <!-- filled by JS -->
-            </div>
-        </div>
+    <!-- 📌 EXECUTIVE KPI BOX INSERTED HERE -->
+    <section class="kpi-section">
+        <div id="kpiContainer"></div>
     </section>
 
-</main>
+    <section class="agent-section">
+        <h2>Agent Performance</h2>
+        <div id="agentTableContainer"></div>
+    </section>
 
-<footer class="page-footer">
-    <div class="footer-right">
-        <img src="assets/ussignal.png" alt="US Signal" class="logo-ussignal-footer" />
-        <div class="footer-text">
-            Created and maintained by <strong>Ahmed Adeyemi</strong>, <strong>US Signal</strong>
-        </div>
-    </div>
-</footer>
+    <img class="usSignalLogo" src="ussignal.png">
+    <div class="footerText">Created and maintained by <b>Ahmed Adeyemi, US Signal</b></div>
 
+    <script src="dashboard.js"></script>
 </body>
 </html>
