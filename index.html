@@ -7,64 +7,111 @@
     <link rel="stylesheet" href="styles.css" />
     <script defer src="dashboard.js"></script>
 </head>
-
 <body>
 
-<header class="page-header">
-    <div class="header-left">
-        <img src="assets/visionbank.png" alt="VisionBank" class="logo-main" />
-    </div>
-    <div class="header-center">
-        <h1>CEG Contact Center Realtime Dashboard</h1>
-        <div class="sub-brand">VisionBank</div>
-    </div>
-</header>
-
-<main class="page-main">
-
-    <!-- Current Queue Status -->
-    <section class="section" id="queueStatusSection">
-        <div class="section-header">
-            <span class="toggle-indicator">−</span>
-            <span>Current Queue Status</span>
+    <!-- TOP BAR -->
+    <header class="top-bar">
+        <div class="brand-left">
+            <img src="assets/visionbank.png" alt="VisionBank" class="logo-main" />
         </div>
-        <div class="section-body">
-            <div class="table-wrapper" id="queueStatusContent"></div>
+        <div class="brand-center">
+            <div class="app-title">CEG Contact Center Realtime Dashboard</div>
         </div>
-    </section>
+    </header>
 
-    <!-- Current Agent Status -->
-    <section class="section" id="agentStatusSection">
-        <div class="section-header">
-            <span class="toggle-indicator">−</span>
-            <span>Current Agent Status</span>
-        </div>
-        <div class="section-body">
-            <div id="agentSummary" class="section-summary"></div>
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="dashboard">
 
-            <div class="link-bar">
-                <span>Log Agent Out</span>
-                <span>Log Telagent In</span>
-                <span>Switch to Telagent</span>
-                <span>Text Message</span>
-                <span>Available</span>
-                <span>Not Available</span>
+        <!-- KPIs ROW -->
+        <section class="kpi-row">
+            <div class="kpi-card">
+                <div class="kpi-label">Available Agents</div>
+                <div class="kpi-value" id="kpiAvailable">–</div>
+                <div class="kpi-subtext" id="kpiAvailableSub">Updating…</div>
             </div>
 
-            <div class="table-wrapper" id="agentStatusContent"></div>
-        </div>
-    </section>
+            <div class="kpi-card">
+                <div class="kpi-label">Average Handling Time</div>
+                <div class="kpi-value" id="kpiAHT">00:00</div>
+                <div class="kpi-subtext">Calculated from total on-call time / answered calls</div>
+            </div>
 
-</main>
+            <div class="kpi-card">
+                <div class="kpi-label">Answered Calls (Today)</div>
+                <div class="kpi-value" id="kpiAnswered">–</div>
+                <div class="kpi-subtext">Sum of inbound calls handled by all agents</div>
+            </div>
 
-<footer class="page-footer">
-    <div class="footer-right">
-        <img src="assets/ussignal.png" alt="US Signal" class="logo-secondary-footer" />
-        <div class="footer-text">
-            Created and maintained by <strong>Ahmed Adeyemi</strong>, <strong>US Signal</strong>
+            <div class="kpi-card">
+                <div class="kpi-label">Calls in Queue</div>
+                <div class="kpi-value" id="kpiQueue">–</div>
+                <div class="kpi-subtext">
+                    Oldest Wait: <span id="kpiOldestWait">–</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECOND ROW: QUEUE + AGENT PERFORMANCE -->
+        <section class="second-row">
+
+            <!-- CURRENT QUEUE STATUS CARD -->
+            <article class="panel panel-queue">
+                <header class="panel-header">
+                    <h2>Current Queue Status</h2>
+                </header>
+                <div class="panel-body" id="queueStatusContent">
+                    <!-- Filled by JS -->
+                </div>
+            </article>
+
+            <!-- AGENT PERFORMANCE CARD -->
+            <article class="panel panel-agent">
+                <header class="panel-header">
+                    <h2>Agent Performance</h2>
+                    <div class="panel-subheader" id="agentSummary">
+                        Loading agent summary…
+                    </div>
+                </header>
+
+                <div class="agent-links">
+                    <span>Log Agent Out</span>
+                    <span>Log Telagent In</span>
+                    <span>Switch to Telagent</span>
+                    <span>Text Message</span>
+                    <span>Available</span>
+                    <span>Not Available</span>
+                </div>
+
+                <div class="panel-body table-scroll">
+                    <table class="agent-table">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Availability</th>
+                                <th>Inbound Calls</th>
+                                <th>Average Handle<br />Time</th>
+                                <th>Outbound Calls</th>
+                            </tr>
+                        </thead>
+                        <tbody id="agentTableBody">
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+        </section>
+    </main>
+
+    <!-- FOOTER WITH US SIGNAL BRANDING -->
+    <footer class="page-footer">
+        <div class="footer-right">
+            <img src="assets/ussignal.png" alt="US Signal" class="logo-secondary" />
+            <div class="footer-text">
+                Created and maintained by <strong>Ahmed Adeyemi</strong>, <strong>US Signal</strong>
+            </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
 </body>
 </html>
