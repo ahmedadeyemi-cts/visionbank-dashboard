@@ -7,40 +7,34 @@
     <link rel="stylesheet" href="styles.css" />
     <script defer src="dashboard.js"></script>
 </head>
+
 <body>
 
 <header class="page-header">
-    <div class="header-left">
-        <img src="assets/visionbank.png" alt="VisionBank" class="logo-main" />
-    </div>
-    <div class="header-center">
-        <h1>CEG Contact Center Realtime Dashboard</h1>
-        <div class="sub-brand">Available Agents</div>
-    </div>
-    <div class="header-right">
-        <img src="assets/ussignal.png" alt="US Signal" class="logo-secondary-top" />
-    </div>
+    <img src="assets/visionbank.png" class="logo-main" alt="VisionBank" />
+    <h1 class="page-title">CEG Contact Center Realtime Dashboard</h1>
 </header>
 
 <main class="page-main">
 
-    <!-- Current Queue Status -->
+    <!-- Queue Status -->
     <section class="section">
-        <h2>Current Queue Status</h2>
+        <h2 class="section-title">Current Queue Status</h2>
         <div id="queueStatusContent"></div>
     </section>
 
-    <!-- Agent Status -->
+    <!-- Agent Performance -->
     <section class="section">
-        <h2>Agent Performance</h2>
-        <div id="agentSummary"></div>
+        <h2 class="section-title">Agent Performance</h2>
+        <div id="agentSummary" class="agent-summary"></div>
         <div id="agentStatusContent"></div>
     </section>
 
 </main>
 
 <footer class="page-footer">
-    <div class="footer-right">
+    <img src="assets/ussignal.png" class="logo-footer" alt="US Signal" />
+    <div class="footer-text">
         Created and maintained by <strong>Ahmed Adeyemi</strong>, <strong>US Signal</strong>
     </div>
 </footer>
