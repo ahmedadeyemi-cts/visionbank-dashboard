@@ -1,246 +1,369 @@
-/* ============================================================
-   Dashboard JS – Fully Fixed & Updated
-   Compatible with your existing index.html + style.css
-   ============================================================ */
+// dashboard.js
+// VisionBank CEG Contact Center Realtime Dashboard
 
-/* ---------- CONFIG ---------- */
-const BASE_URL = "https://pop1-apps.mycontactcenter.net/api/cca";
-const API_KEY = "";   // If needed.
-const THRESHOLD_SECONDS = 300; // 5 min
+const API_BASE = 'https://visionbank-tle1.onrender.com';
+const QUEUES_URL = `${API_BASE}/queues`;
+const AGENTS_URL = `${API_BASE}/agents`;
+const SESSIONS_URL = `${API_BASE}/v3/hist/agentsessions`;
 
-/* ---------- SIMPLE GET WRAPPER ---------- */
-async function apiGet(path) {
-    const url = `${BASE_URL}${path}`;
-    const headers = { "Content-Type": "application/json" };
-    if (API_KEY) headers["Authorization"] = `Bearer ${API_KEY}`;
+// thresholds
+const LONG_WAIT_THRESHOLD_SECONDS = 300;   // 5 minutes for queue highlight
+const AGENT_ONCALL_THRESHOLD_SECONDS = 600; // 10 minutes for flashing row
 
-    const res = await fetch(url, { headers });
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
+// ---------- Utility functions ----------
+
+function $(selector) {
+  return document.querySelector(selector);
 }
 
-/* ============================================================
-   QUEUE STATUS
-   ============================================================ */
+function formatSecondsToHHMMSS(totalSeconds) {
+  if (totalSeconds == null || isNaN(totalSeconds)) return '00:00:00';
+  const seconds = Math.max(0, Math.floor(totalSeconds));
+  const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+  const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+  const s = String(seconds % 60).padStart(2, '0');
+  return `${h}:${m}:${s}`;
+}
+
+function formatSecondsToMMSS(totalSeconds) {
+  if (totalSeconds == null || isNaN(totalSeconds)) return '00:00';
+  const seconds = Math.max(0, Math.floor(totalSeconds));
+  const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const s = String(seconds % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function todayISODate() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+// ---------- Queue status ----------
+
 async function loadQueueStatus() {
-    try {
-        const queues = await apiGet("/v3/queue");
-        const daily = await loadDailyKPI();
+  const queueBody =
+    document.querySelector('#queue-body') ||
+    document.querySelector('#queueBody');
 
-        const container = document.getElementById("queueStatusContent");
-        container.innerHTML = "";
+  if (!queueBody) return;
 
-        if (!queues || queues.length === 0) {
-            container.innerHTML = "<div class='error'>No queue data.</div>";
-            return;
-        }
+  try {
+    const response = await fetch(QUEUES_URL);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
 
-        const q = queues[0]; // VisionBank uses 1 queue
+    const queues = data.QueueStatus || [];
+    queueBody.innerHTML = '';
 
-        /* Summary row */
-        document.getElementById("queueSummary").innerHTML = `
-            Queue: <strong>${q.QueueName}</strong> | 
-            Calls: <strong>${q.CallsWaiting}</strong> | 
-            Agents: <strong>${q.AgentsStaffed}</strong> | 
-            Wait: <strong>${q.WaitTime || "00:00:00"}</strong>
-        `;
-
-        /* Build table */
-        const table = `
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Queue</th>
-                        <th class="numeric">Calls</th>
-                        <th class="numeric">Agents</th>
-                        <th>Wait</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr id="queueRow">
-                        <td>${q.QueueName}</td>
-                        <td class="numeric">${q.CallsWaiting}</td>
-                        <td class="numeric">${q.AgentsStaffed}</td>
-                        <td>${q.WaitTime}</td>
-                    </tr>
-                </tbody>
-            </table>
-        `;
-
-        /* KPI CARD (Daily Call Summary) */
-        const kpi = `
-            <div class="kpi-section">
-                <div class="kpi-card">
-                    <div class="kpi-main-value">${daily.totalQueued}</div>
-                    <div class="kpi-main-label">Total Calls Queued</div>
-
-                    <div class="kpi-divider"></div>
-
-                    <div class="kpi-row">
-                        <div class="kpi-col">
-                            <div class="kpi-sub-value">${daily.answerPct}%</div>
-                            <div class="kpi-sub-label">Pct</div>
-                        </div>
-                        <div class="kpi-col">
-                            <div class="kpi-sub-value">${daily.answered}</div>
-                            <div class="kpi-sub-label">Numeric</div>
-                        </div>
-                    </div>
-                    <div class="kpi-row-label">Total Calls Answered</div>
-
-                    <div class="kpi-divider"></div>
-
-                    <div class="kpi-row">
-                        <div class="kpi-col">
-                            <div class="kpi-sub-value">${daily.abandonPct}%</div>
-                            <div class="kpi-sub-label">Pct</div>
-                        </div>
-                        <div class="kpi-col">
-                            <div class="kpi-sub-value">${daily.abandoned}</div>
-                            <div class="kpi-sub-label">Numeric</div>
-                        </div>
-                    </div>
-                    <div class="kpi-row-label">Total Calls Abandoned</div>
-                </div>
-            </div>
-        `;
-
-        container.innerHTML = `
-            <div style="display:flex; gap:24px;">
-                <div style="flex:1;">${table}</div>
-                ${kpi}
-            </div>
-        `;
-
-        highlightLongestWait(q);
-
-    } catch (err) {
-        document.getElementById("queueStatusContent").innerHTML =
-            `<div class='error'>Failed to load queue: ${err}</div>`;
+    if (!queues.length) {
+      queueBody.innerHTML =
+        `<tr><td colspan="4" class="error-cell">No queue data available.</td></tr>`;
+      return;
     }
+
+    queues.forEach((q, index) => {
+      const row = document.createElement('tr');
+
+      const waitingSeconds = q.MaxWaitingTime ?? q.AvgWaitInterval ?? 0;
+      const waitDisplay = formatSecondsToMMSS(waitingSeconds);
+
+      row.innerHTML = `
+        <td>${q.QueueName || 'Unknown'}</td>
+        <td>${q.TotalCalls ?? 0}</td>
+        <td>${q.TotalLoggedAgents ?? 0}</td>
+        <td>${waitDisplay}</td>
+      `;
+
+      // highlight row if longest wait above threshold
+      if (waitingSeconds >= LONG_WAIT_THRESHOLD_SECONDS) {
+        row.classList.add('queue-long-wait');
+      }
+
+      // zebra striping
+      if (index % 2 === 1) {
+        row.classList.add('row-alt');
+      }
+
+      queueBody.appendChild(row);
+    });
+  } catch (err) {
+    console.error('Error loading queue status:', err);
+    queueBody.innerHTML =
+      `<tr><td colspan="4" class="error-cell">Unable to load queue status.</td></tr>`;
+  }
 }
 
-/* ---------- Highlight longest wait caller ---------- */
-function highlightLongestWait(queue) {
-    const row = document.getElementById("queueRow");
-    if (!row) return;
+// ---------- Agent performance ----------
 
-    const waitSeconds = toSeconds(queue.WaitTime);
-    if (waitSeconds > THRESHOLD_SECONDS) row.classList.add("over-threshold");
+function classifyAvailability(statusText, currentAvailability) {
+  const status = (statusText || '').toLowerCase();
+
+  // 0 = not ready/other, 1 = available, 2 = custom (per CCA)
+  if (currentAvailability === 1 || status.includes('available')) {
+    return 'available';
+  }
+
+  if (
+    status.includes('wrap') ||
+    status.includes('acw') ||
+    status.includes('break')
+  ) {
+    return 'wrap';
+  }
+
+  if (
+    status.includes('call') ||
+    status.includes('busy') ||
+    status.includes('dial') ||
+    status.includes('accept internal')
+  ) {
+    return 'busy';
+  }
+
+  // default
+  return 'other';
 }
 
-/* --- Helper --- */
-function toSeconds(hhmmss = "00:00:00") {
-    const [h, m, s] = hhmmss.split(":").map(Number);
-    return h * 3600 + m * 60 + s;
-}
-
-/* ============================================================
-   AGENT PERFORMANCE
-   ============================================================ */
 async function loadAgentStatus() {
-    try {
-        const agents = await apiGet("/v3/agentstatus");
+  const agentBody =
+    document.querySelector('#agent-body') ||
+    document.querySelector('#agentBody');
 
-        const container = document.getElementById("agentStatusContent");
-        container.innerHTML = "";
+  const agentTable =
+    document.querySelector('#agent-table') ||
+    document.querySelector('#agentTable');
 
-        if (!agents || agents.length === 0) {
-            container.innerHTML = "<div class='error'>No agent status.</div>";
-            return;
-        }
+  if (!agentBody || !agentTable) return;
 
-        /* Build table */
-        let rows = "";
-        agents.forEach((a, i) => {
-            const cls =
-                a.IsOnCall ? "status-busy"
-                : a.IsWrappingUp ? "status-wrap"
-                : a.IsOnBreak ? "status-wrap"
-                : "status-available";
+  try {
+    const response = await fetch(AGENTS_URL);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
 
-            const alt = i % 2 === 1 ? "row-alt" : "";
+    const agents = data.AgentStatus || [];
+    agentBody.innerHTML = '';
 
-            rows += `
-                <tr class="${alt}">
-                    <td>${a.AgentName}</td>
-                    <td>${a.TeamName || ""}</td>
-                    <td>${a.PhoneNumber || ""}</td>
-                    <td class="${cls}">${a.StatusName}</td>
-                    <td class="numeric">${a.InboundCount || 0}</td>
-                    <td class="numeric">${a.OutboundCount || 0}</td>
-                    <td class="numeric">${a.TransferCount || 0}</td>
-                </tr>
-            `;
-        });
-
-        container.innerHTML = `
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Employee</th>
-                        <th>Team</th>
-                        <th>Phone No.</th>
-                        <th>Status</th>
-                        <th class="numeric">Inbound</th>
-                        <th class="numeric">Outbound</th>
-                        <th class="numeric">Transferred</th>
-                    </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-            </table>
-        `;
-
-    } catch (err) {
-        document.getElementById("agentStatusContent").innerHTML =
-            `<div class='error'>Failed to load agent status: ${err}</div>`;
+    if (!agents.length) {
+      agentBody.innerHTML =
+        `<tr><td colspan="10" class="error-cell">No agent data available.</td></tr>`;
+      return;
     }
-}
 
-/* ============================================================
-   DAILY KPI USING AGENT SESSIONS (Your request)
-   ============================================================ */
-async function loadDailyKPI() {
-    const today = new Date().toISOString().slice(0, 10);
+    agents.forEach((agent, index) => {
+      const row = document.createElement('tr');
 
-    const sessions = await apiGet(`/v3/hist/agentsessions/${today}`);
+      const inboundCalls =
+        agent.TotalCallsReceived ??
+        agent.CallCount ??
+        0;
 
-    let answered = 0;
-    let abandoned = 0;
-    let dialOut = 0;
+      const missedCalls =
+        agent.TotalCallsMissed ??
+        agent.MissedCallCount ??
+        0;
 
-    sessions.forEach(s => {
-        answered += s.CallCount || 0;
-        abandoned += s.MissedCallCount || 0;
-        dialOut += s.DialOutCount || 0;
+      const transferredCalls =
+        agent.ThirdPartyTransferCount ??
+        0;
+
+      const outboundCalls =
+        agent.DialoutCount ??
+        agent.DialOutCount ??
+        0;
+
+      const avgHandleSeconds =
+        inboundCalls > 0
+          ? (agent.TotalSecondsOnCall || 0) / inboundCalls
+          : 0;
+
+      const availabilityClass = classifyAvailability(
+        agent.CallTransferStatusDesc,
+        agent.CurrentAvailability
+      );
+
+      const availabilityDisplay =
+        agent.CallTransferStatusDesc || 'Unknown';
+
+      row.innerHTML = `
+        <td>${agent.FullName || ''}</td>
+        <td>${agent.TeamName || ''}</td>
+        <td>${agent.PhoneExt || ''}</td>
+        <td class="availability-cell">
+          <span class="availability-pill availability-${availabilityClass}">
+            ${availabilityDisplay}
+          </span>
+        </td>
+        <td class="numeric-cell">${inboundCalls}</td>
+        <td class="numeric-cell">${missedCalls}</td>
+        <td class="numeric-cell">${transferredCalls}</td>
+        <td class="numeric-cell">${outboundCalls}</td>
+        <td>${formatSecondsToHHMMSS(avgHandleSeconds)}</td>
+        <td>${new Date(agent.StartDateUtc || '').toLocaleString() || ''}</td>
+      `;
+
+      // flashing red when on call over threshold
+      const secondsInStatus = agent.SecondsInCurrentStatus || 0;
+      const statusLower = (agent.CallTransferStatusDesc || '').toLowerCase();
+      if (
+        (statusLower.includes('call') || statusLower.includes('busy')) &&
+        secondsInStatus >= (agent.NormalOnCallInterval || AGENT_ONCALL_THRESHOLD_SECONDS)
+      ) {
+        row.classList.add('agent-over-threshold');
+      }
+
+      if (index % 2 === 1) {
+        row.classList.add('row-alt');
+      }
+
+      agentBody.appendChild(row);
     });
 
-    const total = answered + abandoned;
-
-    return {
-        totalQueued: total,
-        answered,
-        abandoned,
-        answerPct: total === 0 ? 0 : Math.round((answered / total) * 100),
-        abandonPct: total === 0 ? 0 : Math.round((abandoned / total) * 100),
-        dialOut
-    };
+    enableAgentTableSorting(agentTable, agentBody);
+  } catch (err) {
+    console.error('Error loading agent data:', err);
+    agentBody.innerHTML =
+      `<tr><td colspan="10" class="error-cell">Unable to load agent data.</td></tr>`;
+  }
 }
 
-/* ============================================================
-   DARK MODE
-   ============================================================ */
-document.getElementById("darkModeToggle").addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
+// ---------- Agent table sorting ----------
+
+function enableAgentTableSorting(table, tbody) {
+  const headers = table.querySelectorAll('thead th');
+  headers.forEach((th, index) => {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', () => {
+      const ascending =
+        !th.classList.contains('sorted-asc') || th.classList.contains('sorted-desc');
+
+      headers.forEach(h => h.classList.remove('sorted-asc', 'sorted-desc'));
+      th.classList.add(ascending ? 'sorted-asc' : 'sorted-desc');
+
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      rows.sort((a, b) => {
+        const aText = a.children[index]?.textContent.trim() || '';
+        const bText = b.children[index]?.textContent.trim() || '';
+
+        const aNum = parseFloat(aText.replace(/[^0-9.-]/g, ''));
+        const bNum = parseFloat(bText.replace(/[^0-9.-]/g, ''));
+
+        const bothNumeric = !isNaN(aNum) && !isNaN(bNum);
+        if (bothNumeric) {
+          return ascending ? aNum - bNum : bNum - aNum;
+        }
+
+        return ascending
+          ? aText.localeCompare(bText)
+          : bText.localeCompare(aText);
+      });
+
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+}
+
+// ---------- KPI metrics from agent sessions ----------
+
+async function loadKpiMetrics() {
+  const kpiQueued = $('#kpi-total-queued');
+  const kpiAnsNum = $('#kpi-answered-num');
+  const kpiAnsPct = $('#kpi-answered-pct');
+  const kpiAbnNum = $('#kpi-abandoned-num');
+  const kpiAbnPct = $('#kpi-abandoned-pct');
+
+  // If KPI container is not present in the HTML, do nothing
+  if (!kpiQueued || !kpiAnsNum || !kpiAnsPct || !kpiAbnNum || !kpiAbnPct) {
+    return;
+  }
+
+  try {
+    const date = todayISODate();
+    const response = await fetch(`${SESSIONS_URL}/${date}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const sessions = await response.json();
+
+    // Only include voice sessions (MediaTypeId "CSI")
+    const voiceSessions = sessions.filter(
+      s => (s.MediaTypeId || '').toUpperCase() === 'CSI'
+    );
+
+    const totalAnswered = voiceSessions.reduce(
+      (sum, s) => sum + (s.CallCount || 0),
+      0
+    );
+
+    const totalAbandoned = voiceSessions.reduce(
+      (sum, s) => sum + (s.MissedCallCount || 0),
+      0
+    );
+
+    const totalOutbound = voiceSessions.reduce(
+      (sum, s) => sum + (s.DialOutCount || 0),
+      0
+    );
+
+    const totalQueued = totalAnswered + totalAbandoned;
+
+    const answerRate = totalQueued
+      ? (totalAnswered / totalQueued) * 100
+      : 0;
+
+    const abandonRate = totalQueued
+      ? (totalAbandoned / totalQueued) * 100
+      : 0;
+
+    // Update KPI card
+    kpiQueued.textContent = totalQueued.toString();
+    kpiAnsNum.textContent = totalAnswered.toString();
+    kpiAnsPct.textContent = `${answerRate.toFixed(1)}%`;
+    kpiAbnNum.textContent = totalAbandoned.toString();
+    kpiAbnPct.textContent = `${abandonRate.toFixed(1)}%`;
+
+    // Extra: outbound metric if you ever want to display it
+    const outboundEl = $('#kpi-outbound');
+    if (outboundEl) {
+      outboundEl.textContent = totalOutbound.toString();
+    }
+  } catch (err) {
+    console.error('Error loading KPI metrics:', err);
+    // Leave existing placeholders if the KPI call fails
+  }
+}
+
+// ---------- Dark mode ----------
+
+function initDarkMode() {
+  const toggleButton = document.getElementById('dark-mode-toggle');
+  if (!toggleButton) return;
+
+  const stored = localStorage.getItem('vb-dark-mode');
+  if (stored === 'true') {
+    document.body.classList.add('dark-mode');
+    toggleButton.textContent = 'Light mode';
+  }
+
+  toggleButton.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('vb-dark-mode', isDark ? 'true' : 'false');
+    toggleButton.textContent = isDark ? 'Light mode' : 'Dark mode';
+  });
+}
+
+// ---------- Initialization ----------
+
+document.addEventListener('DOMContentLoaded', () => {
+  initDarkMode();
+  loadQueueStatus();
+  loadAgentStatus();
+  loadKpiMetrics();
+
+  // refresh periodically
+  setInterval(() => {
+    loadQueueStatus();
+    loadAgentStatus();
+    loadKpiMetrics();
+  }, 30000); // every 30 seconds
 });
-
-/* ============================================================
-   INITIAL LOAD + Auto-refresh
-   ============================================================ */
-async function refreshAll() {
-    await loadQueueStatus();
-    await loadAgentStatus();
-}
-
-refreshAll();
-setInterval(refreshAll, 10000);
