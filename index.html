@@ -4,38 +4,63 @@
     <meta charset="UTF-8" />
     <title>CEG Contact Center Realtime Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="style.css" />
     <script defer src="dashboard.js"></script>
 </head>
-
 <body>
 
 <header class="page-header">
-    <img src="assets/visionbank.png" class="logo-main" alt="VisionBank" />
-    <h1 class="page-title">CEG Contact Center Realtime Dashboard</h1>
+    <div class="header-left">
+        <img src="assets/visionbank.png" alt="VisionBank" class="logo-main" />
+    </div>
+    <div class="header-center">
+        <h1>CEG Contact Center Realtime Dashboard</h1>
+        <div class="sub-brand">VisionBank</div>
+    </div>
 </header>
 
 <main class="page-main">
 
-    <!-- Queue Status -->
+    <!-- Current Queue Status -->
     <section class="section">
         <h2 class="section-title">Current Queue Status</h2>
-        <div id="queueStatusContent"></div>
+        <div class="section-body">
+            <div class="table-wrapper" id="queueStatusContent">
+                <!-- filled by JS -->
+            </div>
+        </div>
     </section>
 
     <!-- Agent Performance -->
     <section class="section">
         <h2 class="section-title">Agent Performance</h2>
-        <div id="agentSummary" class="agent-summary"></div>
-        <div id="agentStatusContent"></div>
+
+        <div id="agentSummary" class="section-summary"></div>
+
+        <div class="link-bar">
+            <span>Log Agent Out</span>
+            <span>Log Telagent In</span>
+            <span>Switch to Telagent</span>
+            <span>Text Message</span>
+            <span>Available</span>
+            <span>Not Available</span>
+        </div>
+
+        <div class="section-body">
+            <div class="table-wrapper" id="agentStatusContent">
+                <!-- filled by JS -->
+            </div>
+        </div>
     </section>
 
 </main>
 
 <footer class="page-footer">
-    <img src="assets/ussignal.png" class="logo-footer" alt="US Signal" />
-    <div class="footer-text">
-        Created and maintained by <strong>Ahmed Adeyemi</strong>, <strong>US Signal</strong>
+    <div class="footer-right">
+        <img src="assets/ussignal.png" alt="US Signal" class="logo-ussignal-footer" />
+        <div class="footer-text">
+            Created and maintained by <strong>Ahmed Adeyemi</strong>, <strong>US Signal</strong>
+        </div>
     </div>
 </footer>
 
