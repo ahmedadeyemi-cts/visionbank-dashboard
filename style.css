@@ -10,6 +10,9 @@
     --status-busy: #e53935;
     --status-break: #e67e22;
     --status-other: #7f8c8d;
+    --duration-green: #008000;
+    --duration-yellow: #c59f00;
+    --duration-red: #d32f2f;
 }
 
 * {
@@ -18,21 +21,29 @@
 
 body {
     margin: 0;
-    padding: 20px 40px;
+    padding: 20px 40px 30px 40px;
     font-family: Arial, sans-serif;
     background: var(--bg);
     color: #111827;
 }
 
-/* Header */
+/* Header layout */
 
 .page-header {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 24px;
 }
 
-.logo-wrapper {
-    margin-bottom: 6px;
+.header-left,
+.header-right {
+    flex: 0 0 auto;
+}
+
+.header-center {
+    flex: 1 1 auto;
+    text-align: center;
 }
 
 .logo-main {
@@ -40,19 +51,26 @@ body {
     height: auto;
 }
 
+.logo-secondary-top {
+    max-width: 80px;
+    height: auto;
+}
+
+/* Title */
+
 h1 {
     margin: 0;
-    font-size: 30px;
+    font-size: 24px;
     color: #111827;
 }
 
 .sub-brand {
-    margin-top: 4px;
-    font-size: 22px;
+    margin-top: 2px;
+    font-size: 18px;
     font-weight: bold;
 }
 
-/* Layout */
+/* Main layout */
 
 .page-main {
     max-width: 1200px;
@@ -62,7 +80,7 @@ h1 {
 /* Sections */
 
 .section {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     background: white;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
@@ -71,11 +89,11 @@ h1 {
 .section-header {
     background: var(--header-bg);
     color: var(--primary);
-    padding: 8px 16px;
+    padding: 6px 14px;
     font-weight: bold;
     display: flex;
     align-items: center;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .toggle-indicator {
@@ -84,7 +102,7 @@ h1 {
 }
 
 .section-body {
-    padding: 10px 16px 14px 16px;
+    padding: 10px 14px 12px 14px;
 }
 
 .section-summary {
@@ -119,7 +137,7 @@ table {
 
 th, td {
     border: 1px solid var(--border);
-    padding: 4px 6px;
+    padding: 5px 7px;
     text-align: left;
     white-space: nowrap;
 }
@@ -165,10 +183,28 @@ tbody tr:hover {
     font-weight: bold;
 }
 
+/* Duration coloring */
+
+.duration-green {
+    color: var(--duration-green);
+    font-weight: bold;
+}
+
+.duration-yellow {
+    color: var(--duration-yellow);
+    font-weight: bold;
+}
+
+.duration-red {
+    color: var(--duration-red);
+    font-weight: bold;
+}
+
 /* Misc */
 
 .timestamp {
     font-family: "SF Mono", Menlo, monospace;
+    font-size: 11px;
 }
 
 .error {
@@ -180,14 +216,13 @@ tbody tr:hover {
 /* Footer */
 
 .page-footer {
-    margin-top: 26px;
-    text-align: center;
-    font-size: 14px;
+    margin-top: 10px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.logo-secondary {
-    max-width: 120px;
-    height: auto;
-    border-radius: 10px;
-    margin-top: 8px;
+.footer-right {
+    text-align: right;
+    font-size: 13px;
 }
