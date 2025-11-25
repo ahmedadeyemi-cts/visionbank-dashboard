@@ -1,164 +1,164 @@
-/*****************************************************
- * CONFIG
- *****************************************************/
-const API_BASE = "https://pop1-apps.mycontactcenter.net/api/v3/realtime";
-const TOKEN = "VWGKXWSqGA4FwIRXb2clx5H1dS3cYpplXa5il3bE4Xg=";
+const API_ROOT = "https://pop1-apps.mycontactcenter.net/api/v3";
+const AUTH_TOKEN =
+  "VWGKXWSqGA4FwIRXb2clx5H1dS3cYpplXa5il3bE4Xg=";   // your working token
 
-/*****************************************************
- * HELPERS
- *****************************************************/
-function formatSecondsToHHMMSS(seconds) {
-    if (!Number.isFinite(seconds)) return "--:--:--";
-    const h = Math.floor(seconds / 3600).toString().padStart(2, "0");
-    const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, "0");
-    const s = Math.floor(seconds % 60).toString().padStart(2, "0");
-    return `${h}:${m}:${s}`;
+// -------------------------------
+// Helper: format seconds → HH:MM:SS
+// -------------------------------
+function formatSeconds(sec) {
+  if (!sec || sec < 0) sec = 0;
+  const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+  const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+  const s = String(sec % 60).padStart(2, "0");
+  return `${h}:${m}:${s}`;
 }
 
-function safe(v) {
-    return v === undefined || v === null ? "--" : v;
-}
-
-/*****************************************************
- * LOAD QUEUE STATUS
- *****************************************************/
+// -------------------------------
+// LOAD QUEUE STATUS
+// GET /realtime/queues
+// -------------------------------
 async function loadQueueStatus() {
-    const tbody = document.getElementById("queue-body");
+  const tbody = document.getElementById("queue-body");
 
-    try {
-        const res = await fetch(`${API_BASE}/queues`, {
-            headers: { token: TOKEN }
-        });
+  try {
+    const res = await fetch(`${API_ROOT}/realtime/queues`, {
+      headers: { token: AUTH_TOKEN }
+    });
+    const json = await res.json();
 
-        const json = await res.json();
-
-        if (!json || !json.QueueStatus || json.QueueStatus.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" class="error-cell">Unable to load queue status.</td></tr>`;
-            return;
-        }
-
-        const q = json.QueueStatus[0];
-
-        tbody.innerHTML = `
-            <tr>
-                <td>${safe(q.QueueName)}</td>
-                <td>${safe(q.TotalCalls)}</td>
-                <td>${safe(q.TotalLoggedAgents)}</td>
-                <td>${formatSecondsToHHMMSS(q.AvgWaitInterval)}</td>
-            </tr>
-        `;
-    } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="4" class="error-cell">Unable to load queue status.</td></tr>`;
+    if (!json.QueueStatus || json.QueueStatus.length === 0) {
+      tbody.innerHTML =
+        `<tr><td colspan="4" class="error-cell">Unable to load queue status.</td></tr>`;
+      return;
     }
+
+    const q = json.QueueStatus[0];
+
+    tbody.innerHTML = `
+      <tr>
+        <td>${q.QueueName}</td>
+        <td>${q.TotalCalls}</td>
+        <td>${q.TotalLoggedAgents}</td>
+        <td>${formatSeconds(q.AvgWaitInterval)}</td>
+      </tr>`;
+  } catch (err) {
+    tbody.innerHTML =
+      `<tr><td colspan="4" class="error-cell">Unable to load queue status.</td></tr>`;
+  }
 }
 
-/*****************************************************
- * LOAD GLOBAL REALTIME STATISTICS
- *****************************************************/
+// -------------------------------
+// LOAD GLOBAL REALTIME STATISTICS
+// GET /realtime/statistics/global
+// -------------------------------
 async function loadGlobalStats() {
-    const ids = {
-        totalQueued: "stat-total-queued",
-        totalTransferred: "stat-total-transferred",
-        totalAbandoned: "stat-total-abandoned",
-        maxWait: "stat-max-wait",
-        serviceLevel: "stat-service-level",
-        totalReceived: "stat-total-received",
-        answerRate: "stat-answer-rate",
-        abandonRate: "stat-abandon-rate",
-        callbacksRegistered: "stat-callbacks-registered",
-        callbacksWaiting: "stat-callbacks-waiting"
-    };
+  const errBox = document.getElementById("global-error");
+  const fields = {
+    queued: document.getElementById("kpi-total-queued"),
+    transferred: document.getElementById("kpi-total-transferred"),
+    abandoned: document.getElementById("kpi-total-abandoned"),
+    maxWait: document.getElementById("kpi-max-wait"),
+    service: document.getElementById("kpi-service-level"),
+    received: document.getElementById("kpi-total-received"),
+    answerRate: document.getElementById("kpi-answer-rate"),
+    abandonRate: document.getElementById("kpi-abandon-rate"),
+    callbackReg: document.getElementById("kpi-callbacks-registered"),
+    callbackWait: document.getElementById("kpi-callbacks-waiting")
+  };
 
-    try {
-        const res = await fetch(`${API_BASE}/statistics/global`, {
-            headers: { token: TOKEN }
-        });
+  try {
+    const res = await fetch(
+      `${API_ROOT}/realtime/statistics/global`,
+      { headers: { token: AUTH_TOKEN } }
+    );
 
-        const json = await res.json();
-        const g = json.GlobalStatistics?.[0];
+    const json = await res.json();
 
-        if (!g) throw new Error("No stats");
-
-        document.getElementById(ids.totalQueued).textContent = safe(g.TotalCallsQueued);
-        document.getElementById(ids.totalTransferred).textContent = safe(g.TotalCallsTransferred);
-        document.getElementById(ids.totalAbandoned).textContent = safe(g.TotalCallsAbandoned);
-        document.getElementById(ids.maxWait).textContent = formatSecondsToHHMMSS(g.MaxQueueWaitingTime);
-        document.getElementById(ids.serviceLevel).textContent = safe(g.ServiceLevel.toFixed(1)) + "%";
-        document.getElementById(ids.totalReceived).textContent = safe(g.TotalCallsReceived);
-        document.getElementById(ids.answerRate).textContent = safe(g.AnswerRate.toFixed(1)) + "%";
-        document.getElementById(ids.abandonRate).textContent = safe(g.AbandonRate.toFixed(1)) + "%";
-        document.getElementById(ids.callbacksRegistered).textContent = safe(g.CallbacksRegistered);
-        document.getElementById(ids.callbacksWaiting).textContent = safe(g.CallbacksWaiting);
-
-    } catch (e) {
-        console.error("Global stats error", e);
+    if (!json.GlobalStatistics || json.GlobalStatistics.length === 0) {
+      errBox.classList.remove("hidden");
+      return;
     }
+
+    errBox.classList.add("hidden");
+
+    const g = json.GlobalStatistics[0];
+
+    fields.queued.textContent = g.TotalCallsQueued;
+    fields.transferred.textContent = g.TotalCallsTransferred;
+    fields.abandoned.textContent = g.TotalCallsAbandoned;
+    fields.maxWait.textContent = formatSeconds(g.MaxQueueWaitingTime);
+    fields.service.textContent = `${g.ServiceLevel.toFixed(1)}%`;
+    fields.received.textContent = g.TotalCallsReceived;
+    fields.answerRate.textContent = `${g.AnswerRate.toFixed(1)}%`;
+    fields.abandonRate.textContent = `${g.AbandonRate.toFixed(1)}%`;
+    fields.callbackReg.textContent = g.CallbacksRegistered;
+    fields.callbackWait.textContent = g.CallbacksWaiting;
+
+  } catch (err) {
+    errBox.classList.remove("hidden");
+  }
 }
 
-/*****************************************************
- * LOAD AGENT STATUS
- *****************************************************/
-async function loadAgentStatus() {
-    const tbody = document.getElementById("agent-body");
+// -------------------------------
+// LOAD AGENT PERFORMANCE
+// GET /realtime/agents
+// -------------------------------
+async function loadAgents() {
+  const tbody = document.getElementById("agent-body");
 
-    try {
-        const res = await fetch(`${API_BASE}/agents`, {
-            headers: { token: TOKEN }
-        });
+  try {
+    const res = await fetch(`${API_ROOT}/realtime/agents`, {
+      headers: { token: AUTH_TOKEN }
+    });
+    const json = await res.json();
 
-        const json = await res.json();
-
-        if (!json || !json.AgentStatus) {
-            tbody.innerHTML = `<tr><td colspan="10" class="error-cell">Unable to load agent data.</td></tr>`;
-            return;
-        }
-
-        let rows = "";
-
-        json.AgentStatus.forEach(a => {
-            const inbound = a.TotalCallsReceived || 0;
-            const outbound = a.DialoutCount || 0;
-            const avgHandle = inbound > 0 
-                ? formatSecondsToHHMMSS(Math.round((a.TotalSecondsOnCall || 0) / inbound))
-                : "--";
-
-            rows += `
-                <tr>
-                    <td>${safe(a.FullName)}</td>
-                    <td>${safe(a.TeamName)}</td>
-                    <td>${safe(a.PhoneExt)}</td>
-                    <td>${safe(a.CallTransferStatusDesc)}</td>
-                    <td>${inbound}</td>
-                    <td>${safe(a.MissedCallCount || 0)}</td>
-                    <td>${safe(a.TransferredCallCount || 0)}</td>
-                    <td>${outbound}</td>
-                    <td>${avgHandle}</td>
-                    <td>${safe(a.StartDateUtc)}</td>
-                </tr>
-            `;
-        });
-
-        tbody.innerHTML = rows;
-
-    } catch (e) {
-        console.error("Agent error", e);
-        tbody.innerHTML = `<tr><td colspan="10" class="error-cell">Unable to load agent data.</td></tr>`;
+    if (!json.AgentStatus || json.AgentStatus.length === 0) {
+      tbody.innerHTML = `
+        <tr><td colspan="10" class="error-cell">Unable to load agent data.</td></tr>`;
+      return;
     }
+
+    const rows = json.AgentStatus.map(a => {
+      const avgHandle = a.TotalCallsReceived
+        ? formatSeconds(a.TotalSecondsOnCall / a.TotalCallsReceived)
+        : "00:00:00";
+
+      return `
+        <tr>
+          <td>${a.FullName}</td>
+          <td>${a.TeamName}</td>
+          <td>${a.PhoneExt}</td>
+          <td>${a.CallTransferStatusDesc}</td>
+          <td>${a.TotalCallsReceived}</td>
+          <td>${a.TotalCallsMissed || 0}</td>
+          <td>${a.TotalTransfers || 0}</td>
+          <td>${a.DialoutCount || 0}</td>
+          <td>${avgHandle}</td>
+          <td>${a.StartDateUtc}</td>
+        </tr>`;
+    }).join("");
+
+    tbody.innerHTML = rows;
+
+  } catch (err) {
+    tbody.innerHTML =
+      `<tr><td colspan="10" class="error-cell">Unable to load agent data.</td></tr>`;
+  }
 }
 
-/*****************************************************
- * INIT + AUTO REFRESH
- *****************************************************/
-function init() {
+// -------------------------------
+// INIT + AUTO REFRESH
+// -------------------------------
+function initDashboard() {
+  loadQueueStatus();
+  loadGlobalStats();
+  loadAgents();
+
+  setInterval(() => {
     loadQueueStatus();
     loadGlobalStats();
-    loadAgentStatus();
-
-    setInterval(() => {
-        loadQueueStatus();
-        loadGlobalStats();
-        loadAgentStatus();
-    }, 10000);
+    loadAgents();
+  }, 10000);
 }
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", initDashboard);
