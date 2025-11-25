@@ -219,18 +219,27 @@ async function loadAgentStatus() {
 // ===============================
 function initDarkMode() {
     const btn = document.getElementById("darkModeToggle");
-    if (!btn) return;
 
-    // Restore preference if stored
-    const stored = localStorage.getItem("dashboard-dark-mode");
-    if (stored === "on") {
-        document.body.classList.add("dark-mode");
-        btn.textContent = "Light mode";
+    // Detect system preference ON FIRST VISIT
+    if (!localStorage.getItem("dashboard-dark-mode")) {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (prefersDark) {
+            document.body.classList.add("dark-mode");
+            btn.textContent = "☀️ Light Mode";
+        }
+    } else {
+        // Load stored preference
+        const stored = localStorage.getItem("dashboard-dark-mode");
+        if (stored === "on") {
+            document.body.classList.add("dark-mode");
+            btn.textContent = "☀️ Light Mode";
+        }
     }
 
+    // Toggle on click
     btn.addEventListener("click", () => {
         const isDark = document.body.classList.toggle("dark-mode");
-        btn.textContent = isDark ? "Light mode" : "Dark mode";
+        btn.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
         localStorage.setItem("dashboard-dark-mode", isDark ? "on" : "off");
     });
 }
