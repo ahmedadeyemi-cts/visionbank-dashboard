@@ -153,24 +153,52 @@ body {
    DARK MODE — Global Behavior
    ============================================================ */
 
-/* Turn entire page dark */
 body.dark-mode {
     background: #121212 !important;
     color: #f5f5f5 !important;
 }
 
-/* Apply white text everywhere */
-body.dark-mode *,
-body.dark-mode td,
+/* Apply dark text theme everywhere EXCEPT availability cells */
+body.dark-mode *:not(.availability-cell):not(.availability-cell *),
+body.dark-mode td:not(.availability-cell),
 body.dark-mode th,
-body.dark-mode span,
-body.dark-mode div {
+body.dark-mode span:not(.availability-cell),
+body.dark-mode div:not(.availability-cell) {
     color: #f5f5f5 !important;
 }
 
-/* Fix availability colors (keep yellow readable) */
+/* ============================================================
+   PRESERVE AVAILABILITY COLORS IN DARK MODE
+   ============================================================ */
+
+/* Available (green) */
+body.dark-mode .status-available {
+    background: #2ecc71 !important;
+    color: #ffffff !important;
+}
+
+/* On Call / Dialing (red) */
+body.dark-mode .status-oncall {
+    background: #e74c3c !important;
+    color: #ffffff !important;
+}
+
+/* Busy (yellow) */
 body.dark-mode .status-busy {
+    background: #f1c40f !important;
     color: #000 !important;
+}
+
+/* Ringing (orange) */
+body.dark-mode .status-ringing {
+    background: #e67e22 !important;
+    color: #ffffff !important;
+}
+
+/* Wrap-Up (orange) */
+body.dark-mode .status-wrapup {
+    background: #ff8c42 !important;
+    color: #ffffff !important;
 }
 
 /* ============================================================
@@ -192,11 +220,10 @@ body.dark-mode .footer {
     border-top-color: #333 !important;
 }
 
-body.dark-mode .footer-right span {
+body-dark-mode .footer-right span {
     color: #ffffff !important;
 }
 
-/* Slightly brighten logos in dark mode */
 body.dark-mode .logo,
 body.dark-mode .footer-logo {
     filter: brightness(1.8) contrast(1.1);
@@ -232,6 +259,7 @@ body.dark-mode .data-table td {
     border-color: #333 !important;
 }
 
+/* Zebra striping */
 body.dark-mode .data-table tbody tr:nth-child(odd) {
     background: #161616 !important;
 }
@@ -255,7 +283,7 @@ body.dark-mode .stat-label {
 }
 
 /* ============================================================
-   DARK MODE — Smooth transitions
+   Smooth transitions
    ============================================================ */
 
 body,
@@ -264,7 +292,7 @@ body,
 .panel,
 .data-table,
 .stat-card {
-    transition: background-color 0.35s ease, 
-                color 0.35s ease, 
+    transition: background-color 0.35s ease,
+                color 0.35s ease,
                 border-color 0.35s ease;
 }
