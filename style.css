@@ -150,44 +150,121 @@ body {
     width: auto;
 }
 /* ============================================================
-   DARK MODE — Section Panels + Titles
+   DARK MODE — Global Behavior
    ============================================================ */
 
-body.dark-mode .panel {
-    background: #1d1d1d;
-    border-color: #333;
-}
-
-body.dark-mode .panel h2 {
+/* Turn entire page dark */
+body.dark-mode {
+    background: #121212 !important;
     color: #f5f5f5 !important;
 }
 
-/* Better contrast for table headers */
-body.dark-mode .data-table th {
-    background: #2b2b2b !important;
+/* Apply white text everywhere */
+body.dark-mode *,
+body.dark-mode td,
+body.dark-mode th,
+body.dark-mode span,
+body.dark-mode div {
+    color: #f5f5f5 !important;
+}
+
+/* Fix availability colors (keep yellow readable) */
+body.dark-mode .status-busy {
+    color: #000 !important;
+}
+
+/* ============================================================
+   DARK MODE — Header & Footer
+   ============================================================ */
+
+body.dark-mode .header {
+    background: #1b1b1b !important;
+    border-bottom-color: #333 !important;
+}
+
+body.dark-mode .header-center h1,
+body.dark-mode .header-subtitle {
     color: #ffffff !important;
 }
 
-/* Fade animation for all color transitions */
+body.dark-mode .footer {
+    background: #1b1b1b !important;
+    border-top-color: #333 !important;
+}
+
+body.dark-mode .footer-right span {
+    color: #ffffff !important;
+}
+
+/* Slightly brighten logos in dark mode */
+body.dark-mode .logo,
+body.dark-mode .footer-logo {
+    filter: brightness(1.8) contrast(1.1);
+}
+
+/* ============================================================
+   DARK MODE — Panels and Section Titles
+   ============================================================ */
+
+body.dark-mode .panel {
+    background: #1a1a1a !important;
+    border-color: #333 !important;
+}
+
+body.dark-mode .panel h2 {
+    background: #1f1f1f !important;
+    padding: 8px;
+    border-radius: 4px;
+    color: #ffffff !important;
+}
+
+/* ============================================================
+   DARK MODE — Table
+   ============================================================ */
+
+body.dark-mode .data-table th {
+    background: #222 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .data-table td {
+    background: #1a1a1a !important;
+    border-color: #333 !important;
+}
+
+body.dark-mode .data-table tbody tr:nth-child(odd) {
+    background: #161616 !important;
+}
+
+body.dark-mode .data-table tbody tr:nth-child(even) {
+    background: #1e1e1e !important;
+}
+
+/* ============================================================
+   DARK MODE — Global Statistics Cards
+   ============================================================ */
+
+body.dark-mode .stat-card {
+    background: #1d1d1d !important;
+    border-color: #333 !important;
+}
+
+body.dark-mode .stat-value,
+body.dark-mode .stat-label {
+    color: #ffffff !important;
+}
+
+/* ============================================================
+   DARK MODE — Smooth transitions
+   ============================================================ */
+
 body,
 .header,
 .footer,
 .panel,
 .data-table,
 .stat-card {
-    transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
-}
-
-/* Improve text visibility everywhere */
-body.dark-mode *,
-body.dark-mode td,
-body.dark-mode th,
-body.dark-mode span,
-body.dark-mode div {
-    color: #f0f0f0 !important;
-}
-
-/* Fix white text on availability colors */
-body.dark-mode .availability-cell.status-busy {
-    color: #000 !important; /* yellow remains readable */
+    transition: background-color 0.35s ease, 
+                color 0.35s ease, 
+                border-color 0.35s ease;
 }
