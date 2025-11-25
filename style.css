@@ -149,79 +149,45 @@ body {
     height: 30px;
     width: auto;
 }
-
 /* ============================================================
-   FULL-PAGE DARK MODE FIX
-   Ensures header, footer, tables, cards, and all text invert
+   DARK MODE — Section Panels + Titles
    ============================================================ */
 
-body.dark-mode {
-    background: #111;
-    color: #f5f5f5;
-}
-
-/* HEADER */
-body.dark-mode .header {
-    background: #1a1a1a;
-    border-bottom: 1px solid #333;
-}
-body.dark-mode .header-text h1,
-body.dark-mode .header-subtitle {
-    color: #f5f5f5;
-}
-
-/* FOOTER */
-body.dark-mode .footer {
-    background: #1a1a1a;
-    border-top: 1px solid #333;
-    color: #f5f5f5;
-}
-body.dark-mode .footer-right span {
-    color: #f5f5f5;
-}
-
-/* TABLES */
-body.dark-mode .data-table th {
-    background: #222;
-    color: #ffffff;
-}
-
-body.dark-mode .data-table td {
-    background: #1a1a1a;
-    color: #f5f5f5;
-    border-color: #333;
-}
-
-/* Zebra stripe overrides */
-body.dark-mode .data-table tbody tr:nth-child(odd) {
-    background: #161616;
-}
-body.dark-mode .data-table tbody tr:nth-child(even) {
-    background: #1f1f1f;
-}
-
-/* STAT CARDS */
-body.dark-mode .stat-card {
+body.dark-mode .panel {
     background: #1d1d1d;
     border-color: #333;
 }
-body.dark-mode .stat-value,
-body.dark-mode .stat-label {
-    color: #f5f5f5;
+
+body.dark-mode .panel h2 {
+    color: #f5f5f5 !important;
 }
 
-/* BUTTON */
-body.dark-mode .footer-left button {
-    background: #2e2e2e;
-    border-color: #777;
-    color: #f5f5f5;
-}
-body.dark-mode .footer-left button:hover {
-    background: #3a3a3a;
+/* Better contrast for table headers */
+body.dark-mode .data-table th {
+    background: #2b2b2b !important;
+    color: #ffffff !important;
 }
 
-/* LOGOS – brighten slightly */
-body.dark-mode .logo,
-body.dark-mode .footer-logo {
-    filter: brightness(1.2) contrast(1.1);
+/* Fade animation for all color transitions */
+body,
+.header,
+.footer,
+.panel,
+.data-table,
+.stat-card {
+    transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+}
+
+/* Improve text visibility everywhere */
+body.dark-mode *,
+body.dark-mode td,
+body.dark-mode th,
+body.dark-mode span,
+body.dark-mode div {
+    color: #f0f0f0 !important;
+}
+
+/* Fix white text on availability colors */
+body.dark-mode .availability-cell.status-busy {
+    color: #000 !important; /* yellow remains readable */
 }
