@@ -40,25 +40,20 @@ function safe(value, fallback = "--") {
     return value === undefined || value === null ? fallback : value;
 }
 
-// Map status text to availability class
+// ===============================
+// NEW AVAILABILITY LOGIC
+// ===============================
 function getAvailabilityClass(desc) {
     const s = (desc || "").toLowerCase();
 
-    // Available → Green
-    if (s.includes("available")) return "status-available";
+    if (s.includes("available")) return "status-available";          // green
+    if (s.includes("on call") || s.includes("dial")) return "status-oncall"; // red
+    if (s.includes("busy") || (s.includes("On Break"))return "status-busy";                    // yellow
 
-    // On Call / Dialing → Red
-    if (s.includes("on call") || s.includes("dialing") || s.includes("dial out") || s.includes("dialing out")|| s.includes("Accept Internal Calls")) {
-        return "status-oncall";
-    }
+    // NEW: Accept Internal Calls → Orange
+    if (s.includes("accept internal")) return "status-ringing";
 
-    // Busy → Yellow
-    if (s.includes("busy")) return "status-busy";
-
-    // Ringing → Orange
-    if (s.includes("ringing") || s.includes("ring")) return "status-ringing";
-    if (s.includes("wrap")) return "status-wrapup"; 
-   
+    if (s.includes("ring")) return "status-ringing";                 // orange
     return "";
 }
 
