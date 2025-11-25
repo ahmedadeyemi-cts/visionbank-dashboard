@@ -1,300 +1,152 @@
-/* ========== BASE LAYOUT ========== */
-* {
-    box-sizing: border-box;
-}
-
+/* ====== BASE ====== */
 body {
     font-family: Arial, sans-serif;
     background: #f4f5f7;
-    color: #222;
     margin: 0;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    color: #222;
 }
 
-.main {
-    flex: 1 0 auto;
-    padding: 10px 15px 0 15px;
-}
-
-/* ========== HEADER ========== */
+/* ====== HEADER ====== */
 .header {
-    background: #ffffff;
+    background: white;
     border-bottom: 1px solid #ddd;
     padding: 10px 15px;
-}
-
-.header-inner {
-    max-width: 1200px;
-    margin: 0 auto;
     display: flex;
     align-items: center;
-    justify-content: center; /* center entire block */
-    gap: 10px;
+    justify-content: center;
+    position: relative;
+}
+
+.header-left {
+    position: absolute;
+    left: 20px;
+    top: 10px;
 }
 
 .logo {
-    height: 40px;
+    height: 48px;
 }
 
-.header-text {
+.header-center {
     text-align: center;
+    width: 100%;
 }
 
-.header-text h1 {
+.header-center h1 {
     margin: 0;
     font-size: 22px;
     font-weight: bold;
 }
 
 .header-subtitle {
-    font-size: 13px;
+    font-size: 14px;
     color: #555;
 }
 
-/* ========== PANELS ========== */
+/* ====== PANELS ====== */
 .panel {
-    background: #ffffff;
+    background: white;
+    border: 1px solid #ddd;
     border-radius: 6px;
-    border: 1px solid #dedede;
     margin: 10px auto;
     padding: 15px;
     max-width: 1200px;
 }
 
 .panel h2 {
+    text-align: center;
     margin: 0 0 10px 0;
-    font-size: 18px;
-    text-align: center; /* center section titles */
 }
 
-/* ========== TABLES ========== */
+/* ====== TABLE ====== */
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
-}
-
-.data-table th,
-.data-table td {
-    padding: 8px 6px;
-    border: 1px solid #e0e0e0;
-    font-size: 13px;
-    text-align: left;
-    word-wrap: break-word;
 }
 
 .data-table th {
+    text-align: center;
     background: #f1f1f1;
-    text-align: center; /* center header text */
-    font-weight: 600;
+    padding: 8px;
 }
 
-.data-table td.numeric {
-    text-align: right;
+.data-table td {
+    text-align: center;
+    padding: 8px;
+    border: 1px solid #ddd;
 }
 
-/* Zebra striping for body rows */
+/* Zebra rows */
 .data-table tbody tr:nth-child(odd) {
     background: #f9fafb;
 }
-
 .data-table tbody tr:nth-child(even) {
-    background: #ffffff;
+    background: #fff;
 }
 
-/* Loading / Error cells */
-.loading,
-.error {
-    text-align: center;
-    color: #b00020;
-    padding: 10px;
-}
-
-/* ========== GLOBAL STAT CARDS ========== */
-.stat-grid {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.stat-card {
-    background: #fafafa;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: center;
-}
-
-.stat-value {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.stat-label {
-    font-size: 12px;
-    color: #555;
-}
-
-/* ========== AVAILABILITY COLORS ========== */
-.availability-cell {
-    font-weight: 600;
-    text-align: center;
-    border-radius: 4px;
-}
-
-/* Available → Green */
+/* ====== AVAILABILITY COLORS ====== */
 .status-available {
-    background-color: #2ecc71;
-    color: #ffffff;
+    background: #2ecc71;
+    color: white;
 }
-
-/* On Call / Dialing → Red */
 .status-oncall {
-    background-color: #e74c3c;
-    color: #ffffff;
+    background: #e74c3c;
+    color: white;
 }
-
-/* Busy → Yellow */
 .status-busy {
-    background-color: #f1c40f;
-    color: #000000;
+    background: #f1c40f;
+    color: black;
 }
-
-/* Ringing → Orange */
 .status-ringing {
-    background-color: #e67e22;
-    color: #ffffff;
+    background: #e67e22;
+    color: white;
+}
+/* NEW — Wrap-Up */
+.status-wrapup {
+    background: #ff8c42;
+    color: white;
 }
 
-/* ========== FOOTER ========== */
+/* ====== FOOTER ====== */
 .footer {
-    flex-shrink: 0;
+    background: white;
     border-top: 1px solid #ddd;
-    padding: 8px 15px 10px 15px;
-    background: #ffffff;
+    padding: 8px 15px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-}
-
-.footer-left button {
-    padding: 6px 10px;
-    font-size: 12px;
-    border-radius: 4px;
-    border: 1px solid #888;
-    background: #f5f5f5;
-    cursor: pointer;
-}
-
-.footer-left button:hover {
-    background: #e6e6e6;
-}
-
-.footer-right {
-    display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
 }
 
 .footer-logo {
-    height: 26px;            /* small logo */
+    height: 24px;
     width: auto;
 }
 
-/* ========== DARK MODE ========== */
+/* ====== DARK MODE ====== */
 body.dark-mode {
     background: #121212;
     color: #f5f5f5;
 }
 
-body.dark-mode .header {
-    background: #1d1d1d;
-    border-bottom-color: #333;
-}
-
-body.dark-mode .panel {
+body.dark-mode .panel,
+body.dark-mode .header,
+body.dark-mode .footer {
     background: #1d1d1d;
     border-color: #333;
 }
 
 body.dark-mode .data-table th {
-    background: #2a2a2a;
-    color: #ffffff;
+    background: #333;
+    color: white;
 }
 
 body.dark-mode .data-table td {
-    border-color: #3a3a3a;
+    border-color: #444;
 }
 
-body.dark-mode .data-table tbody tr:nth-child(odd) {
-    background: #1b1b1b;
-}
-
-body.dark-mode .data-table tbody tr:nth-child(even) {
-    background: #242424;
-}
-
-body.dark-mode .stat-card {
-    background: #242424;
-    border-color: #3a3a3a;
-}
-
-body.dark-mode .stat-label {
-    color: #cccccc;
-}
-
-body.dark-mode .footer {
-    background: #1d1d1d;
-    border-top-color: #333;
-}
-
-body.dark-mode .footer-left button {
-    background: #2a2a2a;
-    color: #f5f5f5;
-    border-color: #666;
-}
-
-body.dark-mode .footer-left button:hover {
-    background: #333333;
-}
-
-/* invert logos slightly in dark mode so they pop */
-body.dark-mode .logo,
-body.dark-mode .footer-logo {
-    filter: brightness(1.2) contrast(1.05);
-}
-
-/* ========== RESPONSIVE TWEAKS ========== */
-@media (max-width: 900px) {
-    .stat-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .header-inner {
-        flex-direction: column;
-    }
-
-    .logo {
-        margin-bottom: 5px;
-    }
-}
-
-@media (max-width: 600px) {
-    .stat-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .data-table th,
-    .data-table td {
-        font-size: 11px;
-        padding: 6px 4px;
-    }
-
-    .header-text h1 {
-        font-size: 18px;
-    }
+body.dark-mode .footer-logo,
+body.dark-mode .logo {
+    filter: brightness(1.3);
 }
