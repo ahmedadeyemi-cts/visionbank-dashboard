@@ -1,148 +1,160 @@
-const API_URL = "https://pop1-apps.mycontactcenter.net/api/v3";
-const API_TOKEN = "VWGKXWSqGA4FwlRXb2clx5H1dS3cYppIXa5iI3bE4Xg=";
+const API_BASE = "https://pop1-apps.mycontactcenter.net/api";
 
-// ------------- HELPERS -------------
-function formatTime(sec) {
+// GLOBAL TOKEN FOR ALL REQUESTS
+const TOKEN = "VVGKXWSqGA4FwlRXb2clx5H1dS3cYpplXa5iI3bE4Xg=";
+
+function apiFetch(endpoint) {
+    return fetch(`${API_BASE}${endpoint}`, {
+        headers: {
+            "token": TOKEN
+        }
+    }).then(res => res.json());
+}
+
+function formatSecondsToHHMMSS(sec) {
     sec = Number(sec) || 0;
-    return new Date(sec * 1000).toISOString().substr(11, 8);
+    const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+    const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+    const s = String(sec % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
 }
 
-function setLastUpdated() {
-    const now = new Date();
-    document.getElementById("lastUpdated").textContent =
-        "Last updated: " + now.toLocaleTimeString();
-}
+/* -------------------- QUEUE STATUS -------------------- */
 
-function showSpinner(show) {
-    document.getElementById("spinner").classList.toggle("hidden", !show);
-}
-
-// ------------- QUEUE STATUS -------------
 async function loadQueueStatus() {
     const container = document.getElementById("queueStatusContent");
-    container.innerHTML = "";
 
     try {
-        const res = await fetch(`${API_URL}/queues`, {
-            headers: { token: API_TOKEN }
-        });
-        const data = await res.json();
+        const data = await apiFetch("/v3/realtime/status/queues");
 
-        if (!data.QueueStatus || data.QueueStatus.length === 0)
-            throw new Error("No queue data");
+        if (!data || !data.QueueStatus || data.QueueStatus.length === 0) {
+            container.innerHTML = `<div class='error'>Error loading queue status.</div>`;
+            return;
+        }
 
         const q = data.QueueStatus[0];
 
         container.innerHTML = `
             <table>
-                <tr><th>Queue</th><th>Calls</th><th>Agents</th><th>Wait</th></tr>
-                <tr>
-                    <td>${q.QueueName}</td>
-                    <td>${q.TotalCalls}</td>
-                    <td>${q.TotalLoggedAgents}</td>
-                    <td>${formatTime(q.AvgWaitInterval)}</td>
-                </tr>
+                <thead>
+                    <tr><th>Queue</th><th>Calls</th><th>Agents</th><th>Wait</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>${q.QueueName}</td>
+                        <td>${q.TotalCalls}</td>
+                        <td>${q.TotalLoggedAgents}</td>
+                        <td>${formatSecondsToHHMMSS(q.AvgWaitInterval)}</td>
+                    </tr>
+                </tbody>
             </table>
         `;
     } catch (err) {
+        console.error(err);
         container.innerHTML = `<div class="error">Error loading queue status.</div>`;
     }
 }
 
-// ------------- GLOBAL STATS -------------
+/* -------------------- GLOBAL STATISTICS -------------------- */
+
 async function loadGlobalStats() {
-    const container = document.getElementById("globalStatsContent");
-    container.innerHTML = "";
+    const errorBox = document.getElementById("globalStatsError");
 
     try {
-        const res = await fetch(`${API_URL}/realtime/statistics/global`, {
-            headers: { token: API_TOKEN }
-        });
+        const data = await apiFetch("/v3/realtime/statistics/global");
 
-        const data = await res.json();
+        if (!data || !data.GlobalStatistics || data.GlobalStatistics.length === 0) {
+            errorBox.textContent = "Unable to load global statistics.";
+            return;
+        }
 
-        if (!data.GlobalStatistics)
-            throw new Error("Missing GlobalStatistics");
+        errorBox.textContent = "";
 
         const g = data.GlobalStatistics[0];
 
-        container.innerHTML =
-        `
-        <div class="kpi-card"><div class="badge badge-blue">${g.TotalCallsQueued}</div><div>Total Calls Queued</div></div>
-        <div class="kpi-card"><div class="badge badge-blue">${g.TotalCallsTransferred}</div><div>Total Calls Transferred</div></div>
-        <div class="kpi-card"><div class="badge badge-red">${g.TotalCallsAbandoned}</div><div>Total Calls Abandoned</div></div>
-        <div class="kpi-card"><div class="badge badge-blue">${formatTime(g.MaxQueueWaitingTime)}</div><div>Maximum Queue Wait</div></div>
+        document.getElementById("stat_totalQueued").textContent = g.TotalCallsQueued;
+        document.getElementById("stat_transferred").textContent = g.TotalCallsTransferred;
+        document.getElementById("stat_abandoned").textContent = g.TotalCallsAbandoned;
+        document.getElementById("stat_maxWait").textContent = formatSecondsToHHMMSS(g.MaxQueueWaitingTime);
+        document.getElementById("stat_serviceLevel").textContent = g.ServiceLevel.toFixed(1) + "%";
+        document.getElementById("stat_totalReceived").textContent = g.TotalCallsReceived;
+        document.getElementById("stat_answerRate").textContent = g.AnswerRate.toFixed(1) + "%";
+        document.getElementById("stat_abandonRate").textContent = g.AbandonRate.toFixed(1) + "%";
+        document.getElementById("stat_callbacksRegistered").textContent = g.CallbacksRegistered;
+        document.getElementById("stat_callbacksWaiting").textContent = g.CallbacksWaiting;
 
-        <div class="kpi-card"><div class="badge badge-green">${g.ServiceLevel.toFixed(1)}%</div><div>Service Level</div></div>
-        <div class="kpi-card"><div class="badge badge-blue">${g.TotalCallsReceived}</div><div>Total Calls Received</div></div>
-        <div class="kpi-card"><div class="badge badge-green">${g.AnswerRate.toFixed(1)}%</div><div>Answer Rate</div></div>
-        <div class="kpi-card"><div class="badge badge-red">${g.AbandonRate.toFixed(1)}%</div><div>Abandon Rate</div></div>
-
-        <div class="kpi-card"><div class="badge badge-blue">${g.CallbacksRegistered}</div><div>Callbacks Registered</div></div>
-        <div class="kpi-card"><div class="badge badge-blue">${g.CallbacksWaiting}</div><div>Callbacks Waiting</div></div>
-        `;
     } catch (err) {
-        container.innerHTML = `<div class="error">Unable to load global statistics.</div>`;
+        console.error(err);
+        errorBox.textContent = "Unable to load global statistics.";
     }
 }
 
-// ------------- AGENTS -------------
-async function loadAgents() {
+/* -------------------- AGENT STATUS -------------------- */
+
+async function loadAgentStatus() {
     const container = document.getElementById("agentStatusContent");
-    container.innerHTML = "";
+    const errorBox = document.getElementById("agentError");
 
     try {
-        const res = await fetch(`${API_URL}/agents`, {
-            headers: { token: API_TOKEN }
+        const data = await apiFetch("/v3/realtime/status/agents");
+
+        if (!data || !data.AgentStatus || data.AgentStatus.length === 0) {
+            errorBox.textContent = "Unable to load agent data.";
+            return;
+        }
+
+        errorBox.textContent = "";
+
+        let rows = "";
+        data.AgentStatus.forEach(a => {
+            rows += `
+                <tr>
+                    <td>${a.FullName}</td>
+                    <td>${a.TeamName}</td>
+                    <td>${a.PhoneExt}</td>
+                    <td>${a.CallTransferStatusDesc}</td>
+                    <td>${a.TotalCallsReceived}</td>
+                    <td>${formatSecondsToHHMMSS(a.TotalSecondsOnCall)}</td>
+                    <td>${a.DialoutCount}</td>
+                    <td>${a.StartDateUtc}</td>
+                </tr>
+            `;
         });
 
-        const data = await res.json();
-
-        if (!data.AgentStatus)
-            throw new Error("No agent data");
-
-        const rows = data.AgentStatus.map(a => `
-            <tr>
-                <td>${a.FullName}</td>
-                <td>${a.TeamName}</td>
-                <td>${a.PhoneExt}</td>
-                <td>${a.CallTransferStatusDesc}</td>
-                <td>${a.TotalCallsReceived}</td>
-                <td>${formatTime(a.TotalSecondsOnCall)}</td>
-                <td>${a.DialoutCount}</td>
-                <td>${a.StartDateUtc}</td>
-            </tr>
-        `).join("");
-
-        container.innerHTML =
-        `
-        <table>
-            <tr>
-                <th>Name</th><th>Team</th><th>Phone</th>
-                <th>Status</th><th>Inbound</th><th>Avg Handle</th>
-                <th>Outbound</th><th>Start Date</th>
-            </tr>
-            ${rows}
-        </table>
+        container.innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Team</th>
+                        <th>Phone No.</th>
+                        <th>Status</th>
+                        <th>Inbound</th>
+                        <th>Avg Handle</th>
+                        <th>Outbound</th>
+                        <th>Start Date</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
         `;
+
     } catch (err) {
-        container.innerHTML = `<div class="error">Unable to load agent data.</div>`;
+        console.error(err);
+        errorBox.textContent = "Unable to load agent data.";
     }
 }
 
-// ------------- AUTO REFRESH -------------
-async function refreshDashboard() {
-    showSpinner(true);
-    await Promise.all([
-        loadQueueStatus(),
-        loadGlobalStats(),
-        loadAgents()
-    ]);
-    setLastUpdated();
-    showSpinner(false);
-}
+/* -------------------- INIT -------------------- */
 
 document.addEventListener("DOMContentLoaded", () => {
-    refreshDashboard();
-    setInterval(refreshDashboard, 10000);
+    loadQueueStatus();
+    loadGlobalStats();
+    loadAgentStatus();
+
+    setInterval(() => {
+        loadQueueStatus();
+        loadGlobalStats();
+        loadAgentStatus();
+    }, 10000);
 });
