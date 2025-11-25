@@ -1,140 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VisionBank | CEG Contact Center Realtime Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-
-<header class="header">
-    <div class="logo-container">
-        <img src="logo.png" class="logo">
-        <div class="header-text">
-            <h1>CEG Contact Center Realtime Dashboard</h1>
-            <span>VisionBank</span>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="assets/visionbank.png" alt="VisionBank Logo" class="logo" />
+            <div class="header-text">
+                <h1>CEG Contact Center Realtime Dashboard</h1>
+                <span class="subtitle">VisionBank</span>
+            </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<!-- ============================= -->
-<!-- CURRENT QUEUE STATUS -->
-<!-- ============================= -->
-<section class="panel">
-    <h2>Current Queue Status</h2>
+    <!-- ============================= -->
+    <!-- CURRENT QUEUE STATUS (TOP)   -->
+    <!-- ============================= -->
+    <section class="panel">
+        <h2>Current Queue Status</h2>
 
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Queue</th>
-                <th>Calls</th>
-                <th>Agents</th>
-                <th>Wait</th>
-            </tr>
-        </thead>
-        <tbody id="queue-body">
-            <tr><td colspan="4" class="loading">Loading queue status...</td></tr>
-        </tbody>
-    </table>
-</section>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Queue</th>
+                    <th>Calls</th>
+                    <th>Agents</th>
+                    <th>Wait</th>
+                </tr>
+            </thead>
+            <tbody id="queue-body">
+                <tr>
+                    <td colspan="4" class="loading">Loading queue status…</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 
+    <!-- ============================= -->
+    <!-- AGENT PERFORMANCE (MIDDLE)   -->
+    <!-- ============================= -->
+    <section class="panel">
+        <h2>Agent Performance</h2>
 
-<!-- ============================= -->
-<!-- REALTIME GLOBAL STATISTICS -->
-<!-- ============================= -->
-<section class="panel">
-    <h2>Realtime Global Statistics</h2>
-    <div id="global-error" class="error"></div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Team</th>
+                    <th>Phone No.</th>
+                    <th>Availability</th>
+                    <th>Inbound</th>
+                    <th>Missed</th>
+                    <th>Transferred</th>
+                    <th>Outbound</th>
+                    <th>Avg Handle</th>
+                    <th>Start Date</th>
+                </tr>
+            </thead>
+            <tbody id="agent-body">
+                <tr>
+                    <td colspan="10" class="loading">Loading agent data…</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 
-    <div class="stat-grid">
+    <!-- ============================= -->
+    <!-- REALTIME GLOBAL STATS (BOTTOM)-->
+    <!-- ============================= -->
+    <section class="panel">
+        <h2>Realtime Global Statistics</h2>
+        <div id="global-error" class="error"></div>
 
-        <div class="stat-card">
-            <div class="stat-value" id="gs-total-queued">--</div>
-            <div class="stat-label">Total Calls Queued</div>
+        <div class="stat-grid">
+            <!-- row 1 -->
+            <div class="stat-card">
+                <div class="stat-value" id="gs-total-queued">--</div>
+                <div class="stat-label">Total Calls Queued</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-value" id="gs-total-transferred">--</div>
+                <div class="stat-label">Total Calls Transferred</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-value" id="gs-total-abandoned">--</div>
+                <div class="stat-label">Total Calls Abandoned</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-value" id="gs-max-wait">--</div>
+                <div class="stat-label">Maximum Queue Wait Time</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-value" id="gs-service-level">--%</div>
+                <div class="stat-label">Service Level</div>
+            </div>
+
+            <!-- row 2 -->
+            <div class="stat-card">
+                <div class="stat-value" id="gs-total-received">--</div>
+                <div class="stat-label">Total Calls Received</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-value" id="gs-answer-rate">--%</div>
+                <div class="stat-label">Answer Rate</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-value" id="gs-abandon-rate">--%</div>
+                <div class="stat-label">Abandon Rate</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-value" id="gs-callbacks-registered">--</div>
+                <div class="stat-label">Callbacks Registered</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-value" id="gs-callbacks-waiting">--</div>
+                <div class="stat-label">Callbacks Waiting</div>
+            </div>
         </div>
+    </section>
 
-        <div class="stat-card">
-            <div class="stat-value" id="gs-total-transferred">--</div>
-            <div class="stat-label">Total Calls Transferred</div>
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <img src="assets/ussignal.png" alt="US Signal Logo" class="footer-logo" />
+            <p>
+                Created and maintained by
+                <strong>Ahmed Adeyemi, US Signal</strong>
+            </p>
         </div>
+    </footer>
 
-        <div class="stat-card">
-            <div class="stat-value" id="gs-total-abandoned">--</div>
-            <div class="stat-label">Total Calls Abandoned</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-value" id="gs-max-wait">--</div>
-            <div class="stat-label">Maximum Queue Wait Time</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-value" id="gs-service-level">--%</div>
-            <div class="stat-label">Service Level</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-value" id="gs-total-received">--</div>
-            <div class="stat-label">Total Calls Received</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-value" id="gs-answer-rate">--%</div>
-            <div class="stat-label">Answer Rate</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-value" id="gs-abandon-rate">--%</div>
-            <div class="stat-label">Abandon Rate</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-value" id="gs-callbacks-registered">--</div>
-            <div class="stat-label">Callbacks Registered</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-value" id="gs-callbacks-waiting">--</div>
-            <div class="stat-label">Callbacks Waiting</div>
-        </div>
-    </div>
-</section>
-
-
-<!-- ============================= -->
-<!-- AGENT PERFORMANCE -->
-<!-- ============================= -->
-<section class="panel">
-    <h2>Agent Performance</h2>
-
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Employee</th>
-                <th>Team</th>
-                <th>Phone No.</th>
-                <th>Availability</th>
-                <th>Inbound</th>
-                <th>Missed</th>
-                <th>Transferred</th>
-                <th>Outbound</th>
-                <th>Avg Handle</th>
-                <th>Start Date</th>
-            </tr>
-        </thead>
-        <tbody id="agent-body">
-            <tr><td colspan="10" class="loading">Loading agent data...</td></tr>
-        </tbody>
-    </table>
-</section>
-
-
-<footer class="footer">
-    <p>🌟 Created and maintained by <strong>Ahmed Adeyemi, US Signal</strong></p>
-</footer>
-
-<script src="dashboard.js"></script>
+    <script src="dashboard.js"></script>
 </body>
 </html>
