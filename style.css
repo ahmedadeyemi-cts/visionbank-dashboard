@@ -1,79 +1,109 @@
 body {
-    font-family: system-ui, sans-serif;
-    background: #f5f6fa;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
     margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --text: #222;
+    --border: #ddd;
+
+    --green: #2ecc71;
+    --blue: #3498db;
+    --red: #e74c3c;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #1b1b1b;
+        --card: #2a2a2a;
+        --text: #f2f2f2;
+        --border: #444;
+    }
 }
 
 header {
     display: flex;
     align-items: center;
-    padding: 12px 18px;
-    background: white;
-    border-bottom: 1px solid #ddd;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
 }
 
-.bank-logo {
-    height: 48px;
+.logo {
+    height: 50px;
     margin-right: 15px;
 }
 
-.header-text .header-title {
-    font-size: 22px;
-    font-weight: 600;
+.footer-logo {
+    height: 25px;
+    margin-right: 8px;
 }
 
 .section-card {
-    background: white;
-    margin: 12px;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #dcdcdc;
-}
-
-.section-header {
-    font-size: 17px;
-    font-weight: 600;
-    margin-bottom: 10px;
+    background: var(--card);
+    margin: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
 }
 
 .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
-    margin-top: 10px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
 }
 
 .kpi-card {
-    padding: 15px;
-    background: #fafafa;
-    border: 1px solid #e2e2e2;
-    border-radius: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 18px;
     text-align: center;
-}
-
-.kpi-main {
-    font-size: 26px;
-    font-weight: bold;
+    border-radius: 8px;
 }
 
 .error {
-    color: red;
+    color: var(--red);
     text-align: center;
-    margin: 10px 0;
+    font-weight: bold;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
+.spinner {
+    border: 6px solid var(--border);
+    border-top: 6px solid var(--blue);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 15px auto;
 }
 
-th {
-    background: #f0f0f0;
-    padding: 8px;
-    font-weight: 600;
+.hidden {
+    display: none;
 }
 
-td {
-    padding: 8px;
-    border-top: 1px solid #e0e0e0;
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.badge-green { background: var(--green); color: white; }
+.badge-blue { background: var(--blue); color: white; }
+.badge-red { background: var(--red); color: white; }
+
+footer {
+    margin-top: 40px;
+    padding: 10px;
+    text-align: center;
+    color: var(--text);
 }
