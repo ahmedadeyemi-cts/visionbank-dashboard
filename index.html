@@ -2,36 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CEG Contact Center Realtime Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Main stylesheet -->
     <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
 
     <!-- HEADER -->
-    <header>
-        <!-- FIXED: Correct path to VisionBank logo -->
-        <img src="assets/visionbank.png" alt="VisionBank" class="logo" style="height:42px;" />
-
-        <div class="header-text">
-            <div class="header-title">CEG Contact Center Realtime Dashboard</div>
-            <div class="header-subtitle">VisionBank</div>
+    <header class="app-header">
+        <div class="logo-row">
+            <img src="assets/visionbank.png" alt="VisionBank" class="bank-logo" />
+            <div class="header-text">
+                <div class="header-title">CEG Contact Center Realtime Dashboard</div>
+                <div class="header-subtitle">VisionBank</div>
+            </div>
         </div>
     </header>
 
-    <!-- MAIN AREA -->
-    <div class="main-container">
+    <main class="main-container">
 
         <!-- =========================
              CURRENT QUEUE STATUS
         ========================== -->
-        <div class="section-card">
+        <section class="section-card">
             <div class="section-header">Current Queue Status</div>
             <div class="section-body">
 
-                <table id="queue-table">
+                <table class="queue-table">
                     <thead>
                         <tr>
                             <th>Queue</th>
@@ -49,55 +48,80 @@
                     </tbody>
                 </table>
 
-                <!-- KPI STATISTICS PANEL -->
-                <div class="kpi-container">
+            </div>
+        </section>
 
-                    <!-- Total Calls Queued -->
+        <!-- =========================
+             REALTIME GLOBAL STATISTICS
+        ========================== -->
+        <section class="section-card">
+            <div class="section-header">Realtime Global Statistics</div>
+
+            <div class="section-body">
+                <div id="global-error" class="error-cell hidden">
+                    Unable to load global statistics.
+                </div>
+
+                <div id="global-kpi" class="kpi-container">
+
                     <div class="kpi-card">
                         <div id="kpi-total-queued" class="kpi-main-value">--</div>
                         <div class="kpi-label">Total Calls Queued</div>
                     </div>
 
-                    <!-- Total Calls Answered -->
-                    <div class="kpi-card kpi-split">
-                        <div class="kpi-split-row">
-                            <div class="kpi-sub-block">
-                                <div class="kpi-sub-label">Pct</div>
-                                <div id="kpi-answered-pct" class="kpi-sub-value">--</div>
-                            </div>
-                            <div class="kpi-sub-block">
-                                <div class="kpi-sub-label">Numeric</div>
-                                <div id="kpi-answered-num" class="kpi-sub-value">--</div>
-                            </div>
-                        </div>
-                        <div class="kpi-label">Total Calls Answered</div>
+                    <div class="kpi-card">
+                        <div id="kpi-total-transferred" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Total Calls Transferred</div>
                     </div>
 
-                    <!-- Total Calls Abandoned -->
-                    <div class="kpi-card kpi-split">
-                        <div class="kpi-split-row">
-                            <div class="kpi-sub-block">
-                                <div class="kpi-sub-label">Pct</div>
-                                <div id="kpi-abandoned-pct" class="kpi-sub-value">--</div>
-                            </div>
-                            <div class="kpi-sub-block">
-                                <div class="kpi-sub-label">Numeric</div>
-                                <div id="kpi-abandoned-num" class="kpi-sub-value">--</div>
-                            </div>
-                        </div>
+                    <div class="kpi-card">
+                        <div id="kpi-total-abandoned" class="kpi-main-value">--</div>
                         <div class="kpi-label">Total Calls Abandoned</div>
                     </div>
 
-                </div>
-                <!-- END KPI PANEL -->
+                    <div class="kpi-card">
+                        <div id="kpi-max-wait" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Maximum Queue Wait Time</div>
+                    </div>
 
+                    <div class="kpi-card">
+                        <div id="kpi-service-level" class="kpi-main-value">--%</div>
+                        <div class="kpi-label">Service Level</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="kpi-total-received" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Total Calls Received</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="kpi-answer-rate" class="kpi-main-value">--%</div>
+                        <div class="kpi-label">Answer Rate</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="kpi-abandon-rate" class="kpi-main-value">--%</div>
+                        <div class="kpi-label">Abandon Rate</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="kpi-callbacks-registered" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Callbacks Registered</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="kpi-callbacks-waiting" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Callbacks Waiting</div>
+                    </div>
+
+                </div>
             </div>
-        </div>
+        </section>
 
         <!-- =========================
              AGENT PERFORMANCE
         ========================== -->
-        <div class="section-card">
+        <section class="section-card">
             <div class="section-header">Agent Performance</div>
 
             <div class="section-body">
@@ -111,7 +135,7 @@
                     <a href="#">Not Available</a>
                 </div>
 
-                <table id="agent-table">
+                <table class="agent-table">
                     <thead>
                         <tr>
                             <th>Employee</th>
@@ -126,32 +150,33 @@
                             <th>Start Date</th>
                         </tr>
                     </thead>
-
                     <tbody id="agent-body">
                         <tr>
-                            <td colspan="10" class="error-cell">Loading agent data…</td>
+                            <td colspan="10" class="error-cell">
+                                Loading agent data…
+                            </td>
                         </tr>
                     </tbody>
-
                 </table>
 
             </div>
-        </div>
+        </section>
 
-    </div>
+    </main>
 
     <!-- DARK MODE TOGGLE -->
     <button id="dark-mode-toggle">Dark mode</button>
 
     <!-- FOOTER -->
-    <div class="footer">
-        <!-- FIXED: Correct path + correct filename (ussignal.png) -->
-        <img id="us-signal-logo" src="assets/ussignal.png" alt="US Signal" class="ussignal-logo" />
-        Created and maintained by <strong>Ahmed Adeyemi, US Signal</strong>
-    </div>
+    <footer class="footer">
+        <div class="footer-left">
+            <img src="assets/ussignal.png" alt="US Signal" class="us-signal-logo" />
+        </div>
+        <div class="footer-right">
+            Created and maintained by <strong>Ahmed Adeyemi, US Signal</strong>
+        </div>
+    </footer>
 
-    <!-- JS -->
     <script src="dashboard.js"></script>
-
 </body>
 </html>

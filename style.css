@@ -1,24 +1,31 @@
-/* =========================
-   GLOBAL
-========================= */
-body {
+/* Base layout */
+* {
+    box-sizing: border-box;
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f4f6f9;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+    background-color: #f5f7fa;
     color: #222;
 }
 
-header {
-    display: flex;
-    align-items: center;
-    padding: 10px 20px;
-    background: white;
-    border-bottom: 1px solid #ddd;
+/* Header */
+.app-header {
+    background: #ffffff;
+    border-bottom: 1px solid #dde2eb;
+    padding: 10px 24px;
 }
 
-header img {
-    height: 42px;
-    margin-right: 12px;
+.logo-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.bank-logo {
+    height: 48px;
 }
 
 .header-text {
@@ -28,238 +35,268 @@ header img {
 
 .header-title {
     font-size: 22px;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .header-subtitle {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
 }
 
-/* =========================
-   SECTION CARDS
-========================= */
+/* Main container */
 .main-container {
-    padding: 20px;
+    padding: 16px 24px 80px;
 }
 
+/* Section cards */
 .section-card {
-    background: white;
+    background-color: #ffffff;
     border-radius: 6px;
-    padding: 0;
-    margin-bottom: 25px;
-    border: 1px solid #d6d6d6;
+    border: 1px solid #dde2eb;
+    margin-bottom: 16px;
+    overflow: hidden;
 }
 
 .section-header {
-    background: #e4e6ee;
-    padding: 12px 15px;
-    font-size: 18px;
-    font-weight: bold;
-    border-bottom: 1px solid #ccc;
+    background-color: #e5e7f0;
+    font-weight: 600;
+    padding: 8px 16px;
+    font-size: 14px;
 }
 
 .section-body {
-    padding: 15px;
+    padding: 12px 16px 16px;
 }
 
-/* =========================
-   QUEUE TABLE
-========================= */
-#queue-table {
+/* Tables */
+.queue-table,
+.agent-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 15px;
+    font-size: 13px;
+}
+
+.queue-table th,
+.queue-table td,
+.agent-table th,
+.agent-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eceff5;
+    text-align: left;
+}
+
+.queue-table thead th,
+.agent-table thead th {
+    background-color: #f2f3f8;
+    font-weight: 600;
+}
+
+.queue-table tbody tr:nth-child(even),
+.agent-table tbody tr:nth-child(even) {
+    background-color: #fafbff;
+}
+
+/* Error / loading */
+.error-cell {
     text-align: center;
+    color: #c0392b;
+    padding: 12px;
+    font-size: 13px;
 }
 
-#queue-table th,
-#queue-table td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
+.hidden {
+    display: none;
 }
 
-#queue-table th {
-    font-weight: bold;
-    color: #333;
-}
-
-/* Highlight queue row */
-.queue-alert {
-    background: #ffecec !important;
-    color: #b30000 !important;
-    font-weight: bold;
-}
-
-/* =========================
-   KPI PANEL
-========================= */
+/* KPI cards */
 .kpi-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 12px;
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
 .kpi-card {
-    flex: 1;
-    background: #fafafa;
-    border: 1px solid #dedede;
     border-radius: 6px;
-    padding: 12px;
+    border: 1px solid #dde2eb;
+    background-color: #ffffff;
+    padding: 10px 12px;
     text-align: center;
 }
 
 .kpi-main-value {
-    font-size: 34px;
-    font-weight: bold;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 6px;
 }
 
 .kpi-label {
-    font-size: 13px;
-    color: #666;
-    margin-top: 4px;
-}
-
-.kpi-split-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 15px;
-}
-
-.kpi-sub-block {
-    text-align: center;
-}
-
-.kpi-sub-label {
     font-size: 12px;
-    color: #888;
+    color: #555;
 }
 
-.kpi-sub-value {
-    font-size: 18px;
-    font-weight: bold;
+/* Agent actions */
+.agent-actions {
+    margin-bottom: 8px;
+    font-size: 13px;
 }
 
-/* =========================
-   AGENT TABLE
-========================= */
-#agent-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-#agent-table th,
-#agent-table td {
-    padding: 10px;
-    border-bottom: 1px solid #e3e3e3;
-    text-align: center;
-}
-
-#agent-table th {
-    background: #f0f0f5;
-    font-weight: bold;
-}
-
-/* =========================
-   AVAILABILITY COLORS
-========================= */
-
-/* Match text exactly so no JS/HTML changes are needed */
-#agent-table td:nth-child(4) {
-    font-weight: bold;
-    padding: 6px 12px;
-    border-radius: 20px;
-}
-
-/* Available (green) */
-#agent-table td:nth-child(4):contains("Available") {
-    background: #d4f8d4;
-    color: #0b7a0b;
-}
-
-/* Not Available (red) */
-#agent-table td:nth-child(4):contains("Not Available") {
-    background: #ffe1e1;
-    color: #b30000;
-}
-
-/* Chrome/Safari fallback */
-#agent-table td:nth-child(4) {
-    position: relative;
-}
-
-#agent-table td:nth-child(4)::before {
-    content: attr(data-status);
-    display: none;
-}
-
-/* =========================
-   AGENT ACTIONS
-========================= */
 .agent-actions a {
-    margin-right: 14px;
-    color: #0047cc;
-    font-size: 14px;
+    color: #0056cc;
     text-decoration: none;
+    margin-right: 12px;
 }
 
 .agent-actions a:hover {
     text-decoration: underline;
 }
 
-/* =========================
-   FOOTER
-========================= */
-.footer {
-    text-align: right;
-    padding: 20px;
-    margin-top: 25px;
-    font-size: 13px;
-    color: #444;
+/* Availability badges */
+.availability-badge {
+    display: inline-block;
+    min-width: 72px;
+    text-align: center;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-weight: 500;
+    border: 1px solid transparent;
 }
 
-.footer img {
-    height: 26px;
-    margin-right: 8px;
-    vertical-align: middle;
+.status-available {
+    background-color: #e5f7eb;
+    color: #1d7a3d;
+    border-color: #b1e2c2;
 }
 
-/* =========================
-   DARK MODE
-========================= */
-body.dark {
-    background: #1e1e1e;
-    color: white;
+.status-oncall {
+    background-color: #ffe5e5;
+    color: #c0392b;
+    border-color: #f4b0b0;
 }
 
-body.dark header {
-    background: #2b2b2b;
-    border-bottom: 1px solid #444;
+.status-break {
+    background-color: #fff6d8;
+    color: #9f7a00;
+    border-color: #f1df9f;
 }
 
-body.dark .section-card {
-    background: #2b2b2b;
-    border-color: #444;
+.status-other {
+    background-color: #edf1f7;
+    color: #57606a;
+    border-color: #d0d7e2;
 }
 
-body.dark .section-header {
-    background: #3a3a3a;
-    border-bottom: 1px solid #555;
+/* Flashing for threshold breaches */
+.flash-red {
+    animation: flashRed 1s infinite;
 }
 
-body.dark #queue-table th,
-body.dark #queue-table td,
-body.dark #agent-table th,
-body.dark #agent-table td {
-    border-color: #555;
+@keyframes flashRed {
+    0%   { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.8); }
+    100% { box-shadow: 0 0 0 6px rgba(192, 57, 43, 0); }
 }
 
-body.dark #agent-table th {
-    background: #333;
+/* Dark mode */
+body.dark-mode {
+    background-color: #111827;
+    color: #e5e7eb;
 }
 
+body.dark-mode .section-card {
+    background-color: #1f2937;
+    border-color: #374151;
+}
+
+body.dark-mode .section-header {
+    background-color: #111827;
+    color: #e5e7eb;
+}
+
+body.dark-mode .queue-table thead th,
+body.dark-mode .agent-table thead th {
+    background-color: #111827;
+    color: #e5e7eb;
+}
+
+body.dark-mode .queue-table tbody tr:nth-child(even),
+body.dark-mode .agent-table tbody tr:nth-child(even) {
+    background-color: #111827;
+}
+
+body.dark-mode .kpi-card {
+    background-color: #111827;
+    border-color: #374151;
+}
+
+body.dark-mode .kpi-label {
+    color: #9ca3af;
+}
+
+body.dark-mode .agent-actions a {
+    color: #60a5fa;
+}
+
+/* Dark availability tweaks */
+body.dark-mode .status-available {
+    background-color: #064e3b;
+    color: #bbf7d0;
+    border-color: #16a34a;
+}
+
+body.dark-mode .status-oncall {
+    background-color: #7f1d1d;
+    color: #fecaca;
+    border-color: #fca5a5;
+}
+
+body.dark-mode .status-break {
+    background-color: #78350f;
+    color: #fef3c7;
+    border-color: #f59e0b;
+}
+
+body.dark-mode .status-other {
+    background-color: #1f2937;
+    color: #e5e7eb;
+    border-color: #4b5563;
+}
+
+/* Dark mode button */
 #dark-mode-toggle {
-    margin: 20px;
-    padding: 8px 12px;
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+body.dark-mode #dark-mode-toggle {
+    background-color: #111827;
+    color: #e5e7eb;
+    border-color: #4b5563;
+}
+
+/* Footer */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background-color: #ffffff;
+    border-top: 1px solid #dde2eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    font-size: 12px;
+}
+
+.us-signal-logo {
+    height: 22px;
 }
