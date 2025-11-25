@@ -48,19 +48,26 @@ function getAvailabilityClass(desc) {
     if (s.includes("available")) return "status-available";
 
     // On Call / Dialing → Red
-    if (s.includes("on call") || s.includes("dialing") || s.includes("dial out") || s.includes("dialing out")) {
+    if (s.includes("on call") || s.includes("dial") || s.includes("talk")) {
         return "status-oncall";
     }
 
-    // Busy → Yellow
-    if (s.includes("busy")) return "status-busy";
+    // Busy / Not Set / On Break → Yellow
+    if (s.includes("busy") || s.includes("not set") || s.includes("break")) {
+        return "status-busy";
+    }
 
-    // Ringing → Orange
-    if (s.includes("ringing") || s.includes("ring")) return "status-ringing";
+    // Ringing / Accept Internal Calls / Wrap-up → Orange
+    if (
+        s.includes("ring") ||
+        s.includes("accept internal") ||
+        s.includes("wrap")
+    ) {
+        return "status-ringing";
+    }
 
     return "";
 }
-
 // ===============================
 // LOAD CURRENT QUEUE STATUS
 // ===============================
