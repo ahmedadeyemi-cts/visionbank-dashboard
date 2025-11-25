@@ -58,7 +58,7 @@ function getAvailabilityClass(desc) {
     // Ringing → Orange
     if (s.includes("ringing") || s.includes("ring")) return "status-ringing";
     if (s.includes("wrap")) return "status-wrapup"; 
-    
+    if (s.includes("Accept Internal Calls")) return "Internal Call"; 
     return "";
 }
 
