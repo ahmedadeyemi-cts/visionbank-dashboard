@@ -53,7 +53,7 @@ function getAvailabilityClass(desc) {
     }
 
     // Busy → Yellow
-    if (s.includes("busy") || (s.includes("wrap") || (s.includes("break")) return "status-busy";
+    if (s.includes("busy")) return "status-busy";
 
     // Ringing → Orange
     if (s.includes("ringing") || s.includes("ring")) return "status-ringing";
