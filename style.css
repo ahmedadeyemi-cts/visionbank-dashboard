@@ -1,141 +1,150 @@
-/* ========== GLOBAL RESET ========== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* ------------------------------
+   GLOBAL RESET + BASE STYLES
+--------------------------------*/
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f4f5f7;
-    color: #222;
-    padding: 0;
     margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
 }
 
-/* ========== HEADER ========== */
+a {
+    color: #0047b3;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ------------------------------
+   HEADER
+--------------------------------*/
 header {
     display: flex;
     align-items: center;
-    padding: 20px 30px;
+    padding: 16px 20px;
     background: white;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #dcdcdc;
+    gap: 12px;
 }
 
 header img {
     height: 42px;
-    margin-right: 15px;
+}
+
+.header-text {
+    display: flex;
+    flex-direction: column;
 }
 
 .header-title {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bold;
 }
 
 .header-subtitle {
     font-size: 14px;
-    color: #666;
+    color: #555;
 }
 
-/* ========== SECTION CARD ========== */
+/* ------------------------------
+   MAIN CONTAINER
+--------------------------------*/
+.main-container {
+    padding: 20px;
+}
+
+/* ------------------------------
+   SECTION CARDS
+--------------------------------*/
 .section-card {
     background: white;
+    border: 1px solid #dcdcdc;
     border-radius: 6px;
-    padding: 15px;
-    margin: 20px;
-    border: 1px solid #ddd;
+    margin-bottom: 20px;
 }
 
 .section-header {
-    background: #e6e8ee;
-    padding: 10px 12px;
+    background: #e2e4eb;
+    padding: 12px 16px;
     font-weight: bold;
-    border-radius: 6px;
-    margin-bottom: 12px;
+    border-bottom: 1px solid #dcdcdc;
 }
 
-/* ========== TABLE BASE ========== */
+.section-body {
+    padding: 16px;
+}
+
+/* ------------------------------
+   TABLES (QUEUE + AGENTS)
+--------------------------------*/
 table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;   /* ENSURES PERFECT COLUMN ALIGNMENT */
+    margin-top: 8px;
 }
 
 th, td {
-    padding: 10px 8px;
-    border-bottom: 1px solid #e0e0e0;
-    font-size: 14px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
     vertical-align: middle;
 }
 
-/* HEADER CELLS */
-thead th {
-    background: #f0f2f5;
-    font-weight: bold;
-    text-align: left;
-}
-
-/* QUEUE TABLE SPECIAL ALIGNMENT */
-#queue-table th:nth-child(2),
-#queue-table td:nth-child(2),
-#queue-table th:nth-child(3),
-#queue-table td:nth-child(3),
-#queue-table th:nth-child(4),
-#queue-table td:nth-child(4) {
-    text-align: center;  /* Perfect centering under headers */
-}
-
-/* ROW COLORS */
-.queue-alert {
-    background: #ffecec !important;
-    color: #b30000;
+th {
+    background: #f3f4f6;
     font-weight: bold;
 }
 
-/* ERROR CELL */
 .error-cell {
+    padding: 20px;
     text-align: center;
-    padding: 12px;
     color: red;
     font-weight: bold;
 }
 
-/* ========== KPI CARDS ========== */
+/* Highlight row for active queue */
+.queue-highlight {
+    background: #fdecec !important;
+}
+
+/* ------------------------------
+   KPI BOXES
+--------------------------------*/
 .kpi-container {
-    display: flex;
-    justify-content: flex-start;
-    gap: 15px;
     margin-top: 15px;
+    display: flex;
+    gap: 16px;
 }
 
 .kpi-card {
     background: white;
-    border: 1px solid #ddd;
+    border: 1px solid #dcdcdc;
     border-radius: 6px;
-    padding: 12px 18px;
+    padding: 15px;
     width: 150px;
     text-align: center;
 }
 
 .kpi-main-value {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: bold;
 }
 
 .kpi-label {
-    margin-top: 6px;
+    margin-top: 8px;
     font-size: 12px;
     color: #555;
 }
 
-/* KPI SPLIT BLOCKS */
 .kpi-split-row {
     display: flex;
     justify-content: space-between;
 }
 
 .kpi-sub-block {
-    width: 50%;
+    width: 48%;
 }
 
 .kpi-sub-label {
@@ -144,90 +153,139 @@ thead th {
 }
 
 .kpi-sub-value {
-    font-size: 18px;
+    font-size: 19px;
     font-weight: bold;
 }
 
-/* ========== AGENT TABLE ALIGNMENT ========== */
-#agent-table th:nth-child(5),
-#agent-table th:nth-child(6),
-#agent-table th:nth-child(7),
-#agent-table th:nth-child(8),
-#agent-table th:nth-child(9),
-#agent-table td:nth-child(5),
-#agent-table td:nth-child(6),
-#agent-table td:nth-child(7),
-#agent-table td:nth-child(8),
-#agent-table td:nth-child(9) {
-    text-align: center;     /* Numeric values centered */
+/* ------------------------------
+   AGENT ACTION LINKS
+--------------------------------*/
+.agent-actions {
+    margin-bottom: 12px;
 }
 
-/* Availability Chips */
-.avail-green {
-    background: #d7f8d7;
-    color: #0a7a0a;
-    padding: 4px 10px;
+.agent-actions a {
+    margin-right: 12px;
+    font-weight: 500;
+}
+
+/* ------------------------------
+   AVAILABILITY STATUS COLORS
+   (Restored + Enforced)
+--------------------------------*/
+.status-available {
+    background-color: #81c784 !important; /* Green */
+    color: white !important;
+    padding: 4px 12px;
     border-radius: 12px;
     display: inline-block;
 }
 
-.avail-red {
-    background: #ffd4d4;
-    color: #b30000;
-    padding: 4px 10px;
+.status-busy,
+.status-oncall,
+.status-accepting-internal {
+    background-color: #e57373 !important; /* Red */
+    color: white !important;
+    padding: 4px 12px;
     border-radius: 12px;
     display: inline-block;
 }
 
-.avail-yellow {
-    background: #fff7cc;
-    color: #8a740a;
-    padding: 4px 10px;
+.status-wrapup {
+    background-color: #fff176 !important; /* Yellow */
+    color: #000 !important;
+    padding: 4px 12px;
     border-radius: 12px;
     display: inline-block;
 }
 
-/* ========== FOOTER ========== */
-.footer {
-    text-align: right;
-    padding: 20px;
-    font-size: 12px;
-    color: #444;
+/* ------------------------------
+   DARK MODE
+--------------------------------*/
+.dark-mode {
+    background-color: #1f1f1f;
+    color: #f0f0f0;
 }
 
-.footer img {
-    height: 32px;        /* Small logo */
-    margin-right: 8px;
-    vertical-align: middle;
+.dark-mode header,
+.dark-mode .section-card,
+.dark-mode table,
+.dark-mode .footer {
+    background-color: #2a2a2a !important;
+    border-color: #444 !important;
 }
 
-/* ========== DARK MODE ========== */
-body.dark-mode {
-    background: #181818;
-    color: white;
+.dark-mode th {
+    background: #3a3a3a !important;
 }
 
-body.dark-mode .section-card {
-    background: #242424;
+.dark-mode td {
+    border-bottom-color: #555 !important;
+}
+
+.dark-mode .kpi-card {
+    background: #333;
     border-color: #555;
 }
 
-body.dark-mode th {
-    background: #333 !important;
-}
-
-body.dark-mode td {
-    border-color: #444;
-}
-
+/* ------------------------------
+   DARK MODE BUTTON
+--------------------------------*/
 #dark-mode-toggle {
     position: fixed;
-    bottom: 18px;
-    left: 18px;
-    padding: 8px 14px;
-    font-size: 12px;
-    background: #eee;
-    border: 1px solid #aaa;
+    left: 15px;
+    bottom: 15px;
+    background: #e2e4eb;
+    border: 1px solid #c7c7c7;
+    padding: 10px 16px;
+    border-radius: 6px;
     cursor: pointer;
-    border-radius: 4px;
+}
+
+/* ------------------------------
+   FOOTER
+--------------------------------*/
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 16px 20px;
+    font-size: 13px;
+    gap: 12px;
+    color: #555;
+}
+
+.footer img {
+    height: 22px;
+    opacity: 0.9;
+}
+
+/* ------------------------------
+   RESPONSIVE
+--------------------------------*/
+@media (max-width: 768px) {
+
+    .kpi-container {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .kpi-card {
+        width: 100%;
+    }
+
+    th, td {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    header img {
+        height: 32px;
+    }
+
+    header {
+        flex-direction: column;
+        text-align: center;
+        gap: 5px;
+    }
 }
