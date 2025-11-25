@@ -150,100 +150,149 @@ body {
     width: auto;
 }
 /* ============================================================
-   UI ANIMATIONS
+   DARK MODE — Global Behavior
    ============================================================ */
 
-* {
-    transition: 
-        background-color 0.35s ease,
-        color 0.35s ease,
-        border-color 0.35s ease,
-        transform 0.25s ease;
-}
-
-/* Slight float animation for cards */
-.stat-card:hover,
-.panel:hover {
-    transform: translateY(-3px);
-}
-
-
-/* ============================================================
-   GLASS UI STYLE (Dark Mode Panels)
-   ============================================================ */
-
-body.dark-mode .panel,
-body.dark-mode .stat-card,
-body.dark-mode .data-table td,
-body.dark-mode .data-table th {
-    background: rgba(30, 30, 30, 0.6) !important; /* semi-transparent */
-    backdrop-filter: blur(8px);                   /* GLASS blur */
-    -webkit-backdrop-filter: blur(8px);
-    border-color: rgba(255,255,255,0.08) !important;
-}
-
-/* Outer page background */
 body.dark-mode {
-    background: #0f0f0f url("data:image/png;base64,iVBOR…") repeat !important; /* subtle texture */
+    background: #121212 !important;
+    color: #f5f5f5 !important;
 }
 
+/* Apply dark text theme everywhere EXCEPT availability cells */
+body.dark-mode *:not(.availability-cell):not(.availability-cell *),
+body.dark-mode td:not(.availability-cell),
+body.dark-mode th,
+body.dark-mode span:not(.availability-cell),
+body.dark-mode div:not(.availability-cell) {
+    color: #f5f5f5 !important;
+}
 
 /* ============================================================
-   AVAILABILITY BADGES (Rounded)
+   PRESERVE AVAILABILITY COLORS IN DARK MODE
    ============================================================ */
 
-.availability-cell {
-    padding: 6px 10px;
-    border-radius: 20px;      /* <-- NEW smooth rounded badges */
-    font-weight: 600;
-    display: inline-block;
+/* Available (green) */
+body.dark-mode .status-available {
+    background: #2ecc71 !important;
+    color: #ffffff !important;
 }
 
-/* Retain colors in both modes */
-.status-available  { background: #2ecc71 !important; color: #fff !important; }
-.status-oncall     { background: #e74c3c !important; color: #fff !important; }
-.status-busy       { background: #f1c40f !important; color: #000 !important; }
-.status-ringing    { background: #e67e22 !important; color: #fff !important; }
-.status-wrapup     { background: #ff8c42 !important; color: #fff !important; }
+/* On Call / Dialing (red) */
+body.dark-mode .status-oncall {
+    background: #e74c3c !important;
+    color: #ffffff !important;
+}
 
+/* Busy (yellow) */
+body.dark-mode .status-busy {
+    background: #f1c40f !important;
+    color: #000 !important;
+}
+
+/* Ringing (orange) */
+body.dark-mode .status-ringing {
+    background: #e67e22 !important;
+    color: #ffffff !important;
+}
+
+/* Wrap-Up (orange) */
+body.dark-mode .status-wrapup {
+    background: #ff8c42 !important;
+    color: #ffffff !important;
+}
 
 /* ============================================================
-   DARK MODE ICON TOGGLE
+   DARK MODE — Header & Footer
    ============================================================ */
 
-#darkModeToggle {
-    padding: 6px 12px;
-    font-size: 13px;
-    border-radius: 6px;
-    background: #f5f5f5;
-    border: 1px solid #777;
-    cursor: pointer;
-    transition: background 0.3s ease, color 0.3s ease;
+body.dark-mode .header {
+    background: #1b1b1b !important;
+    border-bottom-color: #333 !important;
 }
 
-/* Light mode icon (moon) */
-#darkModeToggle.light::before {
-    content: "🌙 ";
+body.dark-mode .header-center h1,
+body.dark-mode .header-subtitle {
+    color: #ffffff !important;
 }
 
-/* Dark mode icon (sun) */
-#darkModeToggle.dark::before {
-    content: "☀️ ";
+body.dark-mode .footer {
+    background: #1b1b1b !important;
+    border-top-color: #333 !important;
 }
 
-body.dark-mode #darkModeToggle {
-    background: #232323;
-    color: #fff;
-    border-color: #666;
+body-dark-mode .footer-right span {
+    color: #ffffff !important;
 }
 
+body.dark-mode .logo,
+body.dark-mode .footer-logo {
+    filter: brightness(1.8) contrast(1.1);
+}
 
 /* ============================================================
-   EXCLUDE AVAILABILITY BADGES FROM GLOBAL DARK TEXT OVERRIDE
+   DARK MODE — Panels and Section Titles
    ============================================================ */
 
-body.dark-mode :not(.availability-cell):not(.status-available)
-                :not(.status-oncall):not(.status-busy)
-                :not(.status-ringing):not(.status-wrapup) {
-    color: #eaeaea;
+body.dark-mode .panel {
+    background: #1a1a1a !important;
+    border-color: #333 !important;
+}
+
+body.dark-mode .panel h2 {
+    background: #1f1f1f !important;
+    padding: 8px;
+    border-radius: 4px;
+    color: #ffffff !important;
+}
+
+/* ============================================================
+   DARK MODE — Table
+   ============================================================ */
+
+body.dark-mode .data-table th {
+    background: #222 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .data-table td {
+    background: #1a1a1a !important;
+    border-color: #333 !important;
+}
+
+/* Zebra striping */
+body.dark-mode .data-table tbody tr:nth-child(odd) {
+    background: #161616 !important;
+}
+
+body.dark-mode .data-table tbody tr:nth-child(even) {
+    background: #1e1e1e !important;
+}
+
+/* ============================================================
+   DARK MODE — Global Statistics Cards
+   ============================================================ */
+
+body.dark-mode .stat-card {
+    background: #1d1d1d !important;
+    border-color: #333 !important;
+}
+
+body.dark-mode .stat-value,
+body.dark-mode .stat-label {
+    color: #ffffff !important;
+}
+
+/* ============================================================
+   Smooth transitions
+   ============================================================ */
+
+body,
+.header,
+.footer,
+.panel,
+.data-table,
+.stat-card {
+    transition: background-color 0.35s ease,
+                color 0.35s ease,
+                border-color 0.35s ease;
 }
