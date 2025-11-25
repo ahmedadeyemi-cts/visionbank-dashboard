@@ -1,162 +1,177 @@
-// ===============================
-// DASHBOARD.JS – UPDATED
-// ===============================
+/* ===============================
+   DASHBOARD.JS – UPDATED
+================================ */
 
-// API BASE URL
-const API_BASE = "https://pop1-apps.mycontactcenter.net/api/v3";
+/* -------------------------------
+   API BASE CONFIG
+-------------------------------- */
+const API_BASE = "https://pop1-apps.mycontactcenter.net/api/cca";   // Adjust if needed
+const API_KEY = "";  // If your system requires auth add here
 
-// ===============================
-// FETCH QUEUE STATUS
-// ===============================
+/* -------------------------------
+   LOAD QUEUE STATUS
+-------------------------------- */
 async function loadQueueStatus() {
+    const tbody = document.getElementById("queue-body");
+    tbody.innerHTML = `<tr><td colspan="4">Loading…</td></tr>`;
+
     try {
-        const response = await fetch(`${API_BASE}/queue/status`);
-        const data = await response.json();
+        const res = await fetch(`${API_BASE}/v3/queue`);
+        const data = await res.json();
 
-        const tbody = document.getElementById("queue-body");
-        tbody.innerHTML = "";
+        const queue = data?.Queues?.[0];
+        if (!queue) throw new Error("No queue data");
 
-        if (!data || !data.length) {
-            tbody.innerHTML = `<tr><td colspan="4" class="error-cell">No queue data available.</td></tr>`;
-            return;
+        const queueName = queue.QueueName || "Queue";
+        const calls = queue.QueuedCalls || 0;
+        const agents = queue.AgentsStaffed || 0;
+
+        // -------------------------------
+        // FIXED: TRUE CURRENT WAIT TIME
+        // -------------------------------
+        let waitSeconds = queue.LongestWaitingCallTime;
+        if (!waitSeconds || waitSeconds < 1) {
+            waitSeconds = 0; // match portal showing 0
         }
 
-        data.forEach(q => {
-            const row = document.createElement("tr");
+        const waitFormatted = formatSeconds(waitSeconds);
 
-            // Highlight long wait
-            if (q.WaitCount > 0) {
-                row.classList.add("queue-alert");
-            }
+        tbody.innerHTML = `
+            <tr class="queue-alert">
+                <td>${queueName}</td>
+                <td>${calls}</td>
+                <td>${agents}</td>
+                <td>${waitFormatted}</td>
+            </tr>
+        `;
 
-            row.innerHTML = `
-                <td>${q.QueueName || "Unknown"}</td>
-                <td>${q.WaitCount ?? 0}</td>
-                <td>${q.AgentCount ?? 0}</td>
-                <td>${q.AverageWaitTime || "00:00:00"}</td>
+        /* KPI SECTION */
+        document.getElementById("kpi-total-queued").textContent = queue.TotalOffered || 0;
+
+        const ans = queue.Answered || 0;
+        const abd = queue.Abandoned || 0;
+        const total = ans + abd;
+
+        const pctAns = total ? ((ans / total) * 100).toFixed(1) : 0;
+        const pctAbd = total ? ((abd / total) * 100).toFixed(1) : 0;
+
+        document.getElementById("kpi-answered-pct").textContent = pctAns + "%";
+        document.getElementById("kpi-answered-num").textContent = ans;
+
+        document.getElementById("kpi-abandoned-pct").textContent = pctAbd + "%";
+        document.getElementById("kpi-abandoned-num").textContent = abd;
+
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" class="error-cell">Unable to load queue status.</td></tr>`;
+        console.error("QUEUE ERROR:", err);
+    }
+}
+
+/* -------------------------------
+   LOAD AGENT PERFORMANCE
+-------------------------------- */
+async function loadAgentStats() {
+    const tbody = document.getElementById("agent-body");
+    tbody.innerHTML = `<tr><td colspan="10">Loading…</td></tr>`;
+
+    try {
+        const date = new Date().toISOString().split("T")[0];
+        const res = await fetch(`${API_BASE}/v3/hist/agentsessions/${date}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data)) throw new Error("Invalid agent data");
+
+        let html = "";
+        data.forEach(a => {
+            const inbound = a.CallCount || 0;
+            const missed = a.MissedCallCount || 0;
+            const transferred = a.ThirdPartyTransferCount || 0;
+            const outbound = a.DialOutCount || 0;
+
+            const availability = mapAvailability(a);
+
+            html += `
+                <tr>
+                    <td>${a.AgentName || "Unknown"}</td>
+                    <td>CEG Agents</td>
+                    <td>${a.PhoneNumber || ""}</td>
+                    <td class="avail-cell">${availability}</td>
+                    <td>${inbound}</td>
+                    <td>${missed}</td>
+                    <td>${transferred}</td>
+                    <td>${outbound}</td>
+                    <td>${formatSeconds(a.SecondsOnCall)}</td>
+                    <td>${formatDate(a.StartDateUtc)}</td>
+                </tr>
             `;
-
-            tbody.appendChild(row);
         });
 
-        updateKPI();
-    } catch (e) {
-        console.error("Queue error:", e);
-        document.getElementById("queue-body").innerHTML =
-            `<tr><td colspan="4" class="error-cell">Unable to load queue status.</td></tr>`;
+        tbody.innerHTML = html;
+
+        /* Apply availability colors AFTER HTML loads */
+        applyAvailabilityColors();
+
+    } catch (err) {
+        console.error("AGENT ERROR:", err);
+        tbody.innerHTML = `<tr><td colspan="10" class="error-cell">Unable to load agent data.</td></tr>`;
     }
 }
 
-// ===============================
-// FETCH KPI DATA
-// ===============================
-async function updateKPI() {
-    try {
-        const response = await fetch(`${API_BASE}/queue/kpi`);
-        const kpi = await response.json();
+/* -------------------------------
+   AVAILABILITY COLOR HANDLING
+-------------------------------- */
+function applyAvailabilityColors() {
+    document.querySelectorAll(".avail-cell").forEach(cell => {
+        const text = cell.textContent.trim().toLowerCase();
 
-        document.getElementById("kpi-total-queued").textContent = kpi.TotalQueued ?? "--";
-        document.getElementById("kpi-answered-pct").textContent = (kpi.AnsweredPct ?? 0) + "%";
-        document.getElementById("kpi-answered-num").textContent = kpi.Answered ?? "--";
-        document.getElementById("kpi-abandoned-pct").textContent = (kpi.AbandonedPct ?? 0) + "%";
-        document.getElementById("kpi-abandoned-num").textContent = kpi.Abandoned ?? "--";
-
-    } catch (e) {
-        console.error("KPI error:", e);
-    }
-}
-
-// ===============================
-// FETCH AGENT DATA
-// ===============================
-async function loadAgentStatus() {
-    try {
-        const response = await fetch(`${API_BASE}/agent/status`);
-        const data = await response.json();
-
-        const tbody = document.getElementById("agent-body");
-        tbody.innerHTML = "";
-
-        if (!data || !data.AgentStatus || !data.AgentStatus.length) {
-            tbody.innerHTML = `<tr><td colspan="10" class="error-cell">No agent data available.</td></tr>`;
-            return;
+        if (text === "available") {
+            cell.style.background = "#d6f7d6";
+            cell.style.color = "#0a6b0a";
+            cell.style.fontWeight = "bold";
+            cell.style.borderRadius = "20px";
         }
 
-        data.AgentStatus.forEach(a => {
-            const tr = document.createElement("tr");
-
-            const availabilityText = getAvailabilityText(a.CallTransferStatusDesc);
-
-            // ADD CSS CLASS BASED ON AVAILABILITY
-            let availabilityClass = "avail-other";
-            if (availabilityText === "Available") availabilityClass = "avail-available";
-            else if (availabilityText === "Not Available") availabilityClass = "avail-not-available";
-
-            tr.innerHTML = `
-                <td>${a.FullName}</td>
-                <td>${a.TeamName}</td>
-                <td>${a.PhoneExt}</td>
-                <td class="${availabilityClass}">${availabilityText}</td>
-                <td>${a.TotalCallsReceived ?? 0}</td>
-                <td>${a.TotalCallsMissed ?? 0}</td>
-                <td>${a.ThirdPartyTransferCount ?? 0}</td>
-                <td>${a.DialoutCount ?? 0}</td>
-                <td>${formatSeconds(a.TotalSecondsOnCall)}</td>
-                <td>${formatDate(a.StartDateUtc)}</td>
-            `;
-
-            tbody.appendChild(tr);
-        });
-
-    } catch (e) {
-        console.error("Agent error:", e);
-        document.getElementById("agent-body").innerHTML =
-            `<tr><td colspan="10" class="error-cell">Unable to load agent data.</td></tr>`;
-    }
+        if (text === "not available") {
+            cell.style.background = "#ffd9d9";
+            cell.style.color = "#b30000";
+            cell.style.fontWeight = "bold";
+            cell.style.borderRadius = "20px";
+        }
+    });
 }
 
-// ===============================
-// AVAILABILITY TEXT NORMALIZER
-// ===============================
-function getAvailabilityText(status) {
-    if (!status) return "Other";
-
-    const s = status.toLowerCase();
-
-    if (s.includes("available")) return "Available";
-    if (s.includes("not") || s.includes("busy") || s.includes("away")) return "Not Available";
-
-    return "Other";
+/* -------------------------------
+   HELPER FUNCTIONS
+-------------------------------- */
+function mapAvailability(a) {
+    return a.SecondsAvailable > 0 ? "Available" : "Not Available";
 }
 
-// ===============================
-// UTILITY: FORMAT TIME
-// ===============================
-function formatSeconds(sec) {
-    if (!sec || sec < 1) return "00:00:00";
-
-    const h = Math.floor(sec / 3600);
-    const m = Math.floor((sec % 3600) / 60);
-    const s = sec % 60;
-
-    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+function formatSeconds(total) {
+    if (!total || total < 1) return "00:00:00";
+    const h = String(Math.floor(total / 3600)).padStart(2, "0");
+    const m = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
+    const s = String(total % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
 }
 
-// ===============================
-// UTILITY: FORMAT DATE
-// ===============================
-function formatDate(dateStr) {
-    if (!dateStr) return "--";
-    return new Date(dateStr).toLocaleString();
+function formatDate(utc) {
+    if (!utc) return "-";
+    return new Date(utc).toLocaleString();
 }
 
-// ===============================
-// POLLING
-// ===============================
+/* -------------------------------
+   DARK MODE
+-------------------------------- */
+document.getElementById("dark-mode-toggle").addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+});
+
+/* -------------------------------
+   REFRESH INTERVALS
+-------------------------------- */
 loadQueueStatus();
-loadAgentStatus();
+loadAgentStats();
 
-setInterval(() => {
-    loadQueueStatus();
-    loadAgentStatus();
-}, 10000);
+setInterval(loadQueueStatus, 8000);
+setInterval(loadAgentStats, 15000);
