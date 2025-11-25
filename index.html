@@ -1,60 +1,193 @@
-<!-- ============================================
-     GLOBAL REALTIME STATISTICS
-================================================ -->
-<div class="section-card">
-    <div class="section-header">Realtime Global Statistics</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CEG Contact Center Realtime Dashboard</title>
 
-    <div id="global-stats-container" class="kpi-container">
+    <link rel="stylesheet" href="style.css" />
+</head>
 
-        <div class="kpi-card">
-            <div id="gs-total-queued" class="kpi-main-value">--</div>
-            <div class="kpi-label">Total Calls Queued</div>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <img src="assets/visionbank.png" alt="VisionBank" style="height:42px;" />
+        <div class="header-text">
+            <div class="header-title">CEG Contact Center Realtime Dashboard</div>
+            <div class="header-subtitle">VisionBank</div>
+        </div>
+    </header>
+
+    <div class="main-container">
+
+        <!-- CURRENT QUEUE STATUS -->
+        <div class="section-card">
+            <div class="section-header">Current Queue Status</div>
+            <div class="section-body">
+
+                <table id="queue-table">
+                    <thead>
+                        <tr>
+                            <th>Queue</th>
+                            <th>Calls</th>
+                            <th>Agents</th>
+                            <th>Wait</th>
+                        </tr>
+                    </thead>
+                    <tbody id="queue-body">
+                        <tr><td colspan="4" class="error-cell">Loading queue status…</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- Existing KPI Row -->
+                <div class="kpi-container">
+                    <div class="kpi-card">
+                        <div id="kpi-total-queued" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Total Calls Queued</div>
+                    </div>
+
+                    <div class="kpi-card kpi-split">
+                        <div class="kpi-split-row">
+                            <div class="kpi-sub-block">
+                                <div class="kpi-sub-label">Pct</div>
+                                <div id="kpi-answered-pct" class="kpi-sub-value">--</div>
+                            </div>
+                            <div class="kpi-sub-block">
+                                <div class="kpi-sub-label">Numeric</div>
+                                <div id="kpi-answered-num" class="kpi-sub-value">--</div>
+                            </div>
+                        </div>
+                        <div class="kpi-label">Total Calls Answered</div>
+                    </div>
+
+                    <div class="kpi-card kpi-split">
+                        <div class="kpi-split-row">
+                            <div class="kpi-sub-block">
+                                <div class="kpi-sub-label">Pct</div>
+                                <div id="kpi-abandoned-pct" class="kpi-sub-value">--</div>
+                            </div>
+                            <div class="kpi-sub-block">
+                                <div class="kpi-sub-label">Numeric</div>
+                                <div id="kpi-abandoned-num" class="kpi-sub-value">--</div>
+                            </div>
+                        </div>
+                        <div class="kpi-label">Total Calls Abandoned</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="kpi-card">
-            <div id="gs-total-transferred" class="kpi-main-value">--</div>
-            <div class="kpi-label">Total Calls Transferred</div>
+        <!-- NEW GLOBAL REALTIME STATISTICS -->
+        <div class="section-card">
+            <div class="section-header">Realtime Global Statistics</div>
+            <div class="section-body">
+
+                <div class="kpi-container">
+
+                    <div class="kpi-card">
+                        <div id="gs-total-queued" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Total Calls Queued</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="gs-total-transferred" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Total Calls Transferred</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="gs-total-abandoned" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Total Calls Abandoned</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="gs-max-wait" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Maximum Queue Wait</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="gs-service-level" class="kpi-main-value">--%</div>
+                        <div class="kpi-label">Service Level</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="gs-calls-received" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Total Calls Received</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="gs-answer-rate" class="kpi-main-value">--%</div>
+                        <div class="kpi-label">Answer Rate</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="gs-abandon-rate" class="kpi-main-value">--%</div>
+                        <div class="kpi-label">Abandon Rate</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="gs-callbacks-reg" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Callbacks Registered</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div id="gs-callbacks-wait" class="kpi-main-value">--</div>
+                        <div class="kpi-label">Callbacks Waiting</div>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
-        <div class="kpi-card">
-            <div id="gs-total-abandoned" class="kpi-main-value">--</div>
-            <div class="kpi-label">Total Calls Abandoned</div>
-        </div>
+        <!-- AGENT PERFORMANCE (unchanged) -->
+        <div class="section-card">
+            <div class="section-header">Agent Performance</div>
 
-        <div class="kpi-card">
-            <div id="gs-max-wait" class="kpi-main-value">--</div>
-            <div class="kpi-label">Maximum Queue Wait Time</div>
-        </div>
+            <div class="section-body">
+                <div class="agent-actions">
+                    <a href="#">Log Agent Out</a>
+                    <a href="#">Log Telagent In</a>
+                    <a href="#">Switch to Telagent</a>
+                    <a href="#">Text Message</a>
+                    <a href="#">Available</a>
+                    <a href="#">Not Available</a>
+                </div>
 
-        <div class="kpi-card">
-            <div id="gs-service-level" class="kpi-main-value">--</div>
-            <div class="kpi-label">Service Level</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-total-received" class="kpi-main-value">--</div>
-            <div class="kpi-label">Total Calls Received</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-answer-rate" class="kpi-main-value">--</div>
-            <div class="kpi-label">Answer Rate</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-abandon-rate" class="kpi-main-value">--</div>
-            <div class="kpi-label">Abandon Rate</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-callback-registered" class="kpi-main-value">--</div>
-            <div class="kpi-label">Callbacks Registered</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-callback-waiting" class="kpi-main-value">--</div>
-            <div class="kpi-label">Callbacks Waiting</div>
+                <table id="agent-table">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Team</th>
+                            <th>Phone No.</th>
+                            <th>Availability</th>
+                            <th>Inbound</th>
+                            <th>Missed</th>
+                            <th>Transferred</th>
+                            <th>Outbound</th>
+                            <th>Avg Handle</th>
+                            <th>Start Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="agent-body">
+                        <tr><td colspan="10" class="error-cell">Loading agent data…</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </div>
-</div>
+
+    <!-- DARK MODE -->
+    <button id="dark-mode-toggle">Dark mode</button>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <img id="us-signal-logo" src="assets/ussignal.png" alt="US Signal" />
+        Created and maintained by <strong>Ahmed Adeyemi, US Signal</strong>
+    </div>
+
+    <!-- JS -->
+    <script src="dashboard.js"></script>
+
+</body>
+</html>
