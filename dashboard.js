@@ -4,7 +4,7 @@
 const API_BASE = "https://pop1-apps.mycontactcenter.net/api/v3/realtime";
 const TOKEN = "VWGKXWSqGA4FwlRXb2cIx5H1dS3cYpplXa5iI3bE4Xg=";
 
-// Wrapper for API calls
+// Small helper to call API with token
 async function fetchApi(path) {
     const res = await fetch(`${API_BASE}${path}`, {
         headers: {
@@ -12,7 +12,10 @@ async function fetchApi(path) {
             "token": TOKEN
         }
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+    }
     return res.json();
 }
 
@@ -20,41 +23,46 @@ async function fetchApi(path) {
 // HELPERS
 // ===============================
 function formatTime(sec) {
-    if (!sec || isNaN(sec)) return "00:00:00";
+    if (sec === undefined || sec === null || isNaN(sec)) return "00:00:00";
     const h = Math.floor(sec / 3600);
     const m = Math.floor((sec % 3600) / 60);
-    const s = sec % 60;
-    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    const s = Math.floor(sec % 60);
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
 function formatDate(utc) {
     if (!utc) return "--";
+    // Force UTC and convert to US Central
     return new Date(utc + "Z").toLocaleString("en-US", { timeZone: "America/Chicago" });
 }
 
-function safe(v, fallback = "--") {
-    return v === undefined || v === null ? fallback : v;
+function safe(value, fallback = "--") {
+    return value === undefined || value === null ? fallback : value;
 }
 
-// ===============================
-// NEW AVAILABILITY LOGIC
-// ===============================
+// Map status text to availability class
 function getAvailabilityClass(desc) {
     const s = (desc || "").toLowerCase();
 
-    if (s.includes("available")) return "status-available";          // green
-    if (s.includes("on call") || s.includes("dial")) return "status-oncall"; // red
-    if (s.includes("busy")) return "status-busy";                    // yellow
+    // Available → Green
+    if (s.includes("available")) return "status-available";
 
-    // NEW: Accept Internal Calls → Orange
-    if (s.includes("accept internal")) return "status-ringing";
+    // On Call / Dialing → Red
+    if (s.includes("on call") || s.includes("dialing") || s.includes("dial out") || s.includes("dialing out")) {
+        return "status-oncall";
+    }
 
-    if (s.includes("ring")) return "status-ringing";                 // orange
+    // Busy → Yellow
+    if (s.includes("busy")) return "status-busy";
+
+    // Ringing → Orange
+    if (s.includes("ringing") || s.includes("ring")) return "status-ringing";
+
     return "";
 }
 
 // ===============================
-// CURRENT QUEUE STATUS
+// LOAD CURRENT QUEUE STATUS
 // ===============================
 async function loadQueueStatus() {
     const body = document.getElementById("queue-body");
@@ -63,40 +71,49 @@ async function loadQueueStatus() {
     try {
         const data = await fetchApi("/status/queues");
 
-        if (!data?.QueueStatus?.length) {
+        if (!data || !Array.isArray(data.QueueStatus) || data.QueueStatus.length === 0) {
             body.innerHTML = `<tr><td colspan="5" class="error">Unable to load queue status.</td></tr>`;
             return;
         }
 
         const q = data.QueueStatus[0];
 
-        const maxWait = q.MaxWaitingTime ?? q.OldestWaitTime ?? 0;
-        const avgWait = q.AvgWaitInterval ?? 0;
+        const calls = safe(q.TotalCalls, 0);
+        const agents = safe(q.TotalLoggedAgents, 0);
 
-        body.innerHTML = `
+        const maxWaitSeconds = q.MaxWaitingTime ?? q.OldestWaitTime ?? 0;
+        const avgWaitSeconds = q.AvgWaitInterval ?? 0;
+
+        const rowHtml = `
             <tr>
-                <td>${safe(q.QueueName)}</td>
-                <td class="numeric">${safe(q.TotalCalls, 0)}</td>
-                <td class="numeric">${safe(q.TotalLoggedAgents, 0)}</td>
-                <td class="numeric">${formatTime(maxWait)}</td>
-                <td class="numeric">${formatTime(avgWait)}</td>
+                <td>${safe(q.QueueName, "Unknown")}</td>
+                <td class="numeric">${calls}</td>
+                <td class="numeric">${agents}</td>
+                <td class="numeric">${formatTime(maxWaitSeconds)}</td>
+                <td class="numeric">${formatTime(avgWaitSeconds)}</td>
             </tr>
         `;
-    } catch (e) {
-        console.error("Queue Error:", e);
+
+        body.innerHTML = rowHtml;
+
+    } catch (err) {
+        console.error("Queue load error:", err);
         body.innerHTML = `<tr><td colspan="5" class="error">Unable to load queue status.</td></tr>`;
     }
 }
 
 // ===============================
-// GLOBAL STATISTICS (CARD VIEW)
+// LOAD REALTIME GLOBAL STATISTICS
 // ===============================
 async function loadGlobalStats() {
+    const errorDiv = document.getElementById("global-error");
+    errorDiv.textContent = "";
+
     try {
         const data = await fetchApi("/statistics/global");
 
-        if (!data?.GlobalStatistics?.length) {
-            document.getElementById("global-error").textContent = "Unable to load global statistics.";
+        if (!data || !Array.isArray(data.GlobalStatistics) || data.GlobalStatistics.length === 0) {
+            errorDiv.textContent = "Unable to load global statistics.";
             return;
         }
 
@@ -107,28 +124,29 @@ async function loadGlobalStats() {
         setText("gs-total-abandoned", g.TotalCallsAbandoned);
         setText("gs-max-wait", formatTime(g.MaxQueueWaitingTime));
 
-        setText("gs-service-level", g.ServiceLevel?.toFixed(2) + "%" || "--");
+        setText("gs-service-level", g.ServiceLevel != null ? g.ServiceLevel.toFixed(2) + "%" : "--");
         setText("gs-total-received", g.TotalCallsReceived);
 
-        setText("gs-answer-rate", g.AnswerRate?.toFixed(2) + "%" || "--");
-        setText("gs-abandon-rate", g.AbandonRate?.toFixed(2) + "%" || "--");
+        setText("gs-answer-rate", g.AnswerRate != null ? g.AnswerRate.toFixed(2) + "%" : "--");
+        setText("gs-abandon-rate", g.AbandonRate != null ? g.AbandonRate.toFixed(2) + "%" : "--");
 
         setText("gs-callbacks-registered", g.CallbacksRegistered);
         setText("gs-callbacks-waiting", g.CallbacksWaiting);
 
-    } catch (e) {
-        console.error("Global Stats Error:", e);
-        document.getElementById("global-error").textContent = "Unable to load global statistics.";
+    } catch (err) {
+        console.error("Global stats error:", err);
+        errorDiv.textContent = "Unable to load global statistics.";
     }
 }
 
-function setText(id, val) {
+function setText(id, value) {
     const el = document.getElementById(id);
-    if (el) el.textContent = val ?? "--";
+    if (!el) return;
+    el.textContent = value === undefined || value === null ? "--" : value;
 }
 
 // ===============================
-// AGENT PERFORMANCE
+// LOAD AGENT PERFORMANCE
 // ===============================
 async function loadAgentStatus() {
     const body = document.getElementById("agent-body");
@@ -137,48 +155,54 @@ async function loadAgentStatus() {
     try {
         const data = await fetchApi("/status/agents");
 
-        if (!data?.AgentStatus?.length) {
+        if (!data || !Array.isArray(data.AgentStatus) || data.AgentStatus.length === 0) {
             body.innerHTML = `<tr><td colspan="10" class="error">Unable to load agent data.</td></tr>`;
             return;
         }
 
         body.innerHTML = "";
 
-        data.AgentStatus.forEach(a => {
+        data.AgentStatus.forEach((a, index) => {
             const inbound = a.TotalCallsReceived ?? 0;
+            const missed = a.TotalCallsMissed ?? 0;
+            const transferred = a.ThirdPartyTransferCount ?? 0;
+            const outbound = a.DialoutCount ?? 0;
+
             const avgHandleSeconds = inbound > 0 ? Math.round((a.TotalSecondsOnCall || 0) / inbound) : 0;
 
-            const statusClass = getAvailabilityClass(a.CallTransferStatusDesc);
+            const availabilityClass = getAvailabilityClass(a.CallTransferStatusDesc);
 
-            body.innerHTML += `
-                <tr>
-                    <td>${safe(a.FullName)}</td>
-                    <td>${safe(a.TeamName)}</td>
-                    <td>${safe(a.PhoneExt)}</td>
-                    <td class="availability-cell ${statusClass}">${safe(a.CallTransferStatusDesc)}</td>
-                    <td class="numeric">${inbound}</td>
-                    <td class="numeric">${safe(a.TotalCallsMissed, 0)}</td>
-                    <td class="numeric">${safe(a.ThirdPartyTransferCount, 0)}</td>
-                    <td class="numeric">${safe(a.DialoutCount, 0)}</td>
-                    <td class="numeric">${formatTime(avgHandleSeconds)}</td>
-                    <td>${formatDate(a.StartDateUtc)}</td>
-                </tr>
+            const tr = document.createElement("tr");
+            // zebra striping handled in CSS, row index not needed here
+            tr.innerHTML = `
+                <td>${safe(a.FullName)}</td>
+                <td>${safe(a.TeamName)}</td>
+                <td>${safe(a.PhoneExt)}</td>
+                <td class="availability-cell ${availabilityClass}">${safe(a.CallTransferStatusDesc)}</td>
+                <td class="numeric">${inbound}</td>
+                <td class="numeric">${missed}</td>
+                <td class="numeric">${transferred}</td>
+                <td class="numeric">${outbound}</td>
+                <td class="numeric">${formatTime(avgHandleSeconds)}</td>
+                <td>${formatDate(a.StartDateUtc)}</td>
             `;
+            body.appendChild(tr);
         });
 
-    } catch (e) {
-        console.error("Agent Error:", e);
+    } catch (err) {
+        console.error("Agent load error:", err);
         body.innerHTML = `<tr><td colspan="10" class="error">Unable to load agent data.</td></tr>`;
     }
 }
 
 // ===============================
-// DARK MODE
+// DARK MODE TOGGLE
 // ===============================
 function initDarkMode() {
     const btn = document.getElementById("darkModeToggle");
     if (!btn) return;
 
+    // Restore preference if stored
     const stored = localStorage.getItem("dashboard-dark-mode");
     if (stored === "on") {
         document.body.classList.add("dark-mode");
@@ -204,5 +228,7 @@ function refreshAll() {
 document.addEventListener("DOMContentLoaded", () => {
     initDarkMode();
     refreshAll();
+
+    // Refresh every 10 seconds
     setInterval(refreshAll, 10000);
 });
