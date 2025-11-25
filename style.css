@@ -159,12 +159,24 @@ body.dark-mode {
 }
 
 /* Apply dark text theme everywhere EXCEPT availability cells */
-body.dark-mode *:not(.availability-cell):not(.availability-cell *),
-body.dark-mode td:not(.availability-cell),
-body.dark-mode th,
-body.dark-mode span:not(.availability-cell),
-body.dark-mode div:not(.availability-cell) {
+body.dark-mode *:not(.availability-cell)
+               :not(.status-available)
+               :not(.status-oncall)
+               :not(.status-busy)
+               :not(.status-ringing)
+               :not(.status-wrapup) {
     color: #f5f5f5 !important;
+}
+
+/* Prevent table cells containing availability from being recolored */
+body.dark-mode td.availability-cell,
+body.dark-mode td.status-available,
+body.dark-mode td.status-oncall,
+body.dark-mode td.status-busy,
+body.dark-mode td.status-ringing,
+body.dark-mode td.status-wrapup {
+    color: inherit !important;
+    background: inherit !important;
 }
 
 /* ============================================================
@@ -177,7 +189,7 @@ body.dark-mode .status-available {
     color: #ffffff !important;
 }
 
-/* On Call / Dialing (red) */
+/* On Call (red) */
 body.dark-mode .status-oncall {
     background: #e74c3c !important;
     color: #ffffff !important;
@@ -186,7 +198,7 @@ body.dark-mode .status-oncall {
 /* Busy (yellow) */
 body.dark-mode .status-busy {
     background: #f1c40f !important;
-    color: #000 !important;
+    color: #000000 !important;
 }
 
 /* Ringing (orange) */
@@ -220,7 +232,7 @@ body.dark-mode .footer {
     border-top-color: #333 !important;
 }
 
-body-dark-mode .footer-right span {
+body.dark-mode .footer-right span {
     color: #ffffff !important;
 }
 
@@ -230,7 +242,7 @@ body.dark-mode .footer-logo {
 }
 
 /* ============================================================
-   DARK MODE — Panels and Section Titles
+   DARK MODE — Panels & Section Titles
    ============================================================ */
 
 body.dark-mode .panel {
