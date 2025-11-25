@@ -1,79 +1,147 @@
+/* ========== BASE ========== */
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     background: #f4f5f7;
     margin: 0;
+    color: #222;
 }
 
-/* HEADER */
+/* ========== HEADER ========== */
 .header {
-    background: white;
-    padding: 15px 25px;
-    border-bottom: 1px solid #ddd;
+    background: #ffffff;
+    padding: 14px 24px;
+    border-bottom: 1px solid #d5d7dc;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
 .logo {
-    height: 50px;
+    height: 50px; /* medium as requested */
 }
 
 .header-text h1 {
     margin: 0;
     font-size: 22px;
+    font-weight: 600;
 }
 
+.subtitle {
+    font-size: 14px;
+    color: #666;
+}
+
+/* ========== PANELS ========== */
 .panel {
-    background: white;
-    margin: 20px;
-    padding: 20px;
+    background: #ffffff;
+    margin: 18px 20px;
+    padding: 20px 22px;
     border-radius: 6px;
     border: 1px solid #dedede;
 }
 
+.panel h2 {
+    margin: 0 0 14px;
+    font-size: 18px;
+}
+
+/* ========== TABLES ========== */
 .data-table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 14px;
 }
 
-.data-table th {
-    background: #f1f1f1;
-    padding: 10px;
+.data-table thead th {
+    background: #f1f3f6;
+    padding: 9px 8px;
+    text-align: left;
+    border-bottom: 1px solid #d1d5dd;
 }
 
-.data-table td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
+.data-table tbody td {
+    padding: 8px 8px;
+    border-bottom: 1px solid #eceff4;
 }
 
+/* Loading / error rows */
 .loading,
 .error {
     text-align: center;
-    color: red;
+    color: #c0392b;
     padding: 10px;
 }
 
-/* GLOBAL STAT CARDS */
+/* ========== AVAILABILITY COLORS ========== */
+.availability-cell {
+    font-weight: 500;
+    border-radius: 4px;
+    padding: 4px 6px;
+}
+
+.avail-available {
+    background: #e1f5e5;
+    color: #1b7c3a;
+}
+
+.avail-not-available {
+    background: #fde2e2;
+    color: #b01c1c;
+}
+
+.avail-other {
+    background: #f2f3f7;
+    color: #555;
+}
+
+/* ========== GLOBAL STAT CARDS ========== */
 .stat-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 15px;
-    margin-top: 20px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 16px;
 }
 
 .stat-card {
-    background: #fafafa;
-    border: 1px solid #ddd;
-    padding: 20px;
+    background: #fafbff;
+    border: 1px solid #dde1eb;
+    padding: 16px 10px;
     border-radius: 8px;
     text-align: center;
 }
 
 .stat-value {
-    font-size: 26px;
-    font-weight: bold;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 4px;
 }
 
-/* FOOTER */
+.stat-label {
+    font-size: 13px;
+    color: #555;
+}
+
+/* ========== FOOTER ========== */
 .footer {
-    text-align: center;
-    font-size: 14px;
-    margin: 30px;
+    margin: 24px 20px 28px;
+}
+
+.footer-inner {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #444;
+}
+
+.footer-logo {
+    height: 26px;
 }
