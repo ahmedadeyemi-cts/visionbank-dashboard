@@ -1,94 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CEG Contact Center Realtime Dashboard</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <header>
-    <img src="assets/visionbank.png" class="bank-logo" />
+    <img src="assets/visionbank.png" class="logo">
     <div class="header-text">
         <div class="header-title">CEG Contact Center Realtime Dashboard</div>
         <div class="header-subtitle">VisionBank</div>
     </div>
 </header>
 
-<!-- CURRENT QUEUE STATUS -->
+<!-- LAST UPDATED -->
+<div id="lastUpdated" class="last-updated">Last updated: --</div>
+
+<!-- SPINNER -->
+<div id="spinner" class="spinner hidden"></div>
+
+<!-- ================= QUEUE STATUS ================= -->
 <section class="section-card">
-    <h2 class="section-header">Current Queue Status</h2>
-    <div id="queueStatusContent" class="section-body"></div>
+    <h2>Current Queue Status</h2>
+    <div id="queueStatusContent" class="content-block"></div>
 </section>
 
-<!-- REALTIME GLOBAL STATISTICS -->
+<!-- ================= GLOBAL STATS ================= -->
 <section class="section-card">
-    <h2 class="section-header">Realtime Global Statistics</h2>
-    <div id="globalStatsError" class="error"></div>
-
-    <div class="kpi-grid">
-
-        <div class="kpi-card">
-            <div id="gs-total-queued" class="kpi-main">--</div>
-            <div class="kpi-label">Total Calls Queued</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-transferred" class="kpi-main">--</div>
-            <div class="kpi-label">Total Calls Transferred</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-abandoned" class="kpi-main">--</div>
-            <div class="kpi-label">Total Calls Abandoned</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-max-wait" class="kpi-main">--</div>
-            <div class="kpi-label">Maximum Queue Wait Time</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-service-level" class="kpi-main">--%</div>
-            <div class="kpi-label">Service Level</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-calls-received" class="kpi-main">--</div>
-            <div class="kpi-label">Total Calls Received</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-answer-rate" class="kpi-main">--%</div>
-            <div class="kpi-label">Answer Rate</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-abandon-rate" class="kpi-main">--%</div>
-            <div class="kpi-label">Abandon Rate</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-callbacks-reg" class="kpi-main">--</div>
-            <div class="kpi-label">Callbacks Registered</div>
-        </div>
-
-        <div class="kpi-card">
-            <div id="gs-callbacks-waiting" class="kpi-main">--</div>
-            <div class="kpi-label">Callbacks Waiting</div>
-        </div>
-
-    </div>
+    <h2>Realtime Global Statistics</h2>
+    <div id="globalStatsContent" class="kpi-grid"></div>
 </section>
 
-<!-- AGENT PERFORMANCE -->
+<!-- ================= AGENTS ================= -->
 <section class="section-card">
-    <h2 class="section-header">Agent Performance</h2>
-    <div id="agentSummary"></div>
-    <div id="agentStatusContent"></div>
+    <h2>Agent Performance</h2>
+    <div id="agentStatusContent" class="content-block"></div>
 </section>
+
+<footer>
+    <img src="assets/ussignal.png" class="footer-logo">
+    Created and maintained by <strong>Ahmed Adeyemi, US Signal</strong>
+</footer>
 
 <script src="dashboard.js"></script>
 </body>
