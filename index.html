@@ -8,50 +8,47 @@
 </head>
 
 <body>
-    <!-- HEADER -->
-    <header class="header">
-        <div class="logo-container">
-            <img src="assets/visionbank.png" alt="VisionBank Logo" class="logo" />
-            <div class="header-text">
-                <h1>CEG Contact Center Realtime Dashboard</h1>
-                <span class="subtitle">VisionBank</span>
-            </div>
-        </div>
-    </header>
 
-    <!-- ============================= -->
-    <!-- CURRENT QUEUE STATUS (TOP)   -->
-    <!-- ============================= -->
+<header class="header">
+    <div class="header-inner">
+        <img src="assets/visionbank-logo.png" alt="VisionBank" class="logo" />
+        <div class="header-text">
+            <h1>CEG Contact Center Realtime Dashboard</h1>
+            <span class="header-subtitle">VisionBank</span>
+        </div>
+    </div>
+</header>
+
+<main class="main">
+
+    <!-- CURRENT QUEUE STATUS (TOP) -->
     <section class="panel">
         <h2>Current Queue Status</h2>
-
         <table class="data-table">
             <thead>
                 <tr>
                     <th>Queue</th>
                     <th>Calls</th>
                     <th>Agents</th>
-                    <th>Wait</th>
+                    <th>Max Wait</th>
+                    <th>Avg Wait</th>
                 </tr>
             </thead>
             <tbody id="queue-body">
                 <tr>
-                    <td colspan="4" class="loading">Loading queue status…</td>
+                    <td colspan="5" class="loading">Loading queue status…</td>
                 </tr>
             </tbody>
         </table>
     </section>
 
-    <!-- ============================= -->
-    <!-- AGENT PERFORMANCE (MIDDLE)   -->
-    <!-- ============================= -->
+    <!-- AGENT PERFORMANCE (MIDDLE) -->
     <section class="panel">
         <h2>Agent Performance</h2>
-
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Employee</th>
+                    <th>CEG Agent</th>
                     <th>Team</th>
                     <th>Phone No.</th>
                     <th>Availability</th>
@@ -71,15 +68,13 @@
         </table>
     </section>
 
-    <!-- ============================= -->
-    <!-- REALTIME GLOBAL STATS (BOTTOM)-->
-    <!-- ============================= -->
+    <!-- REALTIME GLOBAL STATISTICS (BOTTOM) -->
     <section class="panel">
         <h2>Realtime Global Statistics</h2>
         <div id="global-error" class="error"></div>
 
         <div class="stat-grid">
-            <!-- row 1 -->
+
             <div class="stat-card">
                 <div class="stat-value" id="gs-total-queued">--</div>
                 <div class="stat-label">Total Calls Queued</div>
@@ -105,7 +100,6 @@
                 <div class="stat-label">Service Level</div>
             </div>
 
-            <!-- row 2 -->
             <div class="stat-card">
                 <div class="stat-value" id="gs-total-received">--</div>
                 <div class="stat-label">Total Calls Received</div>
@@ -130,20 +124,22 @@
                 <div class="stat-value" id="gs-callbacks-waiting">--</div>
                 <div class="stat-label">Callbacks Waiting</div>
             </div>
+
         </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer class="footer">
-        <div class="footer-inner">
-            <img src="assets/ussignal.png" alt="US Signal Logo" class="footer-logo" />
-            <p>
-                Created and maintained by
-                <strong>Ahmed Adeyemi, US Signal</strong>
-            </p>
-        </div>
-    </footer>
+</main>
 
-    <script src="dashboard.js"></script>
+<footer class="footer">
+    <div class="footer-left">
+        <button id="darkModeToggle" type="button">Dark mode</button>
+    </div>
+    <div class="footer-right">
+        <img src="assets/us-signal-logo.png" alt="US Signal" class="footer-logo" />
+        <span>Created and maintained by <strong>Ahmed Adeyemi, US Signal</strong></span>
+    </div>
+</footer>
+
+<script src="dashboard.js"></script>
 </body>
 </html>
