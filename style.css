@@ -1,265 +1,79 @@
-/* =========================
-   GLOBAL
-========================= */
 body {
+    font-family: Arial, sans-serif;
+    background: #f4f5f7;
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f4f6f9;
-    color: #222;
 }
 
-header {
-    display: flex;
-    align-items: center;
-    padding: 10px 20px;
+/* HEADER */
+.header {
     background: white;
+    padding: 15px 25px;
     border-bottom: 1px solid #ddd;
 }
 
-header img {
-    height: 42px;
-    margin-right: 12px;
+.logo {
+    height: 50px;
 }
 
-.header-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.header-title {
+.header-text h1 {
+    margin: 0;
     font-size: 22px;
-    font-weight: bold;
 }
 
-.header-subtitle {
-    font-size: 14px;
-    color: #666;
-}
-
-/* =========================
-   SECTION CARDS
-========================= */
-.main-container {
-    padding: 20px;
-}
-
-.section-card {
+.panel {
     background: white;
+    margin: 20px;
+    padding: 20px;
     border-radius: 6px;
-    padding: 0;
-    margin-bottom: 25px;
-    border: 1px solid #d6d6d6;
+    border: 1px solid #dedede;
 }
 
-.section-header {
-    background: #e4e6ee;
-    padding: 12px 15px;
-    font-size: 18px;
-    font-weight: bold;
-    border-bottom: 1px solid #ccc;
-}
-
-.section-body {
-    padding: 15px;
-}
-
-/* =========================
-   QUEUE TABLE
-========================= */
-#queue-table {
+.data-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 15px;
-    text-align: center;
 }
 
-#queue-table th,
-#queue-table td {
+.data-table th {
+    background: #f1f1f1;
+    padding: 10px;
+}
+
+.data-table td {
     padding: 10px;
     border-bottom: 1px solid #eee;
 }
 
-#queue-table th {
-    font-weight: bold;
-    color: #333;
-}
-
-/* Highlight queue row */
-.queue-alert {
-    background: #ffecec !important;
-    color: #b30000 !important;
-    font-weight: bold;
-}
-
-/* =========================
-   KPI PANEL
-========================= */
-.kpi-container {
-    display: flex;
-    gap: 12px;
-    margin-top: 10px;
-}
-
-.kpi-card {
-    flex: 1;
-    background: #fafafa;
-    border: 1px solid #dedede;
-    border-radius: 6px;
-    padding: 12px;
+.loading,
+.error {
     text-align: center;
-}
-
-.kpi-main-value {
-    font-size: 34px;
-    font-weight: bold;
-}
-
-.kpi-label {
-    font-size: 13px;
-    color: #666;
-    margin-top: 4px;
-}
-
-.kpi-split-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 15px;
-}
-
-.kpi-sub-block {
-    text-align: center;
-}
-
-.kpi-sub-label {
-    font-size: 12px;
-    color: #888;
-}
-
-.kpi-sub-value {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-/* =========================
-   AGENT TABLE
-========================= */
-#agent-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-#agent-table th,
-#agent-table td {
+    color: red;
     padding: 10px;
-    border-bottom: 1px solid #e3e3e3;
+}
+
+/* GLOBAL STAT CARDS */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.stat-card {
+    background: #fafafa;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
     text-align: center;
 }
 
-#agent-table th {
-    background: #f0f0f5;
+.stat-value {
+    font-size: 26px;
     font-weight: bold;
 }
 
-/* =========================
-   AVAILABILITY COLORS
-========================= */
-
-/* Match text exactly so no JS/HTML changes are needed */
-#agent-table td:nth-child(4) {
-    font-weight: bold;
-    padding: 6px 12px;
-    border-radius: 20px;
-}
-
-/* Available (green) */
-#agent-table td:nth-child(4):contains("Available") {
-    background: #d4f8d4;
-    color: #0b7a0b;
-}
-
-/* Not Available (red) */
-#agent-table td:nth-child(4):contains("Not Available") {
-    background: #ffe1e1;
-    color: #b30000;
-}
-
-/* Chrome/Safari fallback */
-#agent-table td:nth-child(4) {
-    position: relative;
-}
-
-#agent-table td:nth-child(4)::before {
-    content: attr(data-status);
-    display: none;
-}
-
-/* =========================
-   AGENT ACTIONS
-========================= */
-.agent-actions a {
-    margin-right: 14px;
-    color: #0047cc;
-    font-size: 14px;
-    text-decoration: none;
-}
-
-.agent-actions a:hover {
-    text-decoration: underline;
-}
-
-/* =========================
-   FOOTER
-========================= */
+/* FOOTER */
 .footer {
-    text-align: right;
-    padding: 20px;
-    margin-top: 25px;
-    font-size: 13px;
-    color: #444;
-}
-
-.footer img {
-    height: 26px;
-    margin-right: 8px;
-    vertical-align: middle;
-}
-
-/* =========================
-   DARK MODE
-========================= */
-body.dark {
-    background: #1e1e1e;
-    color: white;
-}
-
-body.dark header {
-    background: #2b2b2b;
-    border-bottom: 1px solid #444;
-}
-
-body.dark .section-card {
-    background: #2b2b2b;
-    border-color: #444;
-}
-
-body.dark .section-header {
-    background: #3a3a3a;
-    border-bottom: 1px solid #555;
-}
-
-body.dark #queue-table th,
-body.dark #queue-table td,
-body.dark #agent-table th,
-body.dark #agent-table td {
-    border-color: #555;
-}
-
-body.dark #agent-table th {
-    background: #333;
-}
-
-#dark-mode-toggle {
-    margin: 20px;
-    padding: 8px 12px;
+    text-align: center;
+    font-size: 14px;
+    margin: 30px;
 }
