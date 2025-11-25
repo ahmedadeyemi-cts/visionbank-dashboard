@@ -1,265 +1,325 @@
-/* =========================
-   GLOBAL
-========================= */
+/* style.css */
+/* Basic layout */
+
 body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f4f6f9;
-    color: #222;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: #f5f7fa;
+  color: #222;
 }
 
 header {
-    display: flex;
-    align-items: center;
-    padding: 10px 20px;
-    background: white;
-    border-bottom: 1px solid #ddd;
-}
-
-header img {
-    height: 42px;
-    margin-right: 12px;
+  display: flex;
+  align-items: center;
+  padding: 8px 24px;
+  border-bottom: 1px solid #d0d3da;
+  background-color: #ffffff;
 }
 
 .header-text {
-    display: flex;
-    flex-direction: column;
+  margin-left: 8px;
 }
 
 .header-title {
-    font-size: 22px;
-    font-weight: bold;
+  font-size: 22px;
+  font-weight: 600;
 }
 
 .header-subtitle {
-    font-size: 14px;
-    color: #666;
+  font-size: 12px;
+  color: #777;
 }
 
-/* =========================
-   SECTION CARDS
-========================= */
 .main-container {
-    padding: 20px;
+  padding: 16px 24px 80px 24px;
 }
+
+/* Sections */
 
 .section-card {
-    background: white;
-    border-radius: 6px;
-    padding: 0;
-    margin-bottom: 25px;
-    border: 1px solid #d6d6d6;
+  background-color: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px #e1e4ea;
+  margin-bottom: 16px;
 }
 
 .section-header {
-    background: #e4e6ee;
-    padding: 12px 15px;
-    font-size: 18px;
-    font-weight: bold;
-    border-bottom: 1px solid #ccc;
+  background-color: #e9ebf1;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .section-body {
-    padding: 15px;
+  padding: 8px 16px 16px 16px;
 }
 
-/* =========================
-   QUEUE TABLE
-========================= */
-#queue-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 15px;
-    text-align: center;
+/* Tables */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
 }
 
-#queue-table th,
-#queue-table td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
+thead th {
+  border-bottom: 1px solid #e1e4ea;
+  padding: 6px 8px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  color: #555;
 }
 
-#queue-table th {
-    font-weight: bold;
-    color: #333;
+tbody td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f0f1f4;
+  vertical-align: middle;
 }
 
-/* Highlight queue row */
-.queue-alert {
-    background: #ffecec !important;
-    color: #b30000 !important;
-    font-weight: bold;
+.numeric-cell {
+  text-align: right;
 }
 
-/* =========================
-   KPI PANEL
-========================= */
-.kpi-container {
-    display: flex;
-    gap: 12px;
-    margin-top: 10px;
+.row-alt {
+  background-color: #fafbff;
 }
 
-.kpi-card {
-    flex: 1;
-    background: #fafafa;
-    border: 1px solid #dedede;
-    border-radius: 6px;
-    padding: 12px;
-    text-align: center;
+/* Queue */
+
+.queue-long-wait td {
+  background-color: #fff5f5;
+  color: #b00020;
+  font-weight: 600;
 }
 
-.kpi-main-value {
-    font-size: 34px;
-    font-weight: bold;
+/* Availability pills */
+
+.availability-cell {
+  white-space: nowrap;
 }
 
-.kpi-label {
-    font-size: 13px;
-    color: #666;
-    margin-top: 4px;
+.availability-pill {
+  display: inline-block;
+  min-width: 80px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid transparent;
 }
 
-.kpi-split-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 15px;
+.availability-available {
+  background-color: #e6f7ec;
+  color: #0b8a2f;
+  border-color: #0b8a2f33;
 }
 
-.kpi-sub-block {
-    text-align: center;
+.availability-busy {
+  background-color: #ffe6e6;
+  color: #c62828;
+  border-color: #c6282833;
 }
 
-.kpi-sub-label {
-    font-size: 12px;
-    color: #888;
+.availability-wrap {
+  background-color: #fff9e0;
+  color: #b08a00;
+  border-color: #b08a0033;
 }
 
-.kpi-sub-value {
-    font-size: 18px;
-    font-weight: bold;
+.availability-other {
+  background-color: #edf2ff;
+  color: #2c3e94;
+  border-color: #2c3e9433;
 }
 
-/* =========================
-   AGENT TABLE
-========================= */
-#agent-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
+/* Over threshold flashing */
+
+@keyframes flash-red {
+  0%, 100% {
+    background-color: #ffe6e6;
+  }
+  50% {
+    background-color: #ffb3b3;
+  }
 }
 
-#agent-table th,
-#agent-table td {
-    padding: 10px;
-    border-bottom: 1px solid #e3e3e3;
-    text-align: center;
+.agent-over-threshold {
+  animation: flash-red 1s infinite;
 }
 
-#agent-table th {
-    background: #f0f0f5;
-    font-weight: bold;
+/* Error cell */
+
+.error-cell {
+  color: #c62828;
+  font-weight: 500;
+  padding: 10px 8px;
 }
 
-/* =========================
-   AVAILABILITY COLORS
-========================= */
+/* Sorting indicators */
 
-/* Match text exactly so no JS/HTML changes are needed */
-#agent-table td:nth-child(4) {
-    font-weight: bold;
-    padding: 6px 12px;
-    border-radius: 20px;
+thead th.sorted-asc::after,
+thead th.sorted-desc::after {
+  content: "";
+  display: inline-block;
+  margin-left: 4px;
+  border: 4px solid transparent;
 }
 
-/* Available (green) */
-#agent-table td:nth-child(4):contains("Available") {
-    background: #d4f8d4;
-    color: #0b7a0b;
+thead th.sorted-asc::after {
+  border-bottom-color: #555;
 }
 
-/* Not Available (red) */
-#agent-table td:nth-child(4):contains("Not Available") {
-    background: #ffe1e1;
-    color: #b30000;
+thead th.sorted-desc::after {
+  border-top-color: #555;
 }
 
-/* Chrome/Safari fallback */
-#agent-table td:nth-child(4) {
-    position: relative;
+/* Top row actions under Agent Performance */
+
+.agent-actions {
+  margin-bottom: 8px;
 }
 
-#agent-table td:nth-child(4)::before {
-    content: attr(data-status);
-    display: none;
-}
-
-/* =========================
-   AGENT ACTIONS
-========================= */
 .agent-actions a {
-    margin-right: 14px;
-    color: #0047cc;
-    font-size: 14px;
-    text-decoration: none;
+  margin-right: 12px;
+  font-size: 12px;
+  color: #0055cc;
+  text-decoration: none;
 }
 
 .agent-actions a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
-/* =========================
-   FOOTER
-========================= */
-.footer {
-    text-align: right;
-    padding: 20px;
-    margin-top: 25px;
-    font-size: 13px;
-    color: #444;
+/* KPI metrics panel */
+
+.kpi-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
 }
 
-.footer img {
-    height: 26px;
-    margin-right: 8px;
-    vertical-align: middle;
+.kpi-card {
+  background-color: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px #e1e4ea;
+  padding: 8px 12px;
+  min-width: 140px;
+  text-align: center;
+  font-size: 12px;
 }
 
-/* =========================
-   DARK MODE
-========================= */
-body.dark {
-    background: #1e1e1e;
-    color: white;
+.kpi-main-value {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
 }
 
-body.dark header {
-    background: #2b2b2b;
-    border-bottom: 1px solid #444;
+.kpi-label {
+  font-size: 11px;
+  color: #555;
 }
 
-body.dark .section-card {
-    background: #2b2b2b;
-    border-color: #444;
+.kpi-split {
+  display: flex;
+  flex-direction: column;
 }
 
-body.dark .section-header {
-    background: #3a3a3a;
-    border-bottom: 1px solid #555;
+.kpi-split-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
 }
 
-body.dark #queue-table th,
-body.dark #queue-table td,
-body.dark #agent-table th,
-body.dark #agent-table td {
-    border-color: #555;
+.kpi-sub-block {
+  flex: 1;
 }
 
-body.dark #agent-table th {
-    background: #333;
+.kpi-sub-label {
+  font-size: 10px;
+  color: #777;
 }
+
+.kpi-sub-value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Dark mode */
+
+.dark-mode {
+  background-color: #14161c;
+  color: #f5f7ff;
+}
+
+.dark-mode header {
+  background-color: #1b1e26;
+  border-bottom-color: #303341;
+}
+
+.dark-mode .section-card {
+  background-color: #1b1e26;
+  box-shadow: 0 0 0 1px #303341;
+}
+
+.dark-mode .section-header {
+  background-color: #242837;
+}
+
+.dark-mode thead th {
+  border-bottom-color: #303341;
+  color: #ccd2ff;
+}
+
+.dark-mode tbody td {
+  border-bottom-color: #242837;
+}
+
+.dark-mode .row-alt {
+  background-color: #1e2233;
+}
+
+.dark-mode .error-cell {
+  color: #ff8a80;
+}
+
+/* Dark mode button */
 
 #dark-mode-toggle {
-    margin: 20px;
-    padding: 8px 12px;
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  padding: 6px 10px;
+  font-size: 11px;
+  border-radius: 4px;
+  border: 1px solid #d0d3da;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.dark-mode #dark-mode-toggle {
+  background-color: #242837;
+  border-color: #464a63;
+  color: #f5f7ff;
+}
+
+/* Footer & US Signal logo */
+
+.footer {
+  position: fixed;
+  right: 16px;
+  bottom: 8px;
+  font-size: 10px;
+  color: #777;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#us-signal-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
