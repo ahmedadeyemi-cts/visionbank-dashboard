@@ -48,7 +48,7 @@ function getAvailabilityClass(desc) {
     if (s.includes("available")) return "status-available";
 
     // On Call / Dialing → Red
-    if (s.includes("on call") || s.includes("dialing") || s.includes("dial out") || s.includes("dialing out")) {
+    if (s.includes("on call") || s.includes("dialing") || s.includes("dial out") || s.includes("dialing out")|| s.includes("Accept Internal Calls")) {
         return "status-oncall";
     }
 
@@ -58,7 +58,7 @@ function getAvailabilityClass(desc) {
     // Ringing → Orange
     if (s.includes("ringing") || s.includes("ring")) return "status-ringing";
     if (s.includes("wrap")) return "status-wrapup"; 
-    if (s.includes("Accept Internal Calls")) return "Internal Call"; 
+   
     return "";
 }
 
