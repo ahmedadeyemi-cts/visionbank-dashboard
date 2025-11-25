@@ -45,7 +45,7 @@ function getAvailabilityClass(desc) {
     const s = (desc || "").toLowerCase();
 
     // Available → Green
-    if (s.includes("available") || (s.includes("not set")) return "status-available";
+    if (s.includes("available")) return "status-available";
 
     // On Call / Dialing → Red
     if (s.includes("on call") || s.includes("dialing") || s.includes("dial out") || s.includes("dialing out")) {
