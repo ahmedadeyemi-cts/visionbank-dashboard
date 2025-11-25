@@ -1,325 +1,199 @@
-/* style.css */
-/* Basic layout */
-
+/* Global Resets */
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background-color: #f5f7fa;
-  color: #222;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    color: #222;
 }
 
 header {
-  display: flex;
-  align-items: center;
-  padding: 8px 24px;
-  border-bottom: 1px solid #d0d3da;
-  background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 12px 18px;
+    border-bottom: 1px solid #ddd;
+    background: #fff;
 }
 
 .header-text {
-  margin-left: 8px;
+    margin-left: 12px;
 }
 
 .header-title {
-  font-size: 22px;
-  font-weight: 600;
+    font-size: 22px;
+    font-weight: bold;
 }
 
 .header-subtitle {
-  font-size: 12px;
-  color: #777;
+    font-size: 14px;
+    color: #666;
 }
 
+/* MAIN CONTAINER */
 .main-container {
-  padding: 16px 24px 80px 24px;
+    padding: 20px;
 }
 
-/* Sections */
-
+/* SECTION CARDS */
 .section-card {
-  background-color: #ffffff;
-  border-radius: 4px;
-  box-shadow: 0 0 0 1px #e1e4ea;
-  margin-bottom: 16px;
+    background: white;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    margin-bottom: 22px;
 }
 
 .section-header {
-  background-color: #e9ebf1;
-  padding: 8px 16px;
-  font-weight: 600;
-  font-size: 14px;
+    background: #dee0e8;
+    padding: 12px 15px;
+    font-weight: bold;
+    font-size: 16px;
+    border-bottom: 1px solid #ccc;
 }
 
 .section-body {
-  padding: 8px 16px 16px 16px;
+    padding: 18px;
 }
 
-/* Tables */
-
+/* TABLES */
 table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 14px;
 }
 
-thead th {
-  border-bottom: 1px solid #e1e4ea;
-  padding: 6px 8px;
-  text-align: left;
-  font-weight: 600;
-  font-size: 12px;
-  color: #555;
+th {
+    background: #f2f3f6;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+    font-size: 13px;
 }
 
-tbody td {
-  padding: 6px 8px;
-  border-bottom: 1px solid #f0f1f4;
-  vertical-align: middle;
+td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
 }
-
-.numeric-cell {
-  text-align: right;
-}
-
-.row-alt {
-  background-color: #fafbff;
-}
-
-/* Queue */
-
-.queue-long-wait td {
-  background-color: #fff5f5;
-  color: #b00020;
-  font-weight: 600;
-}
-
-/* Availability pills */
-
-.availability-cell {
-  white-space: nowrap;
-}
-
-.availability-pill {
-  display: inline-block;
-  min-width: 80px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  text-align: center;
-  font-weight: 500;
-  border: 1px solid transparent;
-}
-
-.availability-available {
-  background-color: #e6f7ec;
-  color: #0b8a2f;
-  border-color: #0b8a2f33;
-}
-
-.availability-busy {
-  background-color: #ffe6e6;
-  color: #c62828;
-  border-color: #c6282833;
-}
-
-.availability-wrap {
-  background-color: #fff9e0;
-  color: #b08a00;
-  border-color: #b08a0033;
-}
-
-.availability-other {
-  background-color: #edf2ff;
-  color: #2c3e94;
-  border-color: #2c3e9433;
-}
-
-/* Over threshold flashing */
-
-@keyframes flash-red {
-  0%, 100% {
-    background-color: #ffe6e6;
-  }
-  50% {
-    background-color: #ffb3b3;
-  }
-}
-
-.agent-over-threshold {
-  animation: flash-red 1s infinite;
-}
-
-/* Error cell */
 
 .error-cell {
-  color: #c62828;
-  font-weight: 500;
-  padding: 10px 8px;
+    color: #c00;
+    font-weight: bold;
+    text-align: center;
 }
 
-/* Sorting indicators */
-
-thead th.sorted-asc::after,
-thead th.sorted-desc::after {
-  content: "";
-  display: inline-block;
-  margin-left: 4px;
-  border: 4px solid transparent;
-}
-
-thead th.sorted-asc::after {
-  border-bottom-color: #555;
-}
-
-thead th.sorted-desc::after {
-  border-top-color: #555;
-}
-
-/* Top row actions under Agent Performance */
-
-.agent-actions {
-  margin-bottom: 8px;
-}
-
-.agent-actions a {
-  margin-right: 12px;
-  font-size: 12px;
-  color: #0055cc;
-  text-decoration: none;
-}
-
-.agent-actions a:hover {
-  text-decoration: underline;
-}
-
-/* KPI metrics panel */
-
+/* KPI CARDS */
 .kpi-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
 }
 
 .kpi-card {
-  background-color: #ffffff;
-  border-radius: 4px;
-  box-shadow: 0 0 0 1px #e1e4ea;
-  padding: 8px 12px;
-  min-width: 140px;
-  text-align: center;
-  font-size: 12px;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    width: 230px;
+    border-radius: 8px;
+    text-align: center;
 }
 
 .kpi-main-value {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 4px;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 6px;
 }
 
 .kpi-label {
-  font-size: 11px;
-  color: #555;
+    font-size: 14px;
+    color: #444;
 }
 
-.kpi-split {
-  display: flex;
-  flex-direction: column;
-}
-
+/* Split KPI rows (Pct/Numeric) */
 .kpi-split-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 8px;
 }
-
 .kpi-sub-block {
-  flex: 1;
+    text-align: center;
 }
-
 .kpi-sub-label {
-  font-size: 10px;
-  color: #777;
+    font-size: 12px;
+    color: #777;
 }
-
 .kpi-sub-value {
-  font-size: 14px;
-  font-weight: 600;
+    font-size: 20px;
+    font-weight: bold;
 }
 
-/* Dark mode */
-
-.dark-mode {
-  background-color: #14161c;
-  color: #f5f7ff;
+/* AVAILABILITY COLORS */
+.avail-green {
+    background: #d2f5d2;
+    color: #006400;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 4px 8px;
+    text-align: center;
+}
+.avail-red {
+    background: #ffd6d6;
+    color: #8b0000;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 4px 8px;
+    text-align: center;
+}
+.avail-yellow {
+    background: #fff4cc;
+    color: #8a6d00;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 4px 8px;
+    text-align: center;
 }
 
-.dark-mode header {
-  background-color: #1b1e26;
-  border-bottom-color: #303341;
+/* FOOTER */
+.footer {
+    padding: 20px;
+    font-size: 12px;
+    text-align: right;
+    color: #555;
+}
+.footer img {
+    height: 22px;
+    margin-right: 6px;
 }
 
-.dark-mode .section-card {
-  background-color: #1b1e26;
-  box-shadow: 0 0 0 1px #303341;
+/* DARK MODE */
+body.dark-mode {
+    background: #1e1e1e;
+    color: #e0e0e0;
 }
 
-.dark-mode .section-header {
-  background-color: #242837;
+body.dark-mode .section-card {
+    background: #2c2c2c;
+    border-color: #555;
 }
 
-.dark-mode thead th {
-  border-bottom-color: #303341;
-  color: #ccd2ff;
+body.dark-mode table th {
+    background: #414141;
+    color: #fff;
 }
 
-.dark-mode tbody td {
-  border-bottom-color: #242837;
+body.dark-mode table td {
+    border-color: #555;
 }
 
-.dark-mode .row-alt {
-  background-color: #1e2233;
+body.dark-mode .kpi-card {
+    background: #353535;
+    border-color: #666;
 }
-
-.dark-mode .error-cell {
-  color: #ff8a80;
-}
-
-/* Dark mode button */
 
 #dark-mode-toggle {
-  position: fixed;
-  bottom: 12px;
-  left: 12px;
-  padding: 6px 10px;
-  font-size: 11px;
-  border-radius: 4px;
-  border: 1px solid #d0d3da;
-  background-color: #ffffff;
-  cursor: pointer;
-}
-
-.dark-mode #dark-mode-toggle {
-  background-color: #242837;
-  border-color: #464a63;
-  color: #f5f7ff;
-}
-
-/* Footer & US Signal logo */
-
-.footer {
-  position: fixed;
-  right: 16px;
-  bottom: 8px;
-  font-size: 10px;
-  color: #777;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-#us-signal-logo {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
+    margin: 20px;
+    padding: 8px 18px;
+    border: none;
+    background: #333;
+    color: white;
+    cursor: pointer;
+    border-radius: 6px;
 }
