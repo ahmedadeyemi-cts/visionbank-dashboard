@@ -1,164 +1,194 @@
-const API_ROOT = "https://pop1-apps.mycontactcenter.net/api/v3";
-const AUTH_TOKEN =
-  "VWGKXWSqGA4FwIRXb2clx5H1dS3cYpplXa5il3bE4Xg=";   // your working token
+// DIRECT API ENDPOINTS
+const API_QUEUE = "https://pop1-apps.mycontactcenter.net/api/v3/realtime/queues";
+const API_AGENTS = "https://pop1-apps.mycontactcenter.net/api/v3/realtime/agents";
+const API_GLOBAL = "https://pop1-apps.mycontactcenter.net/api/v3/realtime/statistics/global";
 
-// -------------------------------
-// Helper: format seconds → HH:MM:SS
-// -------------------------------
-function formatSeconds(sec) {
-  if (!sec || sec < 0) sec = 0;
-  const h = String(Math.floor(sec / 3600)).padStart(2, "0");
-  const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
-  const s = String(sec % 60).padStart(2, "0");
-  return `${h}:${m}:${s}`;
+// TOKEN REQUIRED BY MCC (same one used in Postman)
+const TOKEN =
+  "VWGKXWSqGA4FwIRXb2clx5H1dS3cYpplXa5iI3bE4Xg=";
+
+// Helper
+function formatSecondsToHHMMSS(sec) {
+    if (!sec || sec < 0) return "00:00:00";
+    const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+    const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+    const s = String(sec % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
 }
 
-// -------------------------------
-// LOAD QUEUE STATUS
-// GET /realtime/queues
-// -------------------------------
+/* ---------------------------------------------------
+   LOAD QUEUE STATUS
+----------------------------------------------------*/
 async function loadQueueStatus() {
-  const tbody = document.getElementById("queue-body");
+    const box = document.getElementById("queueStatusContent");
 
-  try {
-    const res = await fetch(`${API_ROOT}/realtime/queues`, {
-      headers: { token: AUTH_TOKEN }
-    });
-    const json = await res.json();
+    try {
+        const res = await fetch(API_QUEUE, {
+            headers: { token: TOKEN }
+        });
 
-    if (!json.QueueStatus || json.QueueStatus.length === 0) {
-      tbody.innerHTML =
-        `<tr><td colspan="4" class="error-cell">Unable to load queue status.</td></tr>`;
-      return;
+        const data = await res.json();
+
+        if (!data?.QueueStatus?.length) {
+            box.innerHTML = `<div class="error">Unable to load queue status.</div>`;
+            return;
+        }
+
+        const q = data.QueueStatus[0];
+
+        box.innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Queue</th><th>Calls</th><th>Agents</th><th>Wait</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>${q.QueueName}</td>
+                        <td>${q.TotalCalls}</td>
+                        <td>${q.TotalLoggedAgents}</td>
+                        <td>${formatSecondsToHHMMSS(q.AvgWaitInterval)}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+
+    } catch (e) {
+        console.error(e);
+        box.innerHTML = `<div class="error">Error loading queue status.</div>`;
     }
-
-    const q = json.QueueStatus[0];
-
-    tbody.innerHTML = `
-      <tr>
-        <td>${q.QueueName}</td>
-        <td>${q.TotalCalls}</td>
-        <td>${q.TotalLoggedAgents}</td>
-        <td>${formatSeconds(q.AvgWaitInterval)}</td>
-      </tr>`;
-  } catch (err) {
-    tbody.innerHTML =
-      `<tr><td colspan="4" class="error-cell">Unable to load queue status.</td></tr>`;
-  }
 }
 
-// -------------------------------
-// LOAD GLOBAL REALTIME STATISTICS
-// GET /realtime/statistics/global
-// -------------------------------
+/* ---------------------------------------------------
+   LOAD GLOBAL STATISTICS
+----------------------------------------------------*/
 async function loadGlobalStats() {
-  const errBox = document.getElementById("global-error");
-  const fields = {
-    queued: document.getElementById("kpi-total-queued"),
-    transferred: document.getElementById("kpi-total-transferred"),
-    abandoned: document.getElementById("kpi-total-abandoned"),
-    maxWait: document.getElementById("kpi-max-wait"),
-    service: document.getElementById("kpi-service-level"),
-    received: document.getElementById("kpi-total-received"),
-    answerRate: document.getElementById("kpi-answer-rate"),
-    abandonRate: document.getElementById("kpi-abandon-rate"),
-    callbackReg: document.getElementById("kpi-callbacks-registered"),
-    callbackWait: document.getElementById("kpi-callbacks-waiting")
-  };
+    const errBox = document.getElementById("globalStatsError");
 
-  try {
-    const res = await fetch(
-      `${API_ROOT}/realtime/statistics/global`,
-      { headers: { token: AUTH_TOKEN } }
-    );
+    try {
+        const res = await fetch(API_GLOBAL, {
+            headers: { token: TOKEN }
+        });
 
-    const json = await res.json();
+        const data = await res.json();
 
-    if (!json.GlobalStatistics || json.GlobalStatistics.length === 0) {
-      errBox.classList.remove("hidden");
-      return;
+        if (!data?.GlobalStatistics?.length) {
+            errBox.textContent = "Unable to load global statistics.";
+            return;
+        }
+
+        errBox.textContent = "";
+        const g = data.GlobalStatistics[0];
+
+        document.getElementById("gs-total-queued").textContent = g.TotalCallsQueued;
+        document.getElementById("gs-transferred").textContent = g.TotalCallsTransferred;
+        document.getElementById("gs-abandoned").textContent = g.TotalCallsAbandoned;
+        document.getElementById("gs-max-wait").textContent =
+            formatSecondsToHHMMSS(g.MaxQueueWaitingTime);
+
+        document.getElementById("gs-service-level").textContent =
+            g.ServiceLevel.toFixed(1) + "%";
+
+        document.getElementById("gs-calls-received").textContent = g.TotalCallsReceived;
+        document.getElementById("gs-answer-rate").textContent =
+            g.AnswerRate.toFixed(1) + "%";
+        document.getElementById("gs-abandon-rate").textContent =
+            g.AbandonRate.toFixed(1) + "%";
+
+        document.getElementById("gs-callbacks-reg").textContent =
+            g.CallbacksRegistered;
+        document.getElementById("gs-callbacks-waiting").textContent =
+            g.CallbacksWaiting;
+
+    } catch (e) {
+        console.error("Global Stats Error", e);
+        errBox.textContent = "Unable to load global statistics.";
     }
-
-    errBox.classList.add("hidden");
-
-    const g = json.GlobalStatistics[0];
-
-    fields.queued.textContent = g.TotalCallsQueued;
-    fields.transferred.textContent = g.TotalCallsTransferred;
-    fields.abandoned.textContent = g.TotalCallsAbandoned;
-    fields.maxWait.textContent = formatSeconds(g.MaxQueueWaitingTime);
-    fields.service.textContent = `${g.ServiceLevel.toFixed(1)}%`;
-    fields.received.textContent = g.TotalCallsReceived;
-    fields.answerRate.textContent = `${g.AnswerRate.toFixed(1)}%`;
-    fields.abandonRate.textContent = `${g.AbandonRate.toFixed(1)}%`;
-    fields.callbackReg.textContent = g.CallbacksRegistered;
-    fields.callbackWait.textContent = g.CallbacksWaiting;
-
-  } catch (err) {
-    errBox.classList.remove("hidden");
-  }
 }
 
-// -------------------------------
-// LOAD AGENT PERFORMANCE
-// GET /realtime/agents
-// -------------------------------
-async function loadAgents() {
-  const tbody = document.getElementById("agent-body");
+/* ---------------------------------------------------
+   LOAD AGENT STATUS
+----------------------------------------------------*/
+async function loadAgentStatus() {
+    const box = document.getElementById("agentStatusContent");
+    const summary = document.getElementById("agentSummary");
 
-  try {
-    const res = await fetch(`${API_ROOT}/realtime/agents`, {
-      headers: { token: AUTH_TOKEN }
-    });
-    const json = await res.json();
+    try {
+        const res = await fetch(API_AGENTS, {
+            headers: { token: TOKEN }
+        });
 
-    if (!json.AgentStatus || json.AgentStatus.length === 0) {
-      tbody.innerHTML = `
-        <tr><td colspan="10" class="error-cell">Unable to load agent data.</td></tr>`;
-      return;
+        const data = await res.json();
+
+        if (!data?.AgentStatus?.length) {
+            box.innerHTML = `<div class="error">Unable to load agent data.</div>`;
+            summary.textContent = "";
+            return;
+        }
+
+        const agents = data.AgentStatus;
+
+        let available = 0, onCall = 0, wrap = 0, onBreak = 0, other = 0;
+        agents.forEach(a => {
+            const s = (a.CallTransferStatusDesc || "").toLowerCase();
+            if (s.includes("available")) available++;
+            else if (s.includes("call")) onCall++;
+            else if (s.includes("wrap")) wrap++;
+            else if (s.includes("break")) onBreak++;
+            else other++;
+        });
+
+        summary.textContent =
+            `${agents.length} agents signed on, ${available} available, `
+            + `${onCall} on call, ${wrap} on wrap-up, ${onBreak} on break, ${other} other`;
+
+        let rows = "";
+        agents.forEach(a => {
+            rows += `
+                <tr>
+                    <td>${a.FullName}</td>
+                    <td>${a.TeamName}</td>
+                    <td>${a.PhoneExt}</td>
+                    <td>${a.CallTransferStatusDesc}</td>
+                    <td>${a.TotalCallsReceived || 0}</td>
+                    <td>${formatSecondsToHHMMSS(a.AverageHandleTimeSeconds)}</td>
+                    <td>${a.DialoutCount || 0}</td>
+                    <td>${a.StartDateUtc}</td>
+                </tr>
+            `;
+        });
+
+        box.innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee</th><th>Team</th><th>Phone No.</th>
+                        <th>Availability</th><th>Inbound</th>
+                        <th>Avg Handle</th><th>Outbound</th><th>Start Date</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+        `;
+
+    } catch (e) {
+        console.error(e);
+        box.innerHTML = `<div class="error">Unable to load agent data.</div>`;
     }
-
-    const rows = json.AgentStatus.map(a => {
-      const avgHandle = a.TotalCallsReceived
-        ? formatSeconds(a.TotalSecondsOnCall / a.TotalCallsReceived)
-        : "00:00:00";
-
-      return `
-        <tr>
-          <td>${a.FullName}</td>
-          <td>${a.TeamName}</td>
-          <td>${a.PhoneExt}</td>
-          <td>${a.CallTransferStatusDesc}</td>
-          <td>${a.TotalCallsReceived}</td>
-          <td>${a.TotalCallsMissed || 0}</td>
-          <td>${a.TotalTransfers || 0}</td>
-          <td>${a.DialoutCount || 0}</td>
-          <td>${avgHandle}</td>
-          <td>${a.StartDateUtc}</td>
-        </tr>`;
-    }).join("");
-
-    tbody.innerHTML = rows;
-
-  } catch (err) {
-    tbody.innerHTML =
-      `<tr><td colspan="10" class="error-cell">Unable to load agent data.</td></tr>`;
-  }
 }
 
-// -------------------------------
-// INIT + AUTO REFRESH
-// -------------------------------
-function initDashboard() {
-  loadQueueStatus();
-  loadGlobalStats();
-  loadAgents();
-
-  setInterval(() => {
+/* ---------------------------------------------------
+   INIT REFRESH LOOP
+----------------------------------------------------*/
+document.addEventListener("DOMContentLoaded", () => {
     loadQueueStatus();
     loadGlobalStats();
-    loadAgents();
-  }, 10000);
-}
+    loadAgentStatus();
 
-document.addEventListener("DOMContentLoaded", initDashboard);
+    setInterval(() => {
+        loadQueueStatus();
+        loadGlobalStats();
+        loadAgentStatus();
+    }, 7000);
+});
