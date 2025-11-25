@@ -153,39 +153,50 @@ function setText(id, value) {
 }
 
 // ===============================
-// LOAD AGENT PERFORMANCE
+// LOAD AGENT PERFORMANCE (UPDATED: DURATION ADDED)
 // ===============================
 async function loadAgentStatus() {
     const body = document.getElementById("agent-body");
-    body.innerHTML = `<tr><td colspan="10" class="loading">Loading agent data…</td></tr>`;
+    body.innerHTML = `<tr><td colspan="11" class="loading">Loading agent data…</td></tr>`;
 
     try {
         const data = await fetchApi("/status/agents");
 
         if (!data || !Array.isArray(data.AgentStatus) || data.AgentStatus.length === 0) {
-            body.innerHTML = `<tr><td colspan="10" class="error">Unable to load agent data.</td></tr>`;
+            body.innerHTML = `<tr><td colspan="11" class="error">Unable to load agent data.</td></tr>`;
             return;
         }
 
         body.innerHTML = "";
 
-        data.AgentStatus.forEach((a, index) => {
+        data.AgentStatus.forEach(a => {
             const inbound = a.TotalCallsReceived ?? 0;
             const missed = a.TotalCallsMissed ?? 0;
             const transferred = a.ThirdPartyTransferCount ?? 0;
             const outbound = a.DialoutCount ?? 0;
 
-            const avgHandleSeconds = inbound > 0 ? Math.round((a.TotalSecondsOnCall || 0) / inbound) : 0;
+            // Calculate Duration → SecondsInCurrentStatus
+            const duration = formatTime(a.SecondsInCurrentStatus ?? 0);
 
+            // Avg Handle Time
+            const avgHandleSeconds =
+                inbound > 0 ? Math.round((a.TotalSecondsOnCall || 0) / inbound) : 0;
+
+            // Availability color map
             const availabilityClass = getAvailabilityClass(a.CallTransferStatusDesc);
 
             const tr = document.createElement("tr");
-            // zebra striping handled in CSS, row index not needed here
+
             tr.innerHTML = `
                 <td>${safe(a.FullName)}</td>
                 <td>${safe(a.TeamName)}</td>
                 <td>${safe(a.PhoneExt)}</td>
                 <td class="availability-cell ${availabilityClass}">${safe(a.CallTransferStatusDesc)}</td>
+                
+                <!-- DURATION (NEW COLUMN) -->
+                <td class="numeric">${duration}</td>
+
+                <!-- Existing columns -->
                 <td class="numeric">${inbound}</td>
                 <td class="numeric">${missed}</td>
                 <td class="numeric">${transferred}</td>
@@ -193,12 +204,13 @@ async function loadAgentStatus() {
                 <td class="numeric">${formatTime(avgHandleSeconds)}</td>
                 <td>${formatDate(a.StartDateUtc)}</td>
             `;
+
             body.appendChild(tr);
         });
 
     } catch (err) {
         console.error("Agent load error:", err);
-        body.innerHTML = `<tr><td colspan="10" class="error">Unable to load agent data.</td></tr>`;
+        body.innerHTML = `<tr><td colspan="11" class="error">Unable to load agent data.</td></tr>`;
     }
 }
 
