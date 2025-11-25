@@ -45,7 +45,7 @@ function getAvailabilityClass(desc) {
     const s = (desc || "").toLowerCase();
 
     // Available → Green
-    if (s.includes("available")) return "status-available";
+    if (s.includes("available") || (s.includes("Not Set")) return "status-available";
 
     // On Call / Dialing → Red
     if (s.includes("on call") || s.includes("dialing") || s.includes("dial out") || s.includes("dialing out")) {
@@ -53,7 +53,7 @@ function getAvailabilityClass(desc) {
     }
 
     // Busy → Yellow
-    if (s.includes("busy")) return "status-busy";
+    if (s.includes("busy") || (s.includes("Wrap")) return "status-busy";
 
     // Ringing → Orange
     if (s.includes("ringing") || s.includes("ring")) return "status-ringing";
