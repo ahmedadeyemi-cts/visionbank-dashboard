@@ -1,152 +1,116 @@
 // ===============================
 // CONFIG
 // ===============================
-
-// Base for all realtime endpoints
-//   /status/queues
-//   /status/agents
-//   /statistics/global
 const API_BASE = "https://pop1-apps.mycontactcenter.net/api/v3/realtime";
+const TOKEN = "VWGKXWSqGA4FwlRXb2cIx5H1dS3cYpplXa5iI3bE4Xg=";
 
-// Static token header (same as Postman)
-const API_TOKEN = "VWGKXWSqGA4FwlRXb2cIx5H1dS3cYpplXa5iI3bE4Xg=";
-
-// Helper wrapper so all fetches share headers
-function apiFetch(path) {
-    return fetch(`${API_BASE}${path}`, {
+// Small helper to call API with token
+async function fetchApi(path) {
+    const res = await fetch(`${API_BASE}${path}`, {
         headers: {
-            token: API_TOKEN
+            "Content-Type": "application/json",
+            "token": TOKEN
         }
     });
+
+    if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+    }
+    return res.json();
 }
 
 // ===============================
 // HELPERS
 // ===============================
 function formatTime(sec) {
-    if (sec === null || sec === undefined || isNaN(sec)) return "--";
-    const s = Math.max(0, Math.floor(sec));
-    const h = Math.floor(s / 3600);
-    const m = Math.floor((s % 3600) / 60);
-    const r = s % 60;
-    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+    if (sec === undefined || sec === null || isNaN(sec)) return "00:00:00";
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = Math.floor(sec % 60);
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
 function formatDate(utc) {
     if (!utc) return "--";
-    // Ensure we treat it as UTC
-    const d = new Date(utc.endsWith("Z") ? utc : utc + "Z");
-    return d.toLocaleString("en-US", { timeZone: "America/Chicago" });
+    // Force UTC and convert to US Central
+    return new Date(utc + "Z").toLocaleString("en-US", { timeZone: "America/Chicago" });
 }
 
-function formatPercent(v) {
-    if (v === null || v === undefined || isNaN(v)) return "--%";
-    return v.toFixed(1) + "%";
+function safe(value, fallback = "--") {
+    return value === undefined || value === null ? fallback : value;
 }
 
-function safe(v, fallback = "--") {
-    return v === null || v === undefined || v === "" ? fallback : v;
-}
+// Map status text to availability class
+function getAvailabilityClass(desc) {
+    const s = (desc || "").toLowerCase();
 
-function availabilityClass(statusText) {
-    const s = (statusText || "").toLowerCase();
-    if (s.includes("accept") || s.includes("available")) return "avail-available";
-    if (s.includes("not ready") || s.includes("wrap") || s.includes("break") || s.includes("away"))
-        return "avail-not-available";
-    return "avail-other";
+    // Available → Green
+    if (s.includes("available")) return "status-available";
+
+    // On Call / Dialing → Red
+    if (s.includes("on call") || s.includes("dialing") || s.includes("dial out") || s.includes("dialing out")) {
+        return "status-oncall";
+    }
+
+    // Busy → Yellow
+    if (s.includes("busy")) return "status-busy";
+
+    // Ringing → Orange
+    if (s.includes("ringing") || s.includes("ring")) return "status-ringing";
+
+    return "";
 }
 
 // ===============================
-// CURRENT QUEUE STATUS
+// LOAD CURRENT QUEUE STATUS
 // ===============================
 async function loadQueueStatus() {
     const body = document.getElementById("queue-body");
+    body.innerHTML = `<tr><td colspan="5" class="loading">Loading queue status…</td></tr>`;
 
     try {
-        const res = await apiFetch("/status/queues");
-        const data = await res.json();
-
-        body.innerHTML = "";
+        const data = await fetchApi("/status/queues");
 
         if (!data || !Array.isArray(data.QueueStatus) || data.QueueStatus.length === 0) {
-            body.innerHTML =
-                `<tr><td colspan="4" class="error">Unable to load queue status.</td></tr>`;
+            body.innerHTML = `<tr><td colspan="5" class="error">Unable to load queue status.</td></tr>`;
             return;
         }
 
-        const q = data.QueueStatus[0]; // Only one queue used
+        const q = data.QueueStatus[0];
 
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${safe(q.QueueName, "Voice Queue")}</td>
-            <td>${safe(q.TotalCalls, 0)}</td>
-            <td>${safe(q.TotalLoggedAgents, 0)}</td>
-            <td>${formatTime(q.AvgWaitInterval)}</td>
+        const calls = safe(q.TotalCalls, 0);
+        const agents = safe(q.TotalLoggedAgents, 0);
+
+        const maxWaitSeconds = q.MaxWaitingTime ?? q.OldestWaitTime ?? 0;
+        const avgWaitSeconds = q.AvgWaitInterval ?? 0;
+
+        const rowHtml = `
+            <tr>
+                <td>${safe(q.QueueName, "Unknown")}</td>
+                <td class="numeric">${calls}</td>
+                <td class="numeric">${agents}</td>
+                <td class="numeric">${formatTime(maxWaitSeconds)}</td>
+                <td class="numeric">${formatTime(avgWaitSeconds)}</td>
+            </tr>
         `;
-        body.appendChild(row);
+
+        body.innerHTML = rowHtml;
+
     } catch (err) {
         console.error("Queue load error:", err);
-        body.innerHTML =
-            `<tr><td colspan="4" class="error">Unable to load queue status.</td></tr>`;
+        body.innerHTML = `<tr><td colspan="5" class="error">Unable to load queue status.</td></tr>`;
     }
 }
 
 // ===============================
-// AGENT PERFORMANCE
-// ===============================
-async function loadAgentStatus() {
-    const body = document.getElementById("agent-body");
-
-    try {
-        const res = await apiFetch("/status/agents");
-        const data = await res.json();
-
-        body.innerHTML = "";
-
-        if (!data || !Array.isArray(data.AgentStatus) || data.AgentStatus.length === 0) {
-            body.innerHTML =
-                `<tr><td colspan="10" class="error">Unable to load agent data.</td></tr>`;
-            return;
-        }
-
-        data.AgentStatus.forEach(a => {
-            const inbound = a.TotalCallsReceived || 0;
-            const totalOnCall = a.TotalSecondsOnCall || 0;
-            const avgHandleSec = inbound > 0 ? Math.round(totalOnCall / inbound) : 0;
-
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${safe(a.FullName)}</td>
-                <td>${safe(a.TeamName)}</td>
-                <td>${safe(a.PhoneExt)}</td>
-                <td class="availability-cell ${availabilityClass(a.CallTransferStatusDesc)}">
-                    ${safe(a.CallTransferStatusDesc)}
-                </td>
-                <td>${inbound}</td>
-                <td>${a.TotalCallsMissed || 0}</td>
-                <td>${a.ThirdPartyTransferCount || 0}</td>
-                <td>${a.DialoutCount || 0}</td>
-                <td>${formatTime(avgHandleSec)}</td>
-                <td>${formatDate(a.StartDateUtc)}</td>
-            `;
-            body.appendChild(tr);
-        });
-    } catch (err) {
-        console.error("Agent load error:", err);
-        body.innerHTML =
-            `<tr><td colspan="10" class="error">Unable to load agent data.</td></tr>`;
-    }
-}
-
-// ===============================
-// REALTIME GLOBAL STATISTICS
+// LOAD REALTIME GLOBAL STATISTICS
 // ===============================
 async function loadGlobalStats() {
     const errorDiv = document.getElementById("global-error");
+    errorDiv.textContent = "";
 
     try {
-        const res = await apiFetch("/statistics/global");
-        const data = await res.json();
+        const data = await fetchApi("/statistics/global");
 
         if (!data || !Array.isArray(data.GlobalStatistics) || data.GlobalStatistics.length === 0) {
             errorDiv.textContent = "Unable to load global statistics.";
@@ -155,39 +119,105 @@ async function loadGlobalStats() {
 
         const g = data.GlobalStatistics[0];
 
-        // Row 1
-        document.getElementById("gs-total-queued").textContent =
-            safe(g.TotalCallsQueued, "--");
-        document.getElementById("gs-total-transferred").textContent =
-            safe(g.TotalCallsTransferred, "--");
-        document.getElementById("gs-total-abandoned").textContent =
-            safe(g.TotalCallsAbandoned, "--");
-        document.getElementById("gs-max-wait").textContent =
-            formatTime(g.MaxQueueWaitingTime);
-        document.getElementById("gs-service-level").textContent =
-            formatPercent(Number(g.ServiceLevel));
+        setText("gs-total-queued", g.TotalCallsQueued);
+        setText("gs-total-transferred", g.TotalCallsTransferred);
+        setText("gs-total-abandoned", g.TotalCallsAbandoned);
+        setText("gs-max-wait", formatTime(g.MaxQueueWaitingTime));
 
-        // Row 2
-        document.getElementById("gs-total-received").textContent =
-            safe(g.TotalCallsReceived, "--");
-        document.getElementById("gs-answer-rate").textContent =
-            formatPercent(Number(g.AnswerRate));
-        document.getElementById("gs-abandon-rate").textContent =
-            formatPercent(Number(g.AbandonRate));
-        document.getElementById("gs-callbacks-registered").textContent =
-            safe(g.CallbacksRegistered, "--");
-        document.getElementById("gs-callbacks-waiting").textContent =
-            safe(g.CallbacksWaiting, "--");
+        setText("gs-service-level", g.ServiceLevel != null ? g.ServiceLevel.toFixed(2) + "%" : "--");
+        setText("gs-total-received", g.TotalCallsReceived);
 
-        errorDiv.textContent = "";
+        setText("gs-answer-rate", g.AnswerRate != null ? g.AnswerRate.toFixed(2) + "%" : "--");
+        setText("gs-abandon-rate", g.AbandonRate != null ? g.AbandonRate.toFixed(2) + "%" : "--");
+
+        setText("gs-callbacks-registered", g.CallbacksRegistered);
+        setText("gs-callbacks-waiting", g.CallbacksWaiting);
+
     } catch (err) {
         console.error("Global stats error:", err);
         errorDiv.textContent = "Unable to load global statistics.";
     }
 }
 
+function setText(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = value === undefined || value === null ? "--" : value;
+}
+
 // ===============================
-// INITIAL LOAD + AUTO REFRESH
+// LOAD AGENT PERFORMANCE
+// ===============================
+async function loadAgentStatus() {
+    const body = document.getElementById("agent-body");
+    body.innerHTML = `<tr><td colspan="10" class="loading">Loading agent data…</td></tr>`;
+
+    try {
+        const data = await fetchApi("/status/agents");
+
+        if (!data || !Array.isArray(data.AgentStatus) || data.AgentStatus.length === 0) {
+            body.innerHTML = `<tr><td colspan="10" class="error">Unable to load agent data.</td></tr>`;
+            return;
+        }
+
+        body.innerHTML = "";
+
+        data.AgentStatus.forEach((a, index) => {
+            const inbound = a.TotalCallsReceived ?? 0;
+            const missed = a.TotalCallsMissed ?? 0;
+            const transferred = a.ThirdPartyTransferCount ?? 0;
+            const outbound = a.DialoutCount ?? 0;
+
+            const avgHandleSeconds = inbound > 0 ? Math.round((a.TotalSecondsOnCall || 0) / inbound) : 0;
+
+            const availabilityClass = getAvailabilityClass(a.CallTransferStatusDesc);
+
+            const tr = document.createElement("tr");
+            // zebra striping handled in CSS, row index not needed here
+            tr.innerHTML = `
+                <td>${safe(a.FullName)}</td>
+                <td>${safe(a.TeamName)}</td>
+                <td>${safe(a.PhoneExt)}</td>
+                <td class="availability-cell ${availabilityClass}">${safe(a.CallTransferStatusDesc)}</td>
+                <td class="numeric">${inbound}</td>
+                <td class="numeric">${missed}</td>
+                <td class="numeric">${transferred}</td>
+                <td class="numeric">${outbound}</td>
+                <td class="numeric">${formatTime(avgHandleSeconds)}</td>
+                <td>${formatDate(a.StartDateUtc)}</td>
+            `;
+            body.appendChild(tr);
+        });
+
+    } catch (err) {
+        console.error("Agent load error:", err);
+        body.innerHTML = `<tr><td colspan="10" class="error">Unable to load agent data.</td></tr>`;
+    }
+}
+
+// ===============================
+// DARK MODE TOGGLE
+// ===============================
+function initDarkMode() {
+    const btn = document.getElementById("darkModeToggle");
+    if (!btn) return;
+
+    // Restore preference if stored
+    const stored = localStorage.getItem("dashboard-dark-mode");
+    if (stored === "on") {
+        document.body.classList.add("dark-mode");
+        btn.textContent = "Light mode";
+    }
+
+    btn.addEventListener("click", () => {
+        const isDark = document.body.classList.toggle("dark-mode");
+        btn.textContent = isDark ? "Light mode" : "Dark mode";
+        localStorage.setItem("dashboard-dark-mode", isDark ? "on" : "off");
+    });
+}
+
+// ===============================
+// INIT
 // ===============================
 function refreshAll() {
     loadQueueStatus();
@@ -196,7 +226,9 @@ function refreshAll() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    initDarkMode();
     refreshAll();
+
     // Refresh every 10 seconds
     setInterval(refreshAll, 10000);
 });
